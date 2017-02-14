@@ -1,0 +1,127 @@
+package audio;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+import com.miv.Options;
+
+import data.SongData;
+import utils.FileUtils;
+
+public class Audio {
+	private Options options;
+	// Hashmap with key:value pairing of fileName:SoundData
+	private HashMap<String, SongData> songsData = new HashMap<String, SongData>();
+	// Hashmap with key:value pairing of fileName:Sound
+	private HashMap<String, Sound> soundEffects = new HashMap<String, Sound>();
+	// Hashmap with key:value pairing of fileName:Song
+	private HashMap<String, Song> songs = new HashMap<String, Song>();
+	
+	public Audio(Options options) {
+		this.options = options;
+	}
+	
+	public void loadAudio() {
+		loadSongsMetadata();
+		loadSoundEffects();
+		loadSongs();
+	}
+	
+	public void loadSongsMetadata() {
+		// Load text file containing the musics' metadata
+		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.songsMetadataFilePath);
+		
+		String song = "";
+		float bpm = 0;
+		float offset = 0f;
+		float loopStartMarker = 0f;
+		boolean loops = false;
+		int lineCount = 1;
+		for(String line : metadata) {
+			try {
+				if(line.startsWith("name=")) {
+					if(!song.equals("")) {
+						songsData.put(song, new SongData(song, bpm, offset, loopStartMarker, loops));
+						bpm = 0;
+						offset = 0f;
+						loopStartMarker = 0f;
+						loops = false;
+					}
+					song = line.replace("name=", "");
+				} else if(line.startsWith("bpm=")) {
+					bpm = Float.valueOf(line.replace("bpm=", ""));
+				} else if(line.startsWith("offset=")) {
+					offset = Float.valueOf(line.replace("offset=", ""));
+				} else if(line.startsWith("loop_start=")) {
+					loopStartMarker = Float.valueOf(line.replace("loop_start=", ""));
+				} else if(line.startsWith("loops=")) {
+					loops = Boolean.valueOf(line.replace("loops=", ""));
+				}
+			} catch(NumberFormatException e) {
+				System.out.println("Music metadata invalid value at line " + lineCount);
+				e.printStackTrace();
+			}
+			lineCount++;
+		}
+	}
+	
+	public void loadSoundEffects() {
+		File soundEffectsFolder = new File(Options.soundEffectsFilePath);
+		File[] soundEffectsFiles = soundEffectsFolder.listFiles();
+		for(int i = 0; i < soundEffectsFiles.length; i++) {
+			if(soundEffectsFiles[i].isFile() && isSupportedAudioFormat(FileUtils.getExtension(soundEffectsFiles[i]))) {
+				soundEffects.put(soundEffectsFiles[i].getName(), Gdx.audio.newSound(new FileHandle(soundEffectsFiles[i])));
+			}
+		}
+	}
+	
+	public void loadSongs() {
+		File musicFolder = new File(Options.musicFilePath);
+		File[] musicFiles = musicFolder.listFiles();
+		for(int i = 0; i < musicFiles.length; i++) {
+			if(musicFiles[i].isFile() && isSupportedAudioFormat(FileUtils.getExtension(musicFiles[i]))) {
+				Song song = new Song(Gdx.audio.newMusic(new FileHandle(musicFiles[i])), songsData.get(musicFiles[i].getName()));
+				songs.put(musicFiles[i].getName(), song);
+			}
+		}
+	}
+	
+	public void playSoundEffect(String fileName) {
+		Sound s = soundEffects.get(fileName);
+		if(s != null) {
+			s.play(options.getMasterVolume() * options.getSoundEffectsVolume());
+		}
+	}
+	
+	public void playSong(String fileName) {
+		playSong(songs.get(fileName));
+	}
+	
+	public void playSong(Song song) {
+		if(song != null) {
+			song.getMusic().setVolume(options.getMasterVolume() * options.getMusicVolume());
+			song.getMusic().play();
+		}
+	}
+	
+	public Song getSong(String fileName) {
+		return songs.get(fileName);
+	}
+	
+	public HashMap<String, Song> getSongs() {
+		return songs;
+	}
+	
+	private boolean isSupportedAudioFormat(String fileExtension) {
+		if(fileExtension.equals("mp3") || fileExtension.equals("ogg") || fileExtension.equals("wav")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
