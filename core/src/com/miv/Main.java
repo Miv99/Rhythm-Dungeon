@@ -1,5 +1,6 @@
 package com.miv;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -15,8 +16,17 @@ import audio.Audio;
 import audio.Song;
 import audio.SongSelector.NoSelectableMusicException;
 import dungeons.Dungeon;
+import graphics.Images;
+import systems.ActionBarSystem;
+import systems.AnimationSystem;
+import systems.RenderSystem;
 
 public class Main extends ApplicationAdapter {
+	private boolean paused;
+	
+	private Engine engine;
+	private ActionBarSystem actionBarSystem;
+	
 	private Options options;
 	private Audio audio;
 	
@@ -24,10 +34,19 @@ public class Main extends ApplicationAdapter {
 	private InputMultiplexer im;
 	
 	@Override
-	public void create () {
+	public void create() {
+		engine = new Engine();
+		
 		options = Options.loadOptions();
 		
 		audio = new Audio(options);
+		
+		Images images = new Images();
+		
+		// Create systems
+		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new RenderSystem());
+		actionBarSystem = new ActionBarSystem(options.getWindowWidth(), null, 200f);
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
@@ -40,18 +59,41 @@ public class Main extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
+		if(!paused) {
+			// Update systems
+			engine.update(deltaTime);
+			actionBarSystem.update(deltaTime);
+		}
+		
 		//System.out.println(1/deltaTime);
 	}
 		
 	@Override
-	public void dispose () {
+	public void dispose() {
 		
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		actionBarSystem.setWindowWidth(width);
+		
+		//TODO: update stage
+	}
+
+	@Override
+	public void pause() {
+		paused = true;
+	}
+
+	@Override
+	public void resume() {
+		paused = false;
 	}
 	
 	public void startNewGame() {

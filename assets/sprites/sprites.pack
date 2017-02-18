@@ -1,0 +1,26 @@
+
+sprites.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dragon
+  rotate: false
+  xy: 1, 35
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+fire guy
+  rotate: false
+  xy: 1, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+player
+  rotate: false
+  xy: 131, 131
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

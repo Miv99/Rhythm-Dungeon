@@ -1,32 +1,32 @@
 package components;
 
-import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import java.awt.Point;
 
-import utils.Point;
+import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class ImageComponent implements Component {
-	private TextureRegion image;
-	private Point position;
+	private Sprite sprite;
+	private Point mapPosition;
 	
-	public ImageComponent(TextureRegion image) {
-		this.image = image;
+	public ImageComponent(Sprite sprite) {
+		this.sprite = sprite;
 	}
 	
-	public TextureRegion getImage() {
-		return image;
+	public Sprite getSprite() {
+		return sprite;
 	}
 	
-	public Point getPosition() {
-		return position;
+	public Point getMapPosition() {
+		return mapPosition;
 	}
 	
-	public void setImage(TextureRegion image) {
-		this.image = image;
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
 	}
 	
-	public void setPosition(float x, float y) {
-		position.setX(x);
-		position.setY(y);
+	public void setMapPosition(int x, int y) {
+		mapPosition.x = x;
+		mapPosition.y = y;
 	}
 }

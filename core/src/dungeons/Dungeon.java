@@ -1,5 +1,7 @@
 package dungeons;
 
+import com.badlogic.gdx.utils.Array;
+
 import audio.Audio;
 import audio.SongSelector;
 
@@ -9,6 +11,8 @@ import audio.SongSelector;
 public class Dungeon {
 	private SongSelector songSelector;
 	private int currentFloor;
+	
+	private Array<Floor> floors = new Array<Floor>();
 	
 	private float beatHitErrorMarginInSeconds;
 	private float beatMissErrorMarginInSeconds;
@@ -28,7 +32,7 @@ public class Dungeon {
 	 * Returns a value proportional to beat hit error margin
 	 */
 	public static float calculateBeatMissErrorMarginFromFloor(int floor) {
-		return calculateBeatHitErrorMarginFromFloor(floor) * 1.5f;
+		return calculateBeatHitErrorMarginFromFloor(floor) * 2f;
 	}
 	
 	/**

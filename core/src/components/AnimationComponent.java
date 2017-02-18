@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import data.AnimationData;
 import utils.GeneralUtils;
@@ -13,7 +13,7 @@ import utils.GeneralUtils;
 public class AnimationComponent implements Component {
 	private float animationStateTime;
 	private HashMap<String, AnimationData> animations;
-	private Animation<TextureRegion> currentAnimation;
+	private Animation<Sprite> currentAnimation;
 	
 	public AnimationComponent(HashMap<String, AnimationData> animations, float dungeonBpm) {
 		this.animations = animations;
@@ -36,7 +36,7 @@ public class AnimationComponent implements Component {
 		animationStateTime = 0f;
 	}
 	
-	public TextureRegion getKeyFrame() {
+	public Sprite getKeyFrame() {
 		return currentAnimation.getKeyFrame(animationStateTime);
 	}
 	

@@ -1,25 +1,27 @@
 package components;
 
+import java.awt.Point;
+
 import com.badlogic.ashley.core.Component;
 
 import data.HitboxData;
 import data.HitboxData.HitboxType;
-import utils.Point;
 
 public class HitboxComponent implements Component {
-	private Point position;
+	private Point mapPosition;
+	// Each grid point on the 2D array represents one map tile that the entire hitbox takes up
 	private HitboxType[][] hitbox;
 	
-	public HitboxComponent(HitboxData hitboxData, Point position) {
+	public HitboxComponent(HitboxData hitboxData, Point mapPosition) {
 		hitbox = hitboxData.getHitbox();
-		this.position = position;
+		this.mapPosition = mapPosition;
 	}
 	
 	public HitboxType[][] getHitbox() {
 		return hitbox;
 	}
 	
-	public Point getPosition() {
-		return position;
+	public Point getMapPosition() {
+		return mapPosition;
 	}
 }

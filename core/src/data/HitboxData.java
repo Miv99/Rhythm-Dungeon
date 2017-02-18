@@ -15,20 +15,20 @@ public class HitboxData {
 			this.tangible = tangible;
 			this.attackable = attackable;
 		}
+		
+		public boolean getTangible() {
+			return tangible;
+		}
+		
+		public boolean getAttackable() {
+			return attackable;
+		}
 	}
 	
 	private HitboxType[][] hitbox;
 	
 	public HitboxData(HitboxType[][] hitbox) {
 		this.hitbox = hitbox;
-	}
-	
-	public static boolean getTangible(HitboxType hitboxType) {
-		return hitboxType.tangible;
-	}
-	
-	public static boolean getAttackble(HitboxType hitboxType) {
-		return hitboxType.attackable;
 	}
 	
 	public HitboxType[][] getHitbox() {
