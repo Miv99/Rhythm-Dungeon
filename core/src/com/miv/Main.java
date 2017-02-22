@@ -21,10 +21,8 @@ import dungeons.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
 import dungeons.Dungeon.ActionBar;
-import systems.ActionBarSystem;
 import systems.AnimationSystem;
 import systems.RenderSystem;
-import systems.TileRenderSystem;
 
 public class Main extends ApplicationAdapter {
 	private boolean paused;
@@ -32,8 +30,7 @@ public class Main extends ApplicationAdapter {
 	private EntityFactory entityFactory;
 	
 	private Engine engine;
-	private ActionBarSystem actionBarSystem;
-	private TileRenderSystem tileRenderSystem;
+	private Dungeon dungeon;
 	
 	private Options options;
 	private Audio audio;
@@ -60,8 +57,6 @@ public class Main extends ApplicationAdapter {
 		// Create systems
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new RenderSystem());
-		actionBarSystem = new ActionBarSystem(options.getWindowWidth(), null, 200f);
-		tileRenderSystem = new TileRenderSystem();
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
@@ -83,8 +78,10 @@ public class Main extends ApplicationAdapter {
 		if(!paused) {
 			// Update systems
 			engine.update(deltaTime);
-			actionBarSystem.update(deltaTime);
-			tileRenderSystem.update(deltaTime);
+			
+			if(dungeon != null) {
+				dungeon.update(deltaTime);
+			}
 		}
 		
 		//System.out.println(1/deltaTime);
@@ -97,7 +94,9 @@ public class Main extends ApplicationAdapter {
 	
 	@Override
 	public void resize(int width, int height) {
-		actionBarSystem.setWindowWidth(width);
+		if(dungeon != null) {
+			dungeon.getActionBar().getActionBarSystem().setWindowWidth(width);
+		}
 		
 		//TODO: update stage
 	}
@@ -119,7 +118,7 @@ public class Main extends ApplicationAdapter {
 		
 		Entity player = entityFactory.createPlayer();
 		
-		Dungeon dungeon = DungeonFactory.generateDungeon(10, player, audio, tileRenderSystem);
+		Dungeon dungeon = DungeonFactory.generateDungeon(10, player, options, audio);
 		
 		//TODO: fade screen from black
 		
