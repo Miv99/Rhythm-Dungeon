@@ -12,7 +12,7 @@ public class Images {
 	private HashMap<String, Sprite> loadedSprites = new HashMap<String, Sprite>();
 	
 	public Images() {
-		spritesAtlas = new TextureAtlas(new FileHandle(Options.spritesPackFilePath), new FileHandle(Options.spritesImageFilePath));
+		spritesAtlas = new TextureAtlas(new FileHandle(Options.spritesPackFilePath), new FileHandle(Options.spritesImageFileDir));
 	}
 	
 	/**

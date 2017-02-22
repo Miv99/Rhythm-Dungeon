@@ -3,7 +3,7 @@ package systems;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
-import hud.ActionBar;
+import dungeons.Dungeon.ActionBar;
 import hud.BeatLine;
 
 /**

@@ -17,6 +17,11 @@ public class HitboxComponent implements Component {
 		this.mapPosition = mapPosition;
 	}
 	
+	public void setMapPosition(int x, int y) {
+		mapPosition.x = x;
+		mapPosition.y = y;
+	}
+	
 	public HitboxType[][] getHitbox() {
 		return hitbox;
 	}

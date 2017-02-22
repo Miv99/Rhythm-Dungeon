@@ -12,6 +12,7 @@ import com.miv.Options;
 
 import data.SongData;
 import utils.FileUtils;
+import utils.GeneralUtils;
 
 public class Audio {
 	private Options options;
@@ -32,35 +33,38 @@ public class Audio {
 		loadSongs();
 	}
 	
-	public void loadSongsMetadata() {
+	private void loadSongsMetadata() {
 		// Load text file containing the musics' metadata
 		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.songsMetadataFilePath);
 		
-		String song = "";
+		String songName = "";
 		float bpm = 0;
 		float offset = 0f;
 		float loopStartMarker = 0f;
 		boolean loops = false;
 		int lineCount = 1;
-		for(String line : metadata) {
+		for(int i = 0; i < metadata.size() - 1; i++) {
+			String line = metadata.get(i);
 			try {
 				if(line.startsWith("name=")) {
-					if(!song.equals("")) {
-						songsData.put(song, new SongData(song, bpm, offset, loopStartMarker, loops));
-						bpm = 0;
-						offset = 0f;
-						loopStartMarker = 0f;
-						loops = false;
-					}
-					song = line.replace("name=", "");
+					songName = line.replace("name=", "");
 				} else if(line.startsWith("bpm=")) {
-					bpm = Float.valueOf(line.replace("bpm=", ""));
+					bpm = GeneralUtils.toFloat(line.replace("bpm=", ""));
 				} else if(line.startsWith("offset=")) {
-					offset = Float.valueOf(line.replace("offset=", ""));
+					offset = GeneralUtils.toFloat(line.replace("offset=", ""));
 				} else if(line.startsWith("loop_start=")) {
-					loopStartMarker = Float.valueOf(line.replace("loop_start=", ""));
+					loopStartMarker = GeneralUtils.toFloat(line.replace("loop_start=", ""));
 				} else if(line.startsWith("loops=")) {
 					loops = Boolean.valueOf(line.replace("loops=", ""));
+				} else if(line.equals("")) {
+					songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, loops));
+					songName = "";
+					bpm = 0;
+					offset = 0f;
+					loopStartMarker = 0f;
+					loops = false;
+				} else {
+					System.out.println("Music metadata invalid format at line " + lineCount);
 				}
 			} catch(NumberFormatException e) {
 				System.out.println("Music metadata invalid value at line " + lineCount);
@@ -68,9 +72,12 @@ public class Audio {
 			}
 			lineCount++;
 		}
+		if(!songName.equals("")) {
+			songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, loops));
+		}
 	}
 	
-	public void loadSoundEffects() {
+	private void loadSoundEffects() {
 		File soundEffectsFolder = new File(Options.soundEffectsFilePath);
 		File[] soundEffectsFiles = soundEffectsFolder.listFiles();
 		for(int i = 0; i < soundEffectsFiles.length; i++) {
@@ -80,12 +87,12 @@ public class Audio {
 		}
 	}
 	
-	public void loadSongs() {
+	private void loadSongs() {
 		File musicFolder = new File(Options.musicFilePath);
 		File[] musicFiles = musicFolder.listFiles();
 		for(int i = 0; i < musicFiles.length; i++) {
 			if(musicFiles[i].isFile() && isSupportedAudioFormat(FileUtils.getExtension(musicFiles[i]))) {
-				Song song = new Song(Gdx.audio.newMusic(new FileHandle(musicFiles[i])), songsData.get(musicFiles[i].getName()));
+				Song song = new Song(Gdx.audio.newMusic(new FileHandle(musicFiles[i])), songsData.get(GeneralUtils.removeExtension(musicFiles[i].getName())));
 				songs.put(musicFiles[i].getName(), song);
 			}
 		}

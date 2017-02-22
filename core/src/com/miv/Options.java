@@ -17,7 +17,9 @@ public class Options {
 	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\metadata.txt";
 	
 	public static String spritesPackFilePath = assetsFilePath + "sprites\\sprites.pack";
-	public static String spritesImageFilePath = assetsFilePath + "sprites\\sprites.png";
+	public static String spritesImageFileDir = assetsFilePath + "sprites\\";
+	
+	public static String animationsMetadataFilePath = assetsFilePath + "animations\\metadata.txt";
 	
 	private boolean fullscreen;
 	private int windowWidth = 1024;

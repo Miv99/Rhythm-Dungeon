@@ -15,17 +15,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import audio.Audio;
 import audio.Song;
 import audio.SongSelector.NoSelectableMusicException;
+import data.AnimationLoader;
 import dungeons.Dungeon;
+import dungeons.DungeonFactory;
+import factories.EntityFactory;
 import graphics.Images;
+import dungeons.Dungeon.ActionBar;
 import systems.ActionBarSystem;
 import systems.AnimationSystem;
 import systems.RenderSystem;
+import systems.TileRenderSystem;
 
 public class Main extends ApplicationAdapter {
 	private boolean paused;
 	
+	private EntityFactory entityFactory;
+	
 	private Engine engine;
 	private ActionBarSystem actionBarSystem;
+	private TileRenderSystem tileRenderSystem;
 	
 	private Options options;
 	private Audio audio;
@@ -36,17 +44,24 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create() {
 		engine = new Engine();
-		
+				
 		options = Options.loadOptions();
 		
 		audio = new Audio(options);
+		audio.loadAudio();
 		
 		Images images = new Images();
+		
+		entityFactory = new EntityFactory(images);
+		
+		AnimationLoader animationLoader = new AnimationLoader(images);
+		animationLoader.loadAnimations();
 		
 		// Create systems
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new RenderSystem());
 		actionBarSystem = new ActionBarSystem(options.getWindowWidth(), null, 200f);
+		tileRenderSystem = new TileRenderSystem();
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
@@ -69,6 +84,7 @@ public class Main extends ApplicationAdapter {
 			// Update systems
 			engine.update(deltaTime);
 			actionBarSystem.update(deltaTime);
+			tileRenderSystem.update(deltaTime);
 		}
 		
 		//System.out.println(1/deltaTime);
@@ -101,22 +117,12 @@ public class Main extends ApplicationAdapter {
 		
 		//TODO: show cutscene of story intro
 		
-		Dungeon dungeon = new Dungeon(audio);
-		dungeon.setCurrentFloor(1);
-		float bpm = Dungeon.calculateBpmFromFloor(dungeon.getCurrentFloor());
-		Song song = null;
-		try {
-			song = dungeon.getSongSelector().selectSongByBpm(bpm);
-		} catch (NoSelectableMusicException e) {
-			e.printStackTrace();
-		}
+		Entity player = entityFactory.createPlayer();
+		
+		Dungeon dungeon = DungeonFactory.generateDungeon(10, player, audio, tileRenderSystem);
 		
 		//TODO: fade screen from black
 		
-		if(song != null) {
-			audio.playSong(song);
-		}
-		
-		//TODO: wait [song.offsetInSeconds] and then enable all entities' movement
+		dungeon.enterNewFloor(1);
 	}
 }

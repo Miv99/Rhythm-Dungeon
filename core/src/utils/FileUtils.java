@@ -27,13 +27,13 @@ public class FileUtils {
 		
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader("file.txt"));
+			br = new BufferedReader(new FileReader(fileAbsolutePath));
 			
 			String line = br.readLine();
 			
 			while (line != null) {
-				line = br.readLine();
 				content.add(line);
+				line = br.readLine();
 			}
 			
 			br.close();

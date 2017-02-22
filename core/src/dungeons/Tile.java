@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import data.HitboxData.HitboxType;
+import special_tiles.SpecialTile;
 import utils.MapUtils;
 import utils.MapUtils.TileDoesNotContainEntityException;
 
@@ -20,6 +21,8 @@ public class Tile {
 	private HitboxType hitboxType;
 	
 	private Point mapPosition;
+	
+	private SpecialTile specialTile;
 	
 	/**
 	 * Uses information on the tangibleOccupant and this tile
@@ -42,7 +45,7 @@ public class Tile {
 	
 	/**
 	 * Uses information on the tangibleOccupant (if any) and hitboxType to determine
-	 * whether this tile can be moved onto
+	 * whether this tile can be touched
 	 */
 	public boolean isTangibleTile() {
 		if(hitboxType.getTangible()) {
@@ -61,6 +64,18 @@ public class Tile {
 		return false;
 	}
 	
+	public void setHitboxType(HitboxType hitboxType) {
+		this.hitboxType = hitboxType;
+	}
+	
+	public void setTangibleOccupant(Entity newOccupant) {
+		this.tangibleOccupant =  newOccupant;
+	}
+	
+	public void setSpecialTile(SpecialTile specialTile) {
+		this.specialTile = specialTile;
+	}
+	
 	public Entity getTangibleOccupant() {
 		return tangibleOccupant;
 	}
@@ -75,5 +90,9 @@ public class Tile {
 	
 	public Point getMapPosition() {
 		return mapPosition;
+	}
+	
+	public SpecialTile getSpecialTile() {
+		return specialTile;
 	}
 }

@@ -5,14 +5,35 @@ filter: Nearest,Nearest
 repeat: none
 dragon
   rotate: false
-  xy: 1, 35
+  xy: 1, 69
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-fire guy
+player_move_right
+  rotate: false
+  xy: 1, 35
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: 1
+player_move_right
+  rotate: false
+  xy: 131, 165
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: 2
+player_move_right
   rotate: false
   xy: 1, 1
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: 3
+fire guy
+  rotate: false
+  xy: 67, 35
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
