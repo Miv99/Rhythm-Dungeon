@@ -29,15 +29,13 @@ public class Dungeon {
 		private Options options;
 		private Audio audio;
 		private Images images;
-		private GameCamera camera;
 		
-		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images, GameCamera camera) {
+		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images) {
 			this.maxFloors = maxFloors;
 			this.player = player;
 			this.options = options;
 			this.audio = audio;
 			this.images = images;
-			this.camera = camera;
 		}
 		
 		public int getMaxFloors() {
@@ -58,10 +56,6 @@ public class Dungeon {
 		
 		public Images getImages() {
 			return images;
-		}
-		
-		public GameCamera getCamera() {
-			return camera;
 		}
 	}
 	
@@ -185,11 +179,10 @@ public class Dungeon {
 		
 		public TileRenderSystem() {
 			batch = new SpriteBatch();
-			batch.setProjectionMatrix(dungeonParams.camera.combined);
 		}
 		
-		public void onCameraPositionUpdate() {
-			batch.setProjectionMatrix(dungeonParams.camera.combined);
+		public SpriteBatch getBatch() {
+			return batch;
 		}
 		
 		public void update(float deltaTime) {

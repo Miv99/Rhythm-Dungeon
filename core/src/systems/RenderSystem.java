@@ -30,14 +30,20 @@ public class RenderSystem extends EntitySystem {
 	public void removedFromEngine(Engine engine) {
 
 	}
+	
+	public SpriteBatch getBatch() {
+		return batch;
+	}
 
 	@Override
 	public void update(float deltaTime) {
+		batch.begin();
 		for(Entity e : entities) {
 			ImageComponent image = ComponentMappers.im.get(e);
 			Point mapPosition = image.getMapPosition();
 			
 			batch.draw(image.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
 		}
+		batch.end();
 	}
 }

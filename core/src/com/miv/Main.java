@@ -58,7 +58,10 @@ public class Main extends ApplicationAdapter {
 		
 		// Create systems
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new RenderSystem());
+		RenderSystem renderSystem = new RenderSystem();
+		engine.addSystem(renderSystem);
+		
+		camera.setRenderSystem(renderSystem);
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
@@ -78,12 +81,12 @@ public class Main extends ApplicationAdapter {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
 		if(!paused) {
-			// Update systems
-			engine.update(deltaTime);
-			
 			if(dungeon != null) {
 				dungeon.update(deltaTime);
 			}
+			
+			// Update systems
+			engine.update(deltaTime);
 			
 			if(camera != null) {
 				camera.frameUpdate(deltaTime);
@@ -124,8 +127,9 @@ public class Main extends ApplicationAdapter {
 		
 		Entity player = entityFactory.createPlayer(new Point(2, 2));
 		camera.setFocus(player);
+		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(10, player, options, audio, images, camera);
+		DungeonParams dungeonParams = new DungeonParams(10, player, options, audio, images);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		inputHandler.setDungeon(dungeon);
 		camera.setDungeon(dungeon);

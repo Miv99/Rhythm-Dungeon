@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 
 import dungeons.Dungeon;
+import systems.RenderSystem;
 
 public class GameCamera extends OrthographicCamera {
 	private final float lerpSpeed = 0.08f;
 	
 	private Dungeon dungeon;
+	private RenderSystem renderSystem;
 	private Entity focus;
 	
 	public GameCamera(float viewportWidth, float viewportHeight) {
@@ -20,6 +22,10 @@ public class GameCamera extends OrthographicCamera {
 		
 	public void setDungeon(Dungeon dungeon) {
 		this.dungeon = dungeon;
+	}
+	
+	public void setRenderSystem(RenderSystem renderSystem) {
+		this.renderSystem = renderSystem;
 	}
 	
 	public void setPosition(float x, float y) {
@@ -55,7 +61,10 @@ public class GameCamera extends OrthographicCamera {
 	@Override
 	public void update() {
 		if(dungeon != null) {
-			dungeon.getTileRenderSystem().onCameraPositionUpdate();
+			dungeon.getTileRenderSystem().getBatch().setProjectionMatrix(combined);
+		}
+		if(renderSystem != null) {
+			renderSystem.getBatch().setProjectionMatrix(combined);
 		}
 		update(true);
 	}
