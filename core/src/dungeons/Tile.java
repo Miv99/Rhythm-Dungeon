@@ -24,6 +24,10 @@ public class Tile {
 	
 	private SpecialTile specialTile;
 	
+	public Tile(Point mapPosition) {
+		this.mapPosition = mapPosition;
+	}
+	
 	/**
 	 * Uses information on the tangibleOccupant and this tile
 	 * to determine whether the tangibleOccupant can be attacked
@@ -62,6 +66,10 @@ public class Tile {
 			}
 		}
 		return false;
+	}
+	
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
 	}
 	
 	public void setHitboxType(HitboxType hitboxType) {

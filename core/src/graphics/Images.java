@@ -20,10 +20,15 @@ public class Images {
 	 * a new sprite is created.
 	 */
 	public Sprite getSprite(String name) {
+		Sprite sprite = null;
 		if(loadedSprites.containsKey(name)) {
-			return loadedSprites.get(name);
+			sprite = loadedSprites.get(name);
 		} else {
-			return spritesAtlas.createSprite(name);
+			sprite = spritesAtlas.createSprite(name);
 		}
+		if(sprite == null) {
+			System.out.println(Options.spritesImageFileDir + " does not contain \"" + name + "\"");
+		}
+		return sprite;
 	}
 }

@@ -45,3 +45,10 @@ player
   orig: 32, 32
   offset: 0, 0
   index: -1
+stone tile
+  rotate: false
+  xy: 197, 165
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

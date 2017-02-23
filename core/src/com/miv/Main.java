@@ -2,25 +2,17 @@ package com.miv;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import audio.Audio;
-import audio.Song;
-import audio.SongSelector.NoSelectableMusicException;
 import data.AnimationLoader;
 import dungeons.Dungeon;
 import dungeons.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
-import dungeons.Dungeon.ActionBar;
 import systems.AnimationSystem;
 import systems.RenderSystem;
 
@@ -29,6 +21,7 @@ public class Main extends ApplicationAdapter {
 	
 	private EntityFactory entityFactory;
 	
+	private Images images;
 	private Engine engine;
 	private Dungeon dungeon;
 	
@@ -47,7 +40,7 @@ public class Main extends ApplicationAdapter {
 		audio = new Audio(options);
 		audio.loadAudio();
 		
-		Images images = new Images();
+		images = new Images();
 		
 		entityFactory = new EntityFactory(images);
 		
@@ -65,7 +58,7 @@ public class Main extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(im);
 		
 		//TODO: remove this
-		//startNewGame();
+		startNewGame();
 	}
 
 	@Override
@@ -118,7 +111,7 @@ public class Main extends ApplicationAdapter {
 		
 		Entity player = entityFactory.createPlayer();
 		
-		Dungeon dungeon = DungeonFactory.generateDungeon(10, player, options, audio);
+		dungeon = DungeonFactory.generateDungeon(10, player, options, audio, images);
 		
 		//TODO: fade screen from black
 		

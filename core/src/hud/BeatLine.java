@@ -20,6 +20,9 @@ public class BeatLine {
 	private float circleYPositionRelativeToAxis;
 	private float circleAlpha;
 	
+	// If the BeatLine is queued to be deleted from the ActionBar
+	private boolean deletionQueued;
+	
 	public BeatLine(float timeUntiLCursorLineInSeconds, boolean strongBeat) {
 		this.timeUntilCursorLineInSeconds = timeUntiLCursorLineInSeconds;
 		this.strongBeat = strongBeat;
@@ -41,8 +44,16 @@ public class BeatLine {
 		//TODO: play sound effect
 	}
 	
+	public void setDeletionQueued(boolean deletionQueued) {
+		this.deletionQueued = deletionQueued;
+	}
+	
 	public void setTimeUntilCursorLineInSeconds(float newTime) {
 		timeUntilCursorLineInSeconds = newTime;
+	}
+	
+	public boolean getDeletionQueued() {
+		return deletionQueued;
 	}
 	
 	public float getTimeUntilCursorLineInSeconds() {

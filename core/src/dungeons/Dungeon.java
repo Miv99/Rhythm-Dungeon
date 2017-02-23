@@ -75,7 +75,7 @@ public class Dungeon {
 		
 		actionBar.actionBarSystem.setScrollInterval(actionBar.actionBarSystem.calculateScrollInterval(calculateBpmFromFloor(currentFloor)));
 		actionBar.beatLines.clear();
-		actionBar.beginBeatLineSpawning(song.getOffsetInSeconds());
+		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
 	}
 	
 	/**
@@ -131,12 +131,20 @@ public class Dungeon {
 		}
 		
 		public void update(float deltaTime) {
+			batch.begin();
 			for(Tile[] col : floors[currentFloor].getTiles()) {
 				for(Tile tile : col) {
 					Point mapPosition = tile.getMapPosition();
 					batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					
+					// Draw special tile, if any
+					if(tile.getSpecialTile() != null
+							&& tile.getSpecialTile().getTileOverlay() != null) {
+						batch.draw(tile.getSpecialTile().getTileOverlay(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					}
 				}
 			}
+			batch.end();
 		}
 	}
 	
@@ -158,13 +166,13 @@ public class Dungeon {
 		}
 		
 		/**
-		 * Begins spawning BeatLines such that the first BeatLine moves past the cursor line after [offset] seconds
+		 * Spawns a number of BeatLines such that the first BeatLine moves past the cursor line after [offset] seconds
+		 * and there are enough BeatLines that the screen is always filled with BeatLines
 		 */
-		public void beginBeatLineSpawning(float offsetInSeconds) {
-			//TODO
-			beatLines.add(new BeatLine(offsetInSeconds, true));
-			
-			// Create timer that spawns a BeatLine every (60/(bpm * 4)) seconds
+		public void spawnPrimaryBeatLines(float offsetInSeconds) {			
+			for(float time = offsetInSeconds; time < offsetInSeconds + actionBarSystem.scrollIntervalInSeconds * 2; time += (60f/(calculateBpmFromFloor(currentFloor) * 4f))) {
+				beatLines.add(new BeatLine(time, true));
+			}
 		}
 		
 		public void fireAttackAction() {
@@ -256,11 +264,14 @@ public class Dungeon {
 			// Time it takes in seconds for a BeatLine to travel the entire width of the window
 			private float scrollIntervalInSeconds;
 			private Array<BeatLine> beatLineAdditionQueue;
+			private Array<BeatLine> beatLineDeletionQueue;
 			
 			private final float cursorLineXPos = 50f;
 			
 			public ActionBarSystem(float windowWidth) {
 				batch = new SpriteBatch();
+				beatLineAdditionQueue = new Array<BeatLine>();
+				beatLineDeletionQueue = new Array<BeatLine>();
 				this.windowWidth = windowWidth;
 			}
 			
@@ -278,6 +289,7 @@ public class Dungeon {
 			}
 			
 			public void update(float deltaTime) {
+				System.out.println("Beat lines: " + actionBar.getBeatLines().size);
 				if(!ActionBar.this.isPaused()) {
 					for(BeatLine b : actionBar.getBeatLines()) {
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
@@ -288,12 +300,15 @@ public class Dungeon {
 						}
 						
 						// Once the BeatLine crosses the cursor, a new BeatLine is spawned
-						if(b.getTimeUntilCursorLineInSeconds() <= 0) {
+						if(b.getTimeUntilCursorLineInSeconds() <= 0
+								&& !b.getDeletionQueued()) {
 							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + scrollIntervalInSeconds, b.getStrongBeat()));
+							queueBeatLineDeletion(b);
 						}
 					}
 					
 					fireBeatLineAdditionQueue();
+					fireBeatLineDeletionQueue();
 				}
 			}
 			
@@ -301,10 +316,22 @@ public class Dungeon {
 				beatLineAdditionQueue.add(newBeatLine);
 			}
 			
+			private void queueBeatLineDeletion(BeatLine target) {
+				target.setDeletionQueued(true);
+				beatLineDeletionQueue.add(target);
+			}
+			
 			private void fireBeatLineAdditionQueue() {
 				if(beatLineAdditionQueue.size > 0) {
 					actionBar.getBeatLines().addAll(beatLineAdditionQueue);
 					beatLineAdditionQueue.clear();
+				}
+			}
+			
+			private void fireBeatLineDeletionQueue() {
+				if(beatLineDeletionQueue.size > 0) {
+					actionBar.getBeatLines().removeAll(beatLineDeletionQueue, false);
+					beatLineDeletionQueue.clear();
 				}
 			}
 		}
