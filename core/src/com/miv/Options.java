@@ -22,8 +22,8 @@ public class Options {
 	public static String animationsMetadataFilePath = assetsFilePath + "animations\\metadata.txt";
 	
 	private boolean fullscreen;
-	private int windowWidth = 1024;
-	private int windowHeight = 768;
+	private int windowWidth = 1600;
+	private int windowHeight = 900;
 	
 	private float masterVolume = 1f;
 	private float soundEffectsVolume = 1f;

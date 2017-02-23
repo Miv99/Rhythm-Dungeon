@@ -6,11 +6,13 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import audio.Audio;
 import data.AnimationLoader;
 import dungeons.Dungeon;
 import dungeons.DungeonFactory;
+import dungeons.Dungeon.DungeonParams;
 import factories.EntityFactory;
 import graphics.Images;
 import systems.AnimationSystem;
@@ -20,6 +22,8 @@ public class Main extends ApplicationAdapter {
 	private boolean paused;
 	
 	private EntityFactory entityFactory;
+	
+	private OrthographicCamera camera;
 	
 	private Images images;
 	private Engine engine;
@@ -56,6 +60,9 @@ public class Main extends ApplicationAdapter {
 		inputHandler = new InputHandler(null);
 		im.addProcessor(inputHandler);
 		Gdx.input.setInputProcessor(im);
+		
+		Gdx.graphics.setWindowedMode(options.getWindowWidth(), options.getWindowHeight());
+		camera = new OrthographicCamera(options.getWindowWidth(), options.getWindowHeight());
 		
 		//TODO: remove this
 		startNewGame();
@@ -111,7 +118,8 @@ public class Main extends ApplicationAdapter {
 		
 		Entity player = entityFactory.createPlayer();
 		
-		dungeon = DungeonFactory.generateDungeon(10, player, options, audio, images);
+		DungeonParams dungeonParams = new DungeonParams(10, player, options, audio, images, camera);
+		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		
 		//TODO: fade screen from black
 		

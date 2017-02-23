@@ -2,28 +2,24 @@ package dungeons;
 
 import java.awt.Point;
 
-import com.badlogic.ashley.core.Entity;
-import com.miv.Options;
-
-import audio.Audio;
 import data.HitboxData.HitboxType;
-import graphics.Images;
+import dungeons.Dungeon.DungeonParams;
 import special_tiles.LadderTile;
 
 public class DungeonFactory {
 	//TODO: generate rooms, populate tiles with enemies
 	
-	public static Dungeon generateDungeon(int maxFloors, Entity player, Options options, Audio audio, Images images) {
-		Dungeon dungeon = new Dungeon(player, options, audio);
+	public static Dungeon generateDungeon(DungeonParams dungeonParams) {
+		Dungeon dungeon = new Dungeon(dungeonParams);
 		
-		Floor[] floors = new Floor[maxFloors];
-		for(int i = 0; i < maxFloors; i++) {
+		Floor[] floors = new Floor[dungeonParams.getMaxFloors()];
+		for(int i = 0; i < dungeonParams.getMaxFloors(); i++) {
 			Floor f = new Floor(10, 10);
 			int x = 0;
 			for(Tile[] col : f.getTiles()) {
 				for(int y = 0; y < col.length; y++) {
 					col[y] = new Tile(new Point(x, y));
-					col[y].setSprite(images.getSprite("stone tile"));
+					col[y].setSprite(dungeonParams.getImages().getSprite("stone tile"));
 					col[y].setHitboxType(HitboxType.Intangible);
 				}
 				x++;

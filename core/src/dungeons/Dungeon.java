@@ -3,6 +3,7 @@ package dungeons;
 import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
@@ -15,16 +16,60 @@ import audio.SongSelector;
 import audio.SongSelector.NoSelectableMusicException;
 import components.HitboxComponent;
 import components.WeaponComponent;
+import graphics.Images;
 import hud.BeatLine;
 
 /**
  * Note: all calculations are optimized so that there is a maximum of 50 floors per dungeon.
  */
 public class Dungeon {
+	public static class DungeonParams {
+		private int maxFloors;
+		private Entity player;
+		private Options options;
+		private Audio audio;
+		private Images images;
+		private OrthographicCamera camera;
+		
+		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images, OrthographicCamera camera) {
+			this.maxFloors = maxFloors;
+			this.player = player;
+			this.options = options;
+			this.audio = audio;
+			this.images = images;
+			this.camera = camera;
+		}
+		
+		public int getMaxFloors() {
+			return maxFloors;
+		}
+		
+		public Entity getPlayer() {
+			return player;
+		}
+		
+		public Options getOptions() {
+			return options;
+		}
+		
+		public Audio getAudio() {
+			return audio;
+		}
+		
+		public Images getImages() {
+			return images;
+		}
+		
+		public OrthographicCamera getCamera() {
+			return camera;
+		}
+	}
+	
+	private DungeonParams dungeonParams;
+	
 	private ActionBar actionBar;
 	private TileRenderSystem tileRenderSystem;
 	
-	private Audio audio;
 	private SongSelector songSelector;
 	private int currentFloor;
 	
@@ -33,11 +78,11 @@ public class Dungeon {
 	private float beatHitErrorMarginInSeconds;
 	private float beatMissErrorMarginInSeconds;
 	
-	public Dungeon(Entity player, Options options, Audio audio) {
-		actionBar = new ActionBar(player, options);
+	public Dungeon(DungeonParams dungeonParams) {
+		this.dungeonParams = dungeonParams;
+		actionBar = new ActionBar(dungeonParams.player, dungeonParams.options);
 		tileRenderSystem = new TileRenderSystem();
-		this.audio = audio;
-		songSelector = new SongSelector(audio);
+		songSelector = new SongSelector(dungeonParams.audio);
 	}
 	
 	/**
@@ -68,7 +113,7 @@ public class Dungeon {
 				
 		Song song = selectNewSongByCurrentFloor();
 		if(song != null) {
-			audio.playSong(song);
+			dungeonParams.audio.playSong(song);
 		} else {
 			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + calculateBpmFromFloor(currentFloor));
 		}
@@ -289,7 +334,6 @@ public class Dungeon {
 			}
 			
 			public void update(float deltaTime) {
-				System.out.println("Beat lines: " + actionBar.getBeatLines().size);
 				if(!ActionBar.this.isPaused()) {
 					for(BeatLine b : actionBar.getBeatLines()) {
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
