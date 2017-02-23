@@ -9,8 +9,9 @@ public class ImageComponent implements Component {
 	private Sprite sprite;
 	private Point mapPosition;
 	
-	public ImageComponent(Sprite sprite) {
+	public ImageComponent(Sprite sprite, Point mapPosition) {
 		this.sprite = sprite;
+		this.mapPosition = mapPosition;
 	}
 	
 	public Sprite getSprite() {

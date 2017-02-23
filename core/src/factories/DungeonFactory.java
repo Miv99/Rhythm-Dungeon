@@ -1,8 +1,11 @@
-package dungeons;
+package factories;
 
 import java.awt.Point;
 
 import data.HitboxData.HitboxType;
+import dungeons.Dungeon;
+import dungeons.Floor;
+import dungeons.Tile;
 import dungeons.Dungeon.DungeonParams;
 import special_tiles.LadderTile;
 

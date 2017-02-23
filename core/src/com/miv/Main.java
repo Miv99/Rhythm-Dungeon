@@ -1,5 +1,7 @@
 package com.miv;
 
+import java.awt.Point;
+
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -11,8 +13,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import audio.Audio;
 import data.AnimationLoader;
 import dungeons.Dungeon;
-import dungeons.DungeonFactory;
 import dungeons.Dungeon.DungeonParams;
+import factories.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
 import systems.AnimationSystem;
@@ -23,7 +25,7 @@ public class Main extends ApplicationAdapter {
 	
 	private EntityFactory entityFactory;
 	
-	private OrthographicCamera camera;
+	private GameCamera camera;
 	
 	private Images images;
 	private Engine engine;
@@ -38,9 +40,12 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create() {
 		engine = new Engine();
-				
+		
 		options = Options.loadOptions();
 		
+		Gdx.graphics.setWindowedMode(options.getWindowWidth(), options.getWindowHeight());
+		camera = new GameCamera(options.getWindowWidth(), options.getWindowHeight());
+						
 		audio = new Audio(options);
 		audio.loadAudio();
 		
@@ -57,13 +62,10 @@ public class Main extends ApplicationAdapter {
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
-		inputHandler = new InputHandler(null);
+		inputHandler = new InputHandler();
 		im.addProcessor(inputHandler);
 		Gdx.input.setInputProcessor(im);
-		
-		Gdx.graphics.setWindowedMode(options.getWindowWidth(), options.getWindowHeight());
-		camera = new OrthographicCamera(options.getWindowWidth(), options.getWindowHeight());
-		
+				
 		//TODO: remove this
 		startNewGame();
 	}
@@ -81,6 +83,10 @@ public class Main extends ApplicationAdapter {
 			
 			if(dungeon != null) {
 				dungeon.update(deltaTime);
+			}
+			
+			if(camera != null) {
+				camera.frameUpdate(deltaTime);
 			}
 		}
 		
@@ -116,10 +122,13 @@ public class Main extends ApplicationAdapter {
 		
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createPlayer();
+		Entity player = entityFactory.createPlayer(new Point(2, 2));
+		camera.setFocus(player);
 		
 		DungeonParams dungeonParams = new DungeonParams(10, player, options, audio, images, camera);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
+		inputHandler.setDungeon(dungeon);
+		camera.setDungeon(dungeon);
 		
 		//TODO: fade screen from black
 		

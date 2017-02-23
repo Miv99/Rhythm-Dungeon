@@ -1,31 +1,30 @@
 package com.miv;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.miv.Movement.Direction;
+
+import dungeons.Dungeon;
 
 public class InputHandler implements InputProcessor {
-	private Entity player;
+	private Dungeon dungeon;
 	
-	public InputHandler(Entity player) {
-		this.player = player;
-	}
-	
-	public void setPlayer(Entity player) {
-		this.player = player;
+	public void setDungeon(Dungeon dungeon) {
+		this.dungeon = dungeon;
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if(player != null) {
+		if(dungeon != null) {
 			if(keycode == Input.Keys.LEFT) {
-				
+				Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Left);
 			} else if(keycode == Input.Keys.RIGHT) {
-				
+				Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Right);
 			} else if(keycode == Input.Keys.UP) {
-				
+				Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Up);
 			} else if(keycode == Input.Keys.DOWN) {
-				
+				Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Down);
 			} else if(keycode == Input.Keys.Z) {
 				
 			} else if(keycode == Input.Keys.X) {

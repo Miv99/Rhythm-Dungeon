@@ -51,13 +51,15 @@ public class Movement {
 			Tile[][] tiles = floor.getTiles();
 			HitboxType[][] hitbox = hitboxComponent.getHitbox();
 			for(int x = xNew; x < xNew + hitbox.length; x++) {
-				for(int y = yNew; y < yNew + hitbox[x].length; y++) {
+				for(int y = yNew; y < yNew + hitbox[0].length; y++) {
 					tiles[x][y].setTangibleOccupant(entity);
 				}
 			}
 			
 			// Begin movement animation
-			ComponentMappers.am.get(entity).startAnimation(animationName);
+			if(ComponentMappers.am.has(entity)) {
+				ComponentMappers.am.get(entity).startAnimation(animationName);
+			}
 			
 			// Trigger special tile events, if any
 			SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();

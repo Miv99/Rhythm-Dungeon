@@ -3,10 +3,10 @@ package dungeons;
 import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
+import com.miv.GameCamera;
 import com.miv.Movement.Direction;
 import com.miv.Options;
 
@@ -29,9 +29,9 @@ public class Dungeon {
 		private Options options;
 		private Audio audio;
 		private Images images;
-		private OrthographicCamera camera;
+		private GameCamera camera;
 		
-		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images, OrthographicCamera camera) {
+		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images, GameCamera camera) {
 			this.maxFloors = maxFloors;
 			this.player = player;
 			this.options = options;
@@ -60,7 +60,7 @@ public class Dungeon {
 			return images;
 		}
 		
-		public OrthographicCamera getCamera() {
+		public GameCamera getCamera() {
 			return camera;
 		}
 	}
@@ -146,6 +146,10 @@ public class Dungeon {
 		this.floors = floors;
 	}
 	
+	public TileRenderSystem getTileRenderSystem() {
+		return tileRenderSystem;
+	}
+	
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
@@ -166,6 +170,14 @@ public class Dungeon {
 		return actionBar;
 	}
 	
+	public Floor[] getFloors() {
+		return floors;
+	}
+	
+	public Entity getPlayer() {
+		return dungeonParams.player;
+	}
+	
 	
 	
 	public class TileRenderSystem {
@@ -173,6 +185,11 @@ public class Dungeon {
 		
 		public TileRenderSystem() {
 			batch = new SpriteBatch();
+			batch.setProjectionMatrix(dungeonParams.camera.combined);
+		}
+		
+		public void onCameraPositionUpdate() {
+			batch.setProjectionMatrix(dungeonParams.camera.combined);
 		}
 		
 		public void update(float deltaTime) {
@@ -334,6 +351,7 @@ public class Dungeon {
 			}
 			
 			public void update(float deltaTime) {
+				batch.begin();
 				if(!ActionBar.this.isPaused()) {
 					for(BeatLine b : actionBar.getBeatLines()) {
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
@@ -354,6 +372,7 @@ public class Dungeon {
 					fireBeatLineAdditionQueue();
 					fireBeatLineDeletionQueue();
 				}
+				batch.end();
 			}
 			
 			private void queueBeatLineAddition(BeatLine newBeatLine) {
