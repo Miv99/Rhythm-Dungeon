@@ -1,20 +1,39 @@
 package components;
 
 import java.awt.Point;
+import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
+import com.miv.Movement.Direction;
 
 import data.HitboxData;
 import data.HitboxData.HitboxType;
+import utils.GeneralUtils;
 
 public class HitboxComponent implements Component {
 	private Point mapPosition;
 	// Each grid point on the 2D array represents one map tile that the entire hitbox takes up
 	private HitboxType[][] hitbox;
+	private HashMap<Direction, HitboxType[][]> directionalHitboxes;
+	private Direction facing;
 	
-	public HitboxComponent(HitboxData hitboxData, Point mapPosition) {
-		hitbox = hitboxData.getHitbox();
+	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
+		hitbox = hitboxDataFacingRight.getHitbox();
 		this.mapPosition = mapPosition;
+		
+		// Create directional hitboxes for facing left and right
+		directionalHitboxes = new HashMap<Direction, HitboxType[][]>();
+		directionalHitboxes.put(Direction.Right, hitbox);
+		directionalHitboxes.put(Direction.Left, (HitboxType[][])GeneralUtils.horizontallyFlipArray(hitbox));
+		facing = Direction.Right;
+	}
+	
+	public void faceDirection(Direction direction) {
+		facing = direction;
+		if(direction.equals(Direction.Left)
+				|| direction.equals(Direction.Right)) {
+			hitbox = directionalHitboxes.get(direction);
+		}
 	}
 	
 	public void setMapPosition(int x, int y) {
@@ -28,5 +47,9 @@ public class HitboxComponent implements Component {
 	
 	public Point getMapPosition() {
 		return mapPosition;
+	}
+	
+	public Direction getFacing() {
+		return facing;
 	}
 }

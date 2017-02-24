@@ -26,29 +26,25 @@ public class AnimationLoader {
 		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.animationsMetadataFilePath);
 		
 		String animationName = "";
-		String imagesString = "";
 		float animationDurationInBeats = 1f;
 		int lineCount = 1;
-		for(int i = 0; i < metadata.size() - 1; i++) {
+		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
 			try {
 				if(line.startsWith("animation_name=")) {
 					animationName = line.replace("animation_name=", "");
 				} else if(line.startsWith("duration=")) {
 					animationDurationInBeats = GeneralUtils.toFloat(line.replace("duration=", ""));
-				} else if(line.startsWith("images=")) {
-					imagesString = line.replace("images=", "");
 				} else if(line.equals("")) {
 					Array<Sprite> sprites = new Array<Sprite>();
+					
 					// Fill array of sprites
-					for(String imageName : imagesString.split(",")) {
-						sprites.add(images.getSprite(imageName.replaceAll(" ", "")));
-					}
-					AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), animationDurationInBeats);
+					sprites.addAll(images.loadAnimationSprites(animationName));
+					
+					AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
 					animationsData.put(animationName, animationData);
 					
 					animationName = "";
-					imagesString = "";
 					animationDurationInBeats = 1f;
 				} else {
 					System.out.println("Animation metadata invalid format at line " + lineCount);
@@ -61,11 +57,25 @@ public class AnimationLoader {
 		}
 		if(!animationName.equals("")) {
 			Array<Sprite> sprites = new Array<Sprite>();
-			for(String imageName : imagesString.split(",")) {
-				sprites.add(images.getSprite(imageName.replaceAll(" ", "")));
-			}
-			AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), animationDurationInBeats);
+			
+			// Fill array of sprites
+			sprites.addAll(images.loadAnimationSprites(animationName));
+			
+			AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
 			animationsData.put(animationName, animationData);
 		}
+	}
+	
+	/**
+	 * Updates all animations' frame duration to match the new bpm
+	 */
+	public void updateAllAnimationFrameDuration(float newBpm) {
+		for(AnimationData data : animationsData.values()) {
+			data.getAnimation().setFrameDuration(data.getFrameCount()/(newBpm/data.getAnimationDurationInBeats()) * 4);
+		}
+	}
+	
+	public HashMap<String, AnimationData> getAnimationsData() {
+		return animationsData;
 	}
 }

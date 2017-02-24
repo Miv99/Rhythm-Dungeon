@@ -1,3 +1,11 @@
 animation_name=player_move_right
-duration=1/8
-images=player_move_right_1, player_move_right_2, player_move_right_3
+duration=1/4
+
+animation_name=player_move_left
+duration=1/4
+
+animation_name=player_move_up
+duration=1/4
+
+animation_name=player_move_down
+duration=1/4

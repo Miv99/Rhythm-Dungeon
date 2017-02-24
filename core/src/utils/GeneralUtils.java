@@ -1,13 +1,6 @@
 package utils;
 
 public class GeneralUtils {
-	/**
-	 * Returns the number of seconds per frame given the number of key frames of an animation and desired duration of an animation
-	 */
-	public static float calulateAnimationFrameDuration(int keyFrameCount, float desiredAnimationDuration) {
-		return (float)keyFrameCount/desiredAnimationDuration;
-	}
-	
 	public static float toFloat(String string) throws NumberFormatException {
 		try {
 			if(string.contains("/")) {
@@ -23,5 +16,15 @@ public class GeneralUtils {
 	
 	public static String removeExtension(String fileName) {
 		return fileName.substring(0, fileName.lastIndexOf("."));
+	}
+	
+	public static Object[][] horizontallyFlipArray(Object[][] array) {
+		for(int x = 0; x < array.length/2; x++) {
+			Object[] temp = array[x];
+			array[x] = array[array.length - x];
+			array[array.length - x] = array[x];
+		}
+		
+		return array;
 	}
 }

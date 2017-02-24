@@ -2,7 +2,9 @@ package dungeons;
 
 import java.awt.Point;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
@@ -14,10 +16,15 @@ import audio.Audio;
 import audio.Song;
 import audio.SongSelector;
 import audio.SongSelector.NoSelectableMusicException;
+import components.AnimationComponent;
 import components.HitboxComponent;
+import components.ImageComponent;
 import components.WeaponComponent;
+import data.AnimationData;
+import data.AnimationLoader;
 import graphics.Images;
 import hud.BeatLine;
+import utils.GeneralUtils;
 
 /**
  * Note: all calculations are optimized so that there is a maximum of 50 floors per dungeon.
@@ -25,13 +32,15 @@ import hud.BeatLine;
 public class Dungeon {
 	public static class DungeonParams {
 		private int maxFloors;
+		private AnimationLoader animationLoader;
 		private Entity player;
 		private Options options;
 		private Audio audio;
 		private Images images;
 		
-		public DungeonParams(int maxFloors, Entity player, Options options, Audio audio, Images images) {
+		public DungeonParams(int maxFloors, AnimationLoader animationLoader, Entity player, Options options, Audio audio, Images images) {
 			this.maxFloors = maxFloors;
+			this.animationLoader = animationLoader;
 			this.player = player;
 			this.options = options;
 			this.audio = audio;
@@ -111,6 +120,8 @@ public class Dungeon {
 		} else {
 			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + calculateBpmFromFloor(currentFloor));
 		}
+		
+		dungeonParams.animationLoader.updateAllAnimationFrameDuration(calculateBpmFromFloor(currentFloor));
 		
 		actionBar.actionBarSystem.setScrollInterval(actionBar.actionBarSystem.calculateScrollInterval(calculateBpmFromFloor(currentFloor)));
 		actionBar.beatLines.clear();

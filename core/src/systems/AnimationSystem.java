@@ -34,7 +34,13 @@ public class AnimationSystem extends EntitySystem {
 			ImageComponent image = ComponentMappers.im.get(e);
 			
 			animation.update(deltaTime);
-			image.setSprite(animation.getKeyFrame());
+			if(animation.getCurrentAnimation() != null) {
+				image.setSprite(animation.getKeyFrame());
+			}
+			if(animation.getQueuedReturnToOriginalSprite()) {
+				image.setSprite(image.getDirectionalSprite());
+				animation.setQueuedReturnToOriginalSprite(false);
+			}
 		}
 	}
 }

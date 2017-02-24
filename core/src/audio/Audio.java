@@ -43,7 +43,7 @@ public class Audio {
 		float loopStartMarker = 0f;
 		boolean loops = false;
 		int lineCount = 1;
-		for(int i = 0; i < metadata.size() - 1; i++) {
+		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
 			try {
 				if(line.startsWith("name=")) {

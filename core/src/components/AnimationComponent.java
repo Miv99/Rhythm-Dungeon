@@ -1,6 +1,5 @@
 package components;
 
-import java.util.Collection;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
@@ -12,28 +11,32 @@ import utils.GeneralUtils;
 
 public class AnimationComponent implements Component {
 	private float animationStateTime;
+	// If true, AnimationSystem will attempt to return the entity's ImageComponent's sprite to its original sprite
+	private boolean queuedReturnToOriginalSprite;
 	private HashMap<String, AnimationData> animations;
 	private Animation<Sprite> currentAnimation;
 	
-	public AnimationComponent(HashMap<String, AnimationData> animations, float dungeonBpm) {
+	public AnimationComponent(HashMap<String, AnimationData> animations) {
 		this.animations = animations;
-		calculateAndSetAnimationFrameDurations(dungeonBpm);
-	}
-	
-	public void calculateAndSetAnimationFrameDurations(float bpm) {
-		Collection<AnimationData> animationDatas = animations.values();
-		for(AnimationData data : animationDatas) {
-			data.getAnimation().setFrameDuration(GeneralUtils.calulateAnimationFrameDuration(data.getAnimation().getKeyFrames().length, bpm/data.getAnimationDurationInBeats()));
-		}
 	}
 	
 	public void startAnimation(String animationName) {
-		animationStateTime = 0f;
-		currentAnimation = animations.get(animationName).getAnimation();
+		if(animations.get(animationName) == null) {
+			System.out.println("Missing animation: " + animationName);
+		} else {
+			animationStateTime = 0f;
+			currentAnimation = animations.get(animationName).getAnimation();
+		}
 	}
 	
 	public void cancelAnimation() {
+		queuedReturnToOriginalSprite = true;
 		animationStateTime = 0f;
+		currentAnimation = null;
+	}
+	
+	public Animation<Sprite> getCurrentAnimation() {
+		return currentAnimation;
 	}
 	
 	public Sprite getKeyFrame() {
@@ -41,10 +44,23 @@ public class AnimationComponent implements Component {
 	}
 	
 	public void update(float deltaTime) {
-		animationStateTime += deltaTime;
+		if(currentAnimation != null) {
+			animationStateTime += deltaTime;
+			if(currentAnimation.isAnimationFinished(animationStateTime)) {
+				cancelAnimation();
+			}
+		}
+	}
+	
+	public void setQueuedReturnToOriginalSprite(boolean queuedReturnToOriginalSprite) {
+		this.queuedReturnToOriginalSprite = queuedReturnToOriginalSprite;
 	}
 	
 	public float getAnimationStateTime() {
 		return animationStateTime;
+	}
+	
+	public boolean getQueuedReturnToOriginalSprite() {
+		return queuedReturnToOriginalSprite;
 	}
 }

@@ -28,6 +28,7 @@ public class Main extends ApplicationAdapter {
 	private GameCamera camera;
 	
 	private Images images;
+	private AnimationLoader animationLoader;
 	private Engine engine;
 	private Dungeon dungeon;
 	
@@ -50,11 +51,11 @@ public class Main extends ApplicationAdapter {
 		audio.loadAudio();
 		
 		images = new Images();
-		
-		entityFactory = new EntityFactory(images);
-		
-		AnimationLoader animationLoader = new AnimationLoader(images);
+				
+		animationLoader = new AnimationLoader(images);
 		animationLoader.loadAnimations();
+		
+		entityFactory = new EntityFactory(images, animationLoader);
 		
 		// Create systems
 		engine.addSystem(new AnimationSystem());
@@ -121,21 +122,23 @@ public class Main extends ApplicationAdapter {
 	}
 	
 	public void startNewGame() {
+		final int startingFloor = 1;
+		
 		//TODO: disable all entities' movement
 		
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createPlayer(new Point(2, 2));
+		Entity player = entityFactory.createPlayer(new Point(2, 2), Dungeon.calculateBpmFromFloor(startingFloor));
 		camera.setFocus(player);
 		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(10, player, options, audio, images);
+		DungeonParams dungeonParams = new DungeonParams(10, animationLoader, player, options, audio, images);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		inputHandler.setDungeon(dungeon);
 		camera.setDungeon(dungeon);
 		
 		//TODO: fade screen from black
 		
-		dungeon.enterNewFloor(1);
+		dungeon.enterNewFloor(startingFloor);
 	}
 }

@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 
 import audio.Song;
 import components.HitboxComponent;
+import components.ImageComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Floor;
 import dungeons.Tile;
@@ -13,10 +14,20 @@ import special_tiles.SpecialTile;
 
 public class Movement {
 	public enum Direction {
-		Up,
-		Down,
-		Left,
-		Right
+		Up("up"),
+		Down("down"),
+		Left("left"),
+		Right("right");
+		
+		private String stringRepresentation;
+		
+		Direction(String stringRepresentation) {
+			this.stringRepresentation = stringRepresentation;
+		}
+		
+		public String getStringRepresentation() {
+			return stringRepresentation;
+		}
 	}
 	
 	public static void moveEntity(Floor floor, Entity entity, Direction direction) {
@@ -25,24 +36,25 @@ public class Movement {
 		if(isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
 			HitboxComponent hitboxComponent = ComponentMappers.hm.get(entity);
+			ImageComponent imageComponent = ComponentMappers.im.get(entity);
 			Point hitboxPosition = hitboxComponent.getMapPosition();
-			Point imagePosition = ComponentMappers.im.get(entity).getMapPosition();
+			Point imagePosition = imageComponent.getMapPosition();
 			int xNew = hitboxPosition.x;
 			int yNew = hitboxPosition.y;
 			
-			String animationName = "";
+			String animationName = imageComponent.getSpriteName() + "_";
 			if(direction.equals(Direction.Up)) {
 				yNew++;
-				animationName = "move_up";
+				animationName += "move_up";
 			} else if(direction.equals(Direction.Down)) {
 				yNew--;
-				animationName = "move_down";
+				animationName += "move_down";
 			} else if(direction.equals(Direction.Left)) {
 				xNew--;
-				animationName = "move_left";
+				animationName += "move_left";
 			} else if(direction.equals(Direction.Right)) {
 				xNew++;
-				animationName = "move_right";
+				animationName += "move_right";
 			}
 			hitboxPosition.setLocation(xNew, yNew);
 			imagePosition.setLocation(xNew, yNew);
@@ -55,6 +67,9 @@ public class Movement {
 					tiles[x][y].setTangibleOccupant(entity);
 				}
 			}
+			
+			hitboxComponent.faceDirection(direction);
+			imageComponent.faceDirection(direction);
 			
 			// Begin movement animation
 			if(ComponentMappers.am.has(entity)) {
@@ -94,8 +109,8 @@ public class Movement {
 		}
 		
 		// Check if the entity is moving out of bounds
-		if(xEntity + hitbox.length >= tiles.length
-				|| yEntity + hitbox[0].length >+ tiles[0].length
+		if(xEntity + hitbox.length > tiles.length
+				|| yEntity + hitbox[0].length > tiles[0].length
 				|| xEntity < 0
 				|| yEntity < 0) {
 			return false;
