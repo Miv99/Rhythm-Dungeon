@@ -19,10 +19,10 @@ public class GeneralUtils {
 	}
 	
 	public static Object[][] horizontallyFlipArray(Object[][] array) {
-		for(int x = 0; x < array.length/2; x++) {
-			Object[] temp = array[x];
-			array[x] = array[array.length - x];
-			array[array.length - x] = array[x];
+		for(int i = 0; i < (array.length / 2); i++) {
+			Object[] temp = array[i];
+			array[i] = array[array.length - i - 1];
+			array[array.length - i - 1] = temp;
 		}
 		
 		return array;

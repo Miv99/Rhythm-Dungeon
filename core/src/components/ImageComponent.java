@@ -22,6 +22,7 @@ public class ImageComponent implements Component {
 		this.spriteName = spriteName;
 		this.directionalSprites = directionalSprites;
 		this.mapPosition = mapPosition;
+		
 		sprite = directionalSprites.get(Direction.Right);
 		facing = Direction.Right;
 	}

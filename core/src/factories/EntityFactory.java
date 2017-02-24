@@ -56,8 +56,11 @@ public class EntityFactory {
 	
 	private HashMap<Direction, Sprite> createDirectionalSprites(String spriteName) {
 		HashMap<Direction, Sprite> directionalSprites = new HashMap<Direction, Sprite>();
-		directionalSprites.put(Direction.Left, images.loadSprite(spriteName + "_" + Direction.Left.getStringRepresentation()));
-		directionalSprites.put(Direction.Right, images.loadSprite(spriteName + "_" + Direction.Right.getStringRepresentation()));
+		directionalSprites.put(Direction.Right, images.loadSprite(spriteName));
+		
+		Sprite leftSprite = new Sprite(images.loadSprite(spriteName));
+		leftSprite.flip(true, false);
+		directionalSprites.put(Direction.Left, leftSprite);
 		return directionalSprites;
 	}
 }

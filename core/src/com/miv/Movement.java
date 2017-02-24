@@ -42,19 +42,14 @@ public class Movement {
 			int xNew = hitboxPosition.x;
 			int yNew = hitboxPosition.y;
 			
-			String animationName = imageComponent.getSpriteName() + "_";
 			if(direction.equals(Direction.Up)) {
 				yNew++;
-				animationName += "move_up";
 			} else if(direction.equals(Direction.Down)) {
 				yNew--;
-				animationName += "move_down";
 			} else if(direction.equals(Direction.Left)) {
 				xNew--;
-				animationName += "move_left";
 			} else if(direction.equals(Direction.Right)) {
 				xNew++;
-				animationName += "move_right";
 			}
 			hitboxPosition.setLocation(xNew, yNew);
 			imagePosition.setLocation(xNew, yNew);
@@ -70,11 +65,6 @@ public class Movement {
 			
 			hitboxComponent.faceDirection(direction);
 			imageComponent.faceDirection(direction);
-			
-			// Begin movement animation
-			if(ComponentMappers.am.has(entity)) {
-				ComponentMappers.am.get(entity).startAnimation(animationName);
-			}
 			
 			// Trigger special tile events, if any
 			SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
