@@ -83,7 +83,14 @@ public class Movement {
 	}
 	
 	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
-		HitboxType[][] hitbox = ComponentMappers.hm.get(entity).getHitbox();
+		HitboxType[][] hitbox;
+		if(direction.equals(Direction.Left)
+				|| direction.equals(Direction.Right)) {
+			hitbox = ComponentMappers.hm.get(entity).getDirectionalHitboxes().get(direction);
+		} else {
+			hitbox = ComponentMappers.hm.get(entity).getHitbox();
+		}
+		
 		Point currentPosition = ComponentMappers.hm.get(entity).getMapPosition();
 		int xEntity = currentPosition.x;
 		int yEntity = currentPosition.y;

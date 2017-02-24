@@ -16,6 +16,8 @@ public class HitboxComponent implements Component {
 	private HitboxType[][] hitbox;
 	private HashMap<Direction, HitboxType[][]> directionalHitboxes;
 	private Direction facing;
+	// The last horizontal direction that the entity has faced
+	private Direction horizontalFacing;
 	
 	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
 		hitbox = hitboxDataFacingRight.getHitbox();
@@ -25,13 +27,16 @@ public class HitboxComponent implements Component {
 		directionalHitboxes = new HashMap<Direction, HitboxType[][]>();
 		directionalHitboxes.put(Direction.Right, hitbox);
 		directionalHitboxes.put(Direction.Left, (HitboxType[][])GeneralUtils.horizontallyFlipArray(hitbox));
+		
 		facing = Direction.Right;
+		horizontalFacing = Direction.Right;
 	}
 	
 	public void faceDirection(Direction direction) {
 		facing = direction;
 		if(direction.equals(Direction.Left)
 				|| direction.equals(Direction.Right)) {
+			horizontalFacing = direction;
 			hitbox = directionalHitboxes.get(direction);
 		}
 	}
@@ -51,5 +56,13 @@ public class HitboxComponent implements Component {
 	
 	public Direction getFacing() {
 		return facing;
+	}
+	
+	public Direction getHorizontalFacing() {
+		return horizontalFacing;
+	}
+	
+	public HashMap<Direction, HitboxType[][]> getDirectionalHitboxes() {
+		return directionalHitboxes;
 	}
 }
