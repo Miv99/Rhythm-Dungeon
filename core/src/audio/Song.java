@@ -14,6 +14,9 @@ public class Song {
 	private float loopStartMarkerInSeconds;
 	private boolean loops;
 	
+	// If song was paused while being played
+	private boolean paused;
+	
 	public Song(Music music, SongData songData) {
 		this.music = music;
 		this.name = songData.getName();
@@ -21,6 +24,10 @@ public class Song {
 		this.offsetInSeconds = songData.getOffsetInSeconds();
 		this.loopStartMarkerInSeconds = songData.getLoopStartMarkerInSeconds();
 		this.loops = songData.getLoops();
+	}
+	
+	public void setPaused(boolean paused) {
+		this.paused = paused;
 	}
 	
 	public Music getMusic() {
@@ -45,5 +52,9 @@ public class Song {
 	
 	public boolean getLoops() {
 		return loops;
+	}
+	
+	public boolean getPaused() {
+		return paused;
 	}
 }

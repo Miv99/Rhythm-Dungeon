@@ -5,6 +5,7 @@ import java.awt.Point;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
@@ -123,7 +124,6 @@ public class Dungeon {
 		
 		dungeonParams.animationLoader.updateAllAnimationFrameDuration(calculateBpmFromFloor(currentFloor));
 		
-		actionBar.actionBarSystem.setScrollInterval(actionBar.actionBarSystem.calculateScrollInterval(calculateBpmFromFloor(currentFloor)));
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
 	}
@@ -143,8 +143,8 @@ public class Dungeon {
 	}
 	
 	public void update(float deltaTime) {
-		actionBar.actionBarSystem.update(deltaTime);
 		tileRenderSystem.update(deltaTime);
+		actionBar.actionBarSystem.update(deltaTime);
 	}
 	
 	public void setFloors(Floor[] floors) {
@@ -235,9 +235,15 @@ public class Dungeon {
 		 * Spawns a number of BeatLines such that the first BeatLine moves past the cursor line after [offset] seconds
 		 * and there are enough BeatLines that the screen is always filled with BeatLines
 		 */
-		public void spawnPrimaryBeatLines(float offsetInSeconds) {			
-			for(float time = offsetInSeconds; time < offsetInSeconds + actionBarSystem.scrollIntervalInSeconds * 2; time += (60f/(calculateBpmFromFloor(currentFloor) * 4f))) {
-				beatLines.add(new BeatLine(time, true));
+		public void spawnPrimaryBeatLines(float offsetInSeconds) {
+			int counter = 0;
+			for(float time = offsetInSeconds; time < offsetInSeconds + dungeonParams.options.getActionBarScrollInterval(); time += (60f/(calculateBpmFromFloor(currentFloor) * 4f))) {
+				if(counter % 4 == 0) {
+					beatLines.add(new BeatLine(time, true));
+				} else {
+					beatLines.add(new BeatLine(time, false));
+				}
+				counter++;
 			}
 		}
 		
@@ -327,48 +333,91 @@ public class Dungeon {
 			private SpriteBatch batch;
 			
 			private float windowWidth;
-			// Time it takes in seconds for a BeatLine to travel the entire width of the window
-			private float scrollIntervalInSeconds;
 			private Array<BeatLine> beatLineAdditionQueue;
 			private Array<BeatLine> beatLineDeletionQueue;
 			
-			private final float cursorLineXPos = 50f;
+			private int maxBeatCirclesOnScreen;
+			
+			private Sprite actionBarAxis;
+			private Sprite cursorLine;
+			private Sprite circleStrongBeat;
+			private Sprite circleWeakBeat;
+			
+			private float circleStrongBeatWidth;
+			private float circleWeakBeatWidth;
+			private float actionBarAxisHeight;
+			
+			private float cursorLineYPos;
+			private float circleStrongBeatYPos;
+			private float circleWeakBeatYPos;
+			
+			private final float cursorLineXPos = 128f;
+			private final float axisYPos = 64f;
 			
 			public ActionBarSystem(float windowWidth) {
 				batch = new SpriteBatch();
 				beatLineAdditionQueue = new Array<BeatLine>();
 				beatLineDeletionQueue = new Array<BeatLine>();
 				this.windowWidth = windowWidth;
+				
+				maxBeatCirclesOnScreen = calculateMaxBeatsOnScreen();
+				
+				// Get sprites
+				actionBarAxis = dungeonParams.images.loadSprite("action_bar_axis");
+				cursorLine = dungeonParams.images.loadSprite("action_bar_cursor_line");
+				circleStrongBeat = dungeonParams.images.loadSprite("action_bar_circle_strong_beat");
+				circleWeakBeat = dungeonParams.images.loadSprite("action_bar_circle_weak_beat");
+				
+				circleStrongBeatWidth = circleStrongBeat.getWidth();
+				circleWeakBeatWidth = circleWeakBeat.getWidth();
+				actionBarAxisHeight = actionBarAxis.getHeight();
+				
+				cursorLineYPos = axisYPos + (actionBarAxis.getHeight() - cursorLine.getHeight())/2f;
+				circleStrongBeatYPos = axisYPos + (actionBarAxis.getHeight() - circleStrongBeat.getHeight())/2f;
+				circleWeakBeatYPos = axisYPos + (actionBarAxis.getHeight() - circleWeakBeat.getHeight())/2f;
 			}
 			
-			public float calculateScrollInterval(float bpm) {
-				//TODO: tweak magic number
-				return 160f/bpm;
+			private int calculateMaxBeatsOnScreen() {
+				 return Math.round(dungeonParams.options.getActionBarScrollInterval()/((60f/(calculateBpmFromFloor(currentFloor))))/4f);
 			}
 			
 			public void setWindowWidth(float windowWidth) {
 				this.windowWidth = windowWidth;
 			}
 			
-			public void setScrollInterval(float scrollIntervalInSeconds) {
-				this.scrollIntervalInSeconds = scrollIntervalInSeconds;
+			public SpriteBatch getBatch() {
+				return batch;
 			}
 			
 			public void update(float deltaTime) {
 				batch.begin();
+				
+				batch.draw(actionBarAxis, 0, axisYPos, dungeonParams.options.getWindowWidth(), actionBarAxisHeight);
+				batch.draw(cursorLine, cursorLineXPos, cursorLineYPos);
+				
 				if(!ActionBar.this.isPaused()) {
 					for(BeatLine b : actionBar.getBeatLines()) {
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
 						
-						if(b.getTimeUntilCursorLineInSeconds() < scrollIntervalInSeconds) {
-							float x = ((b.getTimeUntilCursorLineInSeconds()/scrollIntervalInSeconds) * windowWidth) + cursorLineXPos;
+						// Draw BeatLines and circles
+						if(b.getTimeUntilCursorLineInSeconds() < dungeonParams.options.getActionBarScrollInterval()) {
+							float x = ((b.getTimeUntilCursorLineInSeconds()/dungeonParams.options.getActionBarScrollInterval()) * windowWidth * maxBeatCirclesOnScreen) + cursorLineXPos;
 							//TODO: batch.draw the BeatLine image and the circle image
+							if(b.getStrongBeat()) {
+								batch.draw(circleStrongBeat, x - circleStrongBeatWidth/2f, circleStrongBeatYPos);
+							} else {
+								batch.draw(circleWeakBeat, x - circleWeakBeatWidth/2f, circleWeakBeatYPos);
+							}
 						}
 						
-						// Once the BeatLine crosses the cursor, a new BeatLine is spawned
+						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimeUntilCursorLineInSeconds() <= 0
+								&& !b.getReaddedToActionBar()) {
+							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
+							b.setReaddedToActionBar(true);
+						}
+						if(b.getTimeUntilCursorLineInSeconds() <= -beatMissErrorMarginInSeconds * 2f
 								&& !b.getDeletionQueued()) {
-							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + scrollIntervalInSeconds, b.getStrongBeat()));
 							queueBeatLineDeletion(b);
 						}
 					}

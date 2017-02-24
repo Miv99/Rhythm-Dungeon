@@ -22,6 +22,8 @@ public class BeatLine {
 	
 	// If the BeatLine is queued to be deleted from the ActionBar
 	private boolean deletionQueued;
+	// If a duplicate BeatLine has been added to the ActionBar again
+	private boolean readdedToActionBar;
 	
 	public BeatLine(float timeUntiLCursorLineInSeconds, boolean strongBeat) {
 		this.timeUntilCursorLineInSeconds = timeUntiLCursorLineInSeconds;
@@ -50,6 +52,10 @@ public class BeatLine {
 	
 	public void setTimeUntilCursorLineInSeconds(float newTime) {
 		timeUntilCursorLineInSeconds = newTime;
+	}
+	
+	public void setReaddedToActionBar(boolean readdedToActionBar) {
+		this.readdedToActionBar = readdedToActionBar;
 	}
 	
 	public boolean getDeletionQueued() {
@@ -82,5 +88,9 @@ public class BeatLine {
 	
 	public float getCircleAlpha() {
 		return circleAlpha;
+	}
+	
+	public boolean getReaddedToActionBar() {
+		return readdedToActionBar;
 	}
 }

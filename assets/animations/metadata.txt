@@ -1,11 +1,5 @@
-animation_name=player_move_right
+animation_name=player_attack_right
 duration=1/4
 
-animation_name=player_move_left
-duration=1/4
-
-animation_name=player_move_up
-duration=1/4
-
-animation_name=player_move_down
+animation_name=player_attack_left
 duration=1/4

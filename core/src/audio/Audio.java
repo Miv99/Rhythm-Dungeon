@@ -116,6 +116,24 @@ public class Audio {
 		}
 	}
 	
+	public void pauseMusic() {
+		for(Song song : songs.values()) {
+			if(song.getMusic().isPlaying()) {
+				song.getMusic().pause();
+				song.setPaused(true);
+			}
+		}
+	}
+	
+	public void resumeMusic() {
+		for(Song song : songs.values()) {
+			if(song.getPaused()) {
+				song.getMusic().play();
+				song.setPaused(false);
+			}
+		}
+	}
+	
 	public Song getSong(String fileName) {
 		return songs.get(fileName);
 	}

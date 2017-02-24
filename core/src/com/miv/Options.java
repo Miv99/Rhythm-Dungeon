@@ -25,9 +25,11 @@ public class Options {
 	private int windowWidth = 1600;
 	private int windowHeight = 900;
 	
-	private float masterVolume = 1f;
+	private float masterVolume = 0.5f;
 	private float soundEffectsVolume = 1f;
 	private float musicVolume = 1f;
+	
+	private float actionBarScrollInterval = 16f;
 	
 	// Temporary values that become permanent once changes are applied
 	private boolean fullscreenTemp;
@@ -82,6 +84,10 @@ public class Options {
 		this.musicVolume = musicVolume;
 	}
 	
+	public void setActionBarScrollInterval(float actionBarScrollInterval) {
+		this.actionBarScrollInterval = actionBarScrollInterval;
+	}
+	
 	
 	public boolean getFullscreen() {
 		return fullscreen;
@@ -105,5 +111,9 @@ public class Options {
 	
 	public float getMusicVolume() {
 		return musicVolume;
+	}
+	
+	public float getActionBarScrollInterval() {
+		return actionBarScrollInterval;
 	}
 }
