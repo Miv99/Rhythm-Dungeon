@@ -97,11 +97,12 @@ public class Main extends ApplicationAdapter {
 				camera.frameUpdate(deltaTime);
 			}
 		} else {
-			// Continue rendering
-			engine.getSystem(RenderSystem.class).update(deltaTime);
 			if(dungeon != null) {
 				dungeon.getTileRenderSystem().update(deltaTime);
 			}
+			
+			// Continue rendering
+			engine.getSystem(RenderSystem.class).update(deltaTime);
 		}
 	}
 		
@@ -173,6 +174,12 @@ public class Main extends ApplicationAdapter {
 					
 				} else if(keycode == Input.Keys.S) {
 					
+				} else if(keycode == Input.Keys.ESCAPE) {
+					if(paused) {
+						resume();
+					} else {
+						pause();
+					}
 				}
 			}
 			return false;
