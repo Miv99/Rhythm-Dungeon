@@ -1,7 +1,5 @@
 package data;
 
-import com.badlogic.gdx.audio.Music;
-
 public class SongData {
 	private String name;
 	private float bpm;

@@ -30,8 +30,8 @@ public class AnimationSystem extends EntitySystem {
 	@Override
 	public void update(float deltaTime) {
 		for(Entity e : entities) {
-			AnimationComponent animation = ComponentMappers.am.get(e);
-			ImageComponent image = ComponentMappers.im.get(e);
+			AnimationComponent animation = ComponentMappers.animationMapper.get(e);
+			ImageComponent image = ComponentMappers.imageMapper.get(e);
 			
 			animation.update(deltaTime);
 			if(animation.getCurrentAnimation() != null) {

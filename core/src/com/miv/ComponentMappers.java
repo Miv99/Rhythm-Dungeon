@@ -3,17 +3,17 @@ package com.miv;
 import com.badlogic.ashley.core.ComponentMapper;
 
 import components.AnimationComponent;
+import components.AttackComponent;
 import components.EnemyComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
 import components.PlayerComponent;
-import components.WeaponComponent;
 
 public class ComponentMappers {
-	public static ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
-	public static ComponentMapper<ImageComponent> im = ComponentMapper.getFor(ImageComponent.class);
-	public static ComponentMapper<WeaponComponent> wm = ComponentMapper.getFor(WeaponComponent.class);
-	public static ComponentMapper<HitboxComponent> hm = ComponentMapper.getFor(HitboxComponent.class);
-	public static ComponentMapper<EnemyComponent> em = ComponentMapper.getFor(EnemyComponent.class);
-	public static ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
+	public static ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
+	public static ComponentMapper<ImageComponent> imageMapper = ComponentMapper.getFor(ImageComponent.class);
+	public static ComponentMapper<AttackComponent> attackMapper = ComponentMapper.getFor(AttackComponent.class);
+	public static ComponentMapper<HitboxComponent> hitboxMapper = ComponentMapper.getFor(HitboxComponent.class);
+	public static ComponentMapper<EnemyComponent> enemyMapper = ComponentMapper.getFor(EnemyComponent.class);
+	public static ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
 }

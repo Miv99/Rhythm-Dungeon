@@ -53,7 +53,7 @@ public class GameCamera extends OrthographicCamera {
 	
 	public void frameUpdate(float deltaTime) {
 		if(focus != null) {
-			Point focusMapPosition = ComponentMappers.hm.get(focus).getMapPosition();
+			Point focusMapPosition = ComponentMappers.hitboxMapper.get(focus).getMapPosition();
 			lerp(lerpSpeed * (deltaTime/(1/60f)), focusMapPosition.x * Options.TILE_SIZE, focusMapPosition.y * Options.TILE_SIZE);
 		}
 	}

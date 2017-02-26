@@ -46,6 +46,22 @@ public class BeatLine {
 		//TODO: play sound effect
 	}
 	
+	public void onMovementHit() {
+		if(movementTriggered) {
+			circleState = CircleState.Dying;
+		} else {
+			if(!strongBeat) {
+				circleState = CircleState.Dying;
+			}
+		}
+		//TODO: play sound effect
+	}
+	
+	public void onMovementMiss() {
+		circleState = CircleState.Locked;
+		//TODO: play sound effect
+	}
+	
 	public void setDeletionQueued(boolean deletionQueued) {
 		this.deletionQueued = deletionQueued;
 	}

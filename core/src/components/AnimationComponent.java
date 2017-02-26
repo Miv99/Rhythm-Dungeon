@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import data.AnimationData;
-import utils.GeneralUtils;
 
 public class AnimationComponent implements Component {
 	private float animationStateTime;

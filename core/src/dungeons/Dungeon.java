@@ -8,8 +8,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.miv.Attack;
 import com.miv.ComponentMappers;
 import com.miv.GameCamera;
+import com.miv.Movement;
 import com.miv.Movement.Direction;
 import com.miv.Options;
 
@@ -20,7 +22,6 @@ import audio.SongSelector.NoSelectableMusicException;
 import components.AnimationComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
-import components.WeaponComponent;
 import data.AnimationData;
 import data.AnimationLoader;
 import graphics.Images;
@@ -84,16 +85,17 @@ public class Dungeon {
 	
 	public Dungeon(DungeonParams dungeonParams) {
 		this.dungeonParams = dungeonParams;
-		actionBar = new ActionBar(dungeonParams.player, dungeonParams.options);
+		actionBar = new ActionBar(dungeonParams.options);
 		tileRenderSystem = new TileRenderSystem();
 		songSelector = new SongSelector(dungeonParams.audio);
 	}
 	
 	/**
 	 * Returns a beat hit error margin value that decreases as floor increases
+	 * TODO: tweak this
 	 */
 	public static float calculateBeatHitErrorMarginFromFloor(int floor) {
-		return Math.max(0.02f, 0.05f - ((float)floor * 0.0006f));
+		return Math.max(0.04f, 0.12f - ((float)floor * 0.0006f));
 	}
 	
 	/**
@@ -219,16 +221,11 @@ public class Dungeon {
 		private Array<BeatLine> beatLines = new Array<BeatLine>();
 		
 		private boolean paused;
-		
-		private WeaponComponent playerWeapon;
-		private HitboxComponent playerHitbox;
-		
+				
 		private ActionBarSystem actionBarSystem;
 		
-		public ActionBar(Entity player, Options options) {
+		public ActionBar(Options options) {
 			actionBarSystem = new ActionBarSystem(options.getWindowWidth());
-			playerWeapon = ComponentMappers.wm.get(player);
-			playerHitbox = ComponentMappers.hm.get(player);
 		}
 		
 		/**
@@ -253,8 +250,12 @@ public class Dungeon {
 			
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				nearestLeft.onAttackHit();
+				
+				Attack.entityAttack(floors[currentFloor], dungeonParams.player);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				nearestRight.onAttackHit();
+				
+				Attack.entityAttack(floors[currentFloor], dungeonParams.player);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onAttackMiss();
 			}
@@ -266,12 +267,16 @@ public class Dungeon {
 			
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestLeft.getStrongBeat()) {
-				nearestLeft.onAttackHit();
+				nearestLeft.onMovementHit();
+				
+				Movement.moveEntity(floors[currentFloor], dungeonParams.player, movementDirection);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestRight.getStrongBeat()) {
-				nearestRight.onAttackHit();
+				nearestRight.onMovementHit();
+				
+				Movement.moveEntity(floors[currentFloor], dungeonParams.player, movementDirection);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
-				nearestRight.onAttackMiss();
+				nearestRight.onMovementMiss();
 			}
 		}
 		

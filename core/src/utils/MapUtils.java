@@ -27,7 +27,7 @@ public class MapUtils {
 	 * returns the HitboxType of the entity's hitbox that resides on the tile.
 	 */
 	public static HitboxType getEntityHitboxTypeOnTile(Entity entity, Tile tile) throws TileDoesNotContainEntityException {
-		HitboxComponent entityHitbox = ComponentMappers.hm.get(entity);
+		HitboxComponent entityHitbox = ComponentMappers.hitboxMapper.get(entity);
 		Point entityMapPosition = entityHitbox.getMapPosition();
 		Point tileMapPosition = tile.getMapPosition();
 		

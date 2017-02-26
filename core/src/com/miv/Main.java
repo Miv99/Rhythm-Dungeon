@@ -159,16 +159,16 @@ public class Main extends ApplicationAdapter {
 		public boolean keyDown(int keycode) {
 			if(dungeon != null) {
 				if(keycode == Input.Keys.LEFT) {
-					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Left);
+					dungeon.getActionBar().fireMovementAction(Direction.Left);
 				} else if(keycode == Input.Keys.RIGHT) {
-					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Right);
+					dungeon.getActionBar().fireMovementAction(Direction.Right);
 				} else if(keycode == Input.Keys.UP) {
-					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Up);
+					dungeon.getActionBar().fireMovementAction(Direction.Up);
 				} else if(keycode == Input.Keys.DOWN) {
-					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Down);
+					dungeon.getActionBar().fireMovementAction(Direction.Down);
 				} else if(keycode == options.getAttackKey1()
 						|| keycode == options.getAttackKey2()) {
-					
+					dungeon.getActionBar().fireAttackAction();
 				} else if(keycode == options.getAttackBurstKey()) {
 					
 				} else if(keycode == Input.Keys.ESCAPE) {

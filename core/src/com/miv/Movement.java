@@ -35,8 +35,8 @@ public class Movement {
 		
 		if(isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
-			HitboxComponent hitboxComponent = ComponentMappers.hm.get(entity);
-			ImageComponent imageComponent = ComponentMappers.im.get(entity);
+			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+			ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
 			Point hitboxPosition = hitboxComponent.getMapPosition();
 			Point imagePosition = imageComponent.getMapPosition();
 			int xNew = hitboxPosition.x;
@@ -70,10 +70,10 @@ public class Movement {
 			SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
 			if(specialTile != null 
 					&& !specialTile.getDeactivated()) {
-				if(ComponentMappers.pm.has(entity)) {
+				if(ComponentMappers.playerMapper.has(entity)) {
 					specialTile.onPlayerTrigger();
 				}
-				if(ComponentMappers.em.has(entity)) {
+				if(ComponentMappers.enemyMapper.has(entity)) {
 					specialTile.onEnemyTrigger();
 				}
 			}
@@ -86,12 +86,12 @@ public class Movement {
 		HitboxType[][] hitbox;
 		if(direction.equals(Direction.Left)
 				|| direction.equals(Direction.Right)) {
-			hitbox = ComponentMappers.hm.get(entity).getDirectionalHitboxes().get(direction);
+			hitbox = ComponentMappers.hitboxMapper.get(entity).getDirectionalHitboxes().get(direction);
 		} else {
-			hitbox = ComponentMappers.hm.get(entity).getHitbox();
+			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
 		}
 		
-		Point currentPosition = ComponentMappers.hm.get(entity).getMapPosition();
+		Point currentPosition = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
 		int xEntity = currentPosition.x;
 		int yEntity = currentPosition.y;
 		
