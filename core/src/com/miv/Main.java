@@ -139,7 +139,7 @@ public class Main extends ApplicationAdapter {
 		
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createPlayer(new Point(2, 2), Dungeon.calculateBpmFromFloor(startingFloor));
+		Entity player = entityFactory.createPlayer(new Point(2, 2), Dungeon.calculateBpmFromFloor(options, startingFloor));
 		camera.setFocus(player);
 		engine.addEntity(player);
 		

@@ -85,22 +85,20 @@ public class Dungeon {
 	
 	public Dungeon(DungeonParams dungeonParams) {
 		this.dungeonParams = dungeonParams;
-		actionBar = new ActionBar(dungeonParams.options);
+		actionBar = new ActionBar();
 		tileRenderSystem = new TileRenderSystem();
 		songSelector = new SongSelector(dungeonParams.audio);
 	}
 	
 	/**
-	 * Returns a value proportional the time difference between each quarter beat
-	 * TODO: tweak this
+	 * Returns a value proportional the time difference between each BeatLine
 	 */
 	public float calculateBeatHitErrorMargin() {
-		//return Math.max(0.04f, 0.09f - ((float)floor * 0.0006f));
 		return (actionBar.getBeatLines().get(1).getTimeUntilCursorLineInSeconds() - actionBar.getBeatLines().first().getTimeUntilCursorLineInSeconds())/2.5f;
 	}
 	
 	/**
-	 * Returns a value proportional the time difference between each quarter beat
+	 * Returns a value proportional the time difference between each BeatLine
 	 */
 	public float calculateBeatMissErrorMargin() {
 		return (actionBar.getBeatLines().get(1).getTimeUntilCursorLineInSeconds() - actionBar.getBeatLines().first().getTimeUntilCursorLineInSeconds()) * 2.5f;
@@ -108,9 +106,10 @@ public class Dungeon {
 	
 	/**
 	 * Returns a bpm value that scales increases as floor increases
+	 * TODO: adjust growth function depending on bpmCap
 	 */
-	public static float calculateBpmFromFloor(int floor) {
-		return Math.min(200f, 100f + ((float)Math.round(floor/5f) * 10f));		
+	public static float calculateBpmFromFloor(Options options, int floor) {
+		return Math.min(options.getDifficulty().getBpmCap(), 100f + ((float)Math.round(floor/5f) * 10f));		
 	}
 	
 	public void enterNewFloor(int newFloor) {
@@ -120,10 +119,10 @@ public class Dungeon {
 		if(song != null) {
 			dungeonParams.audio.playSong(song);
 		} else {
-			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + calculateBpmFromFloor(currentFloor));
+			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + calculateBpmFromFloor(dungeonParams.options, currentFloor));
 		}
 		
-		dungeonParams.animationLoader.updateAllAnimationFrameDuration(calculateBpmFromFloor(currentFloor));
+		dungeonParams.animationLoader.updateAllAnimationFrameDuration(calculateBpmFromFloor(dungeonParams.options, currentFloor));
 		
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
@@ -136,7 +135,7 @@ public class Dungeon {
 	 * Uses the current floor to select a new song to play
 	 */
 	private Song selectNewSongByCurrentFloor() {
-		float bpm = calculateBpmFromFloor(currentFloor);
+		float bpm = calculateBpmFromFloor(dungeonParams.options, currentFloor);
 		Song song = null;
 		try {
 			song = songSelector.selectSongByBpm(bpm);
@@ -226,8 +225,8 @@ public class Dungeon {
 				
 		private ActionBarSystem actionBarSystem;
 		
-		public ActionBar(Options options) {
-			actionBarSystem = new ActionBarSystem(options.getWindowWidth());
+		public ActionBar() {
+			actionBarSystem = new ActionBarSystem(dungeonParams.options.getWindowWidth());
 		}
 		
 		/**
@@ -235,14 +234,16 @@ public class Dungeon {
 		 * and there are enough BeatLines that the screen is always filled with BeatLines
 		 */
 		public void spawnPrimaryBeatLines(float offsetInSeconds) {
+			int beatLinesPerBeat = dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
+			
 			float time = offsetInSeconds;
-			for(int i = 0; i < actionBarSystem.calculateMaxBeatsOnScreen() * 4; i++) {
-				if(i % 4 == 0) {
+			for(int i = 0; i < actionBarSystem.calculateMaxBeatsOnScreen() * beatLinesPerBeat; i++) {
+				if(i % beatLinesPerBeat == 0) {
 					beatLines.add(new BeatLine(time, true));
 				} else {
 					beatLines.add(new BeatLine(time, false));
 				}
-				time += (60f/(calculateBpmFromFloor(currentFloor) * 4f));
+				time += (60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * (float)beatLinesPerBeat));
 			}
 		}
 		
@@ -251,13 +252,10 @@ public class Dungeon {
 			BeatLine nearestRight = getNearestCircleFromRight(false);
 			
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestLeft.onAttackHit(floors[currentFloor], dungeonParams.player);
-				
-				Attack.entityAttack(floors[currentFloor], dungeonParams.player);
+				nearestLeft.onAttackHit(dungeonParams.options, floors[currentFloor], dungeonParams.player);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestRight.onAttackHit(floors[currentFloor], dungeonParams.player);
+				nearestRight.onAttackHit(dungeonParams.options, floors[currentFloor], dungeonParams.player);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
-				System.out.println("miss");
 				nearestRight.onAttackMiss();
 			}
 		}
@@ -400,7 +398,7 @@ public class Dungeon {
 			}
 			
 			private int calculateMaxBeatsOnScreen() {
-				 return Math.round(dungeonParams.options.getActionBarScrollInterval()/((60f/(calculateBpmFromFloor(currentFloor))))/4f);
+				 return Math.round(dungeonParams.options.getActionBarScrollInterval()/((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor))))/4f);
 			}
 			
 			public void setWindowWidth(float windowWidth) {
@@ -441,7 +439,7 @@ public class Dungeon {
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimeUntilCursorLineInSeconds() <= 0
 								&& !b.getReaddedToActionBar()) {
-							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
+							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
 							b.setReaddedToActionBar(true);
 						}
 						if(x + circleStrongBeatWidth < 0

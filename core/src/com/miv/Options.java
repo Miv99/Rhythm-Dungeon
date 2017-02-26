@@ -7,10 +7,37 @@ import com.badlogic.gdx.Input;
  * Anything done to volumes/window size using setter methods will not be saved until applyChanges() is called
  */
 public class Options {
+	public static enum Difficulty {
+		Easy(160, 1), // 160bpm cap, full beats only
+		Normal(180, 2), // 180bpm cap, half beats
+		Hard(200, 2), // 200bpm cap, half beats
+		Lunatic(200, 4); // 200bpm cap, all player attacks do 25% damage, quarter beats
+		
+		private int bpmCap;
+		private int beatLinesPerBeat;
+		private float playerDamageMultiplier;
+		
+		Difficulty(int bpmCap, int beatLinesPerBeat) {
+			this.bpmCap = bpmCap;
+			this.beatLinesPerBeat = beatLinesPerBeat;
+			playerDamageMultiplier = 1f/(float)beatLinesPerBeat;
+		}
+		
+		public int getBpmCap() {
+			return bpmCap;
+		}
+		
+		public int getBeatLinesPerBeat() {
+			return beatLinesPerBeat;
+		}
+		
+		public float getPlayerDamageMultiplier() {
+			return playerDamageMultiplier;
+		}
+	}
+	
 	public static final int TILE_SIZE = 32;
-	
-	private static String dataFilePath = Gdx.files.external("Rhythm Dungeon\\").file().getPath();
-	
+		
 	//TODO: change this to Gdx.files.local
 	public static String assetsFilePath = "C:\\Rhythm Dungeon\\assets\\";
 	
@@ -32,6 +59,8 @@ public class Options {
 	private float musicVolume = 1f;
 	
 	private float actionBarScrollInterval = 16f;
+	
+	private Difficulty difficulty = Difficulty.Normal;
 	
 	private int attackKey1 = Input.Keys.A;
 	private int attackKey2 = Input.Keys.S;
@@ -106,6 +135,10 @@ public class Options {
 		this.attackBurstKey = attackBurstKey;
 	}
 	
+	public void setDifficulty(Difficulty difficulty) {
+		this.difficulty = difficulty;
+	}
+	
 	
 	public boolean getFullscreen() {
 		return fullscreen;
@@ -145,5 +178,9 @@ public class Options {
 	
 	public int getAttackBurstKey() {
 		return attackBurstKey;
+	}
+	
+	public Difficulty getDifficulty() {
+		return difficulty;
 	}
 }
