@@ -17,8 +17,10 @@ public class BeatLine {
 	private boolean attackTriggered;
 	// If the circle on the beatline has had the movement key pressed
 	private boolean movementTriggered;
-	private float circleYPositionRelativeToAxis;
+	private float circleYPositionRelativeToAxis = 0f;
 	private float circleAlpha;
+	// If circleYPositionRelativeToAxis is increased every frame update
+	private boolean circleIncreasingYPos;
 	
 	// If the BeatLine is queued to be deleted from the ActionBar
 	private boolean deletionQueued;
@@ -32,34 +34,50 @@ public class BeatLine {
 	
 	public void onAttackHit() {
 		if(movementTriggered) {
-			circleState = CircleState.Dying;
+			setCircleState(CircleState.Dying);
 		} else {
 			if(!strongBeat) {
-				circleState = CircleState.Dying;
+				setCircleState(CircleState.Dying);
 			}
 		}
 		//TODO: play sound effect
 	}
 	
 	public void onAttackMiss() {
-		circleState = CircleState.Locked;
+		setCircleState(CircleState.Locked);
 		//TODO: play sound effect
 	}
 	
 	public void onMovementHit() {
 		if(movementTriggered) {
-			circleState = CircleState.Dying;
+			setCircleState(CircleState.Dying);
 		} else {
 			if(!strongBeat) {
-				circleState = CircleState.Dying;
+				setCircleState(CircleState.Dying);
 			}
 		}
 		//TODO: play sound effect
 	}
 	
 	public void onMovementMiss() {
-		circleState = CircleState.Locked;
+		setCircleState(CircleState.Locked);
 		//TODO: play sound effect
+	}
+	
+	public void setCircleState(CircleState newState) {
+		circleState = newState;
+		if(circleState.equals(CircleState.Dying)) {
+			this.setCircleIncreasingYPos(true);
+		}
+	}
+	
+	
+	public void setCircleYPositionRelativeToAxis(float circleYPositionRelativeToAxis) {
+		this.circleYPositionRelativeToAxis = circleYPositionRelativeToAxis;
+	}
+	
+	public void setCircleIncreasingYPos(boolean circleIncreasingYPos) {
+		this.circleIncreasingYPos = circleIncreasingYPos;
 	}
 	
 	public void setDeletionQueued(boolean deletionQueued) {
@@ -108,5 +126,9 @@ public class BeatLine {
 	
 	public boolean getReaddedToActionBar() {
 		return readdedToActionBar;
+	}
+	
+	public boolean getCircleIncreasingYPos() {
+		return circleIncreasingYPos;
 	}
 }

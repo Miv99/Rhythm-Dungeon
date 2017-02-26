@@ -94,15 +94,15 @@ public class Dungeon {
 	 * Returns a beat hit error margin value that decreases as floor increases
 	 * TODO: tweak this
 	 */
-	public static float calculateBeatHitErrorMarginFromFloor(int floor) {
-		return Math.max(0.04f, 0.12f - ((float)floor * 0.0006f));
+	public float calculateBeatHitErrorMarginFromFloor(int floor) {
+		return Math.max(0.04f, 0.06f - ((float)floor * 0.0006f));
 	}
 	
 	/**
-	 * Returns a value proportional to beat hit error margin
+	 * Returns a value proportional the time difference between each quarter beat
 	 */
-	public static float calculateBeatMissErrorMarginFromFloor(int floor) {
-		return calculateBeatHitErrorMarginFromFloor(floor) * 2f;
+	public float calculateBeatMissErrorMarginFromFloor(int floor) {
+		return (actionBar.getBeatLines().get(1).getTimeUntilCursorLineInSeconds() - actionBar.getBeatLines().first().getTimeUntilCursorLineInSeconds()) * 1.5f;
 	}
 	
 	/**
@@ -113,10 +113,8 @@ public class Dungeon {
 	}
 	
 	public void enterNewFloor(int newFloor) {
-		beatHitErrorMarginInSeconds = calculateBeatHitErrorMarginFromFloor(newFloor);
-		beatMissErrorMarginInSeconds = calculateBeatMissErrorMarginFromFloor(newFloor);
 		currentFloor = newFloor;
-				
+
 		Song song = selectNewSongByCurrentFloor();
 		if(song != null) {
 			dungeonParams.audio.playSong(song);
@@ -128,6 +126,9 @@ public class Dungeon {
 		
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
+		
+		beatHitErrorMarginInSeconds = calculateBeatHitErrorMarginFromFloor(newFloor);
+		beatMissErrorMarginInSeconds = calculateBeatMissErrorMarginFromFloor(newFloor);
 	}
 	
 	/**
@@ -264,7 +265,7 @@ public class Dungeon {
 		public void fireMovementAction(Direction movementDirection) {
 			BeatLine nearestLeft = getNearestCircleFromLeft();
 			BeatLine nearestRight = getNearestCircleFromRight();
-			
+			System.out.println(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) + ", " + Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) + ", " + Dungeon.this.getBeatHitErrorMarginInSeconds());
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestLeft.getStrongBeat()) {
 				nearestLeft.onMovementHit();
@@ -292,8 +293,6 @@ public class Dungeon {
 						nearestLeft = b;
 						smallest = b.getTimeUntilCursorLineInSeconds();
 					}
-				} else {
-					break;
 				}
 			}
 			return nearestLeft;
@@ -306,13 +305,11 @@ public class Dungeon {
 			BeatLine nearestRight = null;
 			float largest = 999f;
 			for(BeatLine b : beatLines) {
-				if(b.getTimeUntilCursorLineInSeconds() <= 0) {
+				if(b.getTimeUntilCursorLineInSeconds() >= 0) {
 					if(b.getTimeUntilCursorLineInSeconds() < largest) {
 						nearestRight = b;
 						largest = b.getTimeUntilCursorLineInSeconds();
 					}
-				} else {
-					break;
 				}
 			}
 			return nearestRight;
@@ -402,16 +399,20 @@ public class Dungeon {
 				
 				if(!ActionBar.this.isPaused()) {
 					for(BeatLine b : actionBar.getBeatLines()) {
+						// Update BeatLine fields
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
+						if(b.getCircleIncreasingYPos()) {
+							b.setCircleYPositionRelativeToAxis(b.getCircleYPositionRelativeToAxis() + (deltaTime * 500f));
+						}
 						
 						// Draw BeatLines and circles
 						if(b.getTimeUntilCursorLineInSeconds() < dungeonParams.options.getActionBarScrollInterval()) {
 							float x = ((b.getTimeUntilCursorLineInSeconds()/dungeonParams.options.getActionBarScrollInterval()) * windowWidth * maxBeatCirclesOnScreen) + cursorLineXPos;
 							//TODO: batch.draw the BeatLine image and the circle image
 							if(b.getStrongBeat()) {
-								batch.draw(circleStrongBeat, x - circleStrongBeatWidth/2f, circleStrongBeatYPos);
+								batch.draw(circleStrongBeat, x - circleStrongBeatWidth/2f, circleStrongBeatYPos + b.getCircleYPositionRelativeToAxis());
 							} else {
-								batch.draw(circleWeakBeat, x - circleWeakBeatWidth/2f, circleWeakBeatYPos);
+								batch.draw(circleWeakBeat, x - circleWeakBeatWidth/2f, circleWeakBeatYPos + b.getCircleYPositionRelativeToAxis());
 							}
 						}
 						
