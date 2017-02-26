@@ -3,58 +3,58 @@ sprites.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-action_bar_axis
-  rotate: false
-  xy: 1, 57
-  size: 768, 192
-  orig: 768, 192
-  offset: 0, 0
-  index: -1
 dragon
   rotate: false
-  xy: 771, 121
+  xy: 1, 109
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
+action_bar_axis
+  rotate: false
+  xy: 131, 45
+  size: 16, 192
+  orig: 16, 192
+  offset: 0, 0
+  index: -1
 action_bar_circle_strong_beat
   rotate: false
-  xy: 901, 177
+  xy: 1, 35
   size: 72, 72
   orig: 72, 72
   offset: 0, 0
   index: -1
 action_bar_circle_weak_beat
   rotate: false
-  xy: 1, 1
+  xy: 75, 53
   size: 54, 54
   orig: 54, 54
   offset: 0, 0
   index: -1
 action_bar_cursor_line
   rotate: false
-  xy: 975, 121
-  size: 15, 128
-  orig: 15, 128
+  xy: 149, 121
+  size: 15, 116
+  orig: 15, 116
   offset: 0, 0
   index: -1
 fire_guy
   rotate: false
-  xy: 771, 87
+  xy: 1, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 player
   rotate: false
-  xy: 57, 23
+  xy: 166, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stone_tile
   rotate: false
-  xy: 901, 143
+  xy: 35, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

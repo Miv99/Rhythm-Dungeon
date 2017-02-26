@@ -1,5 +1,12 @@
 package hud;
 
+import com.badlogic.ashley.core.Entity;
+import com.miv.Attack;
+import com.miv.Movement;
+import com.miv.Movement.Direction;
+
+import dungeons.Floor;
+
 public class BeatLine {
 	private enum CircleState {
 		Alive,
@@ -10,17 +17,19 @@ public class BeatLine {
 	
 	// If the beatline is on a full note as opposed to a quarter note
 	private boolean strongBeat;
-	private CircleState circleState;
+	// State of strong circle
+	private CircleState circleStrongState;
+	// State of weak circle
+	private CircleState circleWeakState;
 	// Time until the beat line reaches the cursor line
 	private float timeUntilCursorLineInSeconds;
 	// If the circle on the beatline has had the attack key pressed
 	private boolean attackTriggered;
-	// If the circle on the beatline has had the movement key pressed
-	private boolean movementTriggered;
-	private float circleYPositionRelativeToAxis = 0f;
-	private float circleAlpha;
+	private float circleStrongYPositionRelativeToAxis = 0f;
+	private float circleWeakYPositionRelativeToAxis = 0f;
 	// If circleYPositionRelativeToAxis is increased every frame update
-	private boolean circleIncreasingYPos;
+	private boolean circleStrongIncreasingYPos;
+	private boolean circleWeakIncreasingYPos;
 	
 	// If the BeatLine is queued to be deleted from the ActionBar
 	private boolean deletionQueued;
@@ -30,54 +39,51 @@ public class BeatLine {
 	public BeatLine(float timeUntiLCursorLineInSeconds, boolean strongBeat) {
 		this.timeUntilCursorLineInSeconds = timeUntiLCursorLineInSeconds;
 		this.strongBeat = strongBeat;
+		
+		if(strongBeat) {
+			circleStrongState = CircleState.Alive;
+		}
+		circleWeakState = CircleState.Alive;
 	}
 	
-	public void onAttackHit() {
-		if(movementTriggered) {
-			setCircleState(CircleState.Dying);
-		} else {
-			if(!strongBeat) {
-				setCircleState(CircleState.Dying);
-			}
+	public void onAttackHit(Floor floor, Entity player) {
+		if(circleWeakState.equals(CircleState.Alive)) {
+			circleWeakState = CircleState.Dying;
+			circleWeakIncreasingYPos = true;
+			
+			//TODO: play sound effect
+			
+			Attack.entityAttack(floor, player);
 		}
-		//TODO: play sound effect
 	}
 	
 	public void onAttackMiss() {
-		setCircleState(CircleState.Locked);
-		//TODO: play sound effect
+		circleWeakState = CircleState.Locked;
 	}
 	
-	public void onMovementHit() {
-		if(movementTriggered) {
-			setCircleState(CircleState.Dying);
-		} else {
-			if(!strongBeat) {
-				setCircleState(CircleState.Dying);
-			}
+	public void onMovementHit(Floor floor, Entity player, Direction movementDirection) {
+		if(circleStrongState.equals(CircleState.Alive)) {
+			circleStrongState = CircleState.Dying;
+			circleStrongIncreasingYPos = true;
+			
+			//TODO: play sound effect
+			
+			Movement.moveEntity(floor, player, movementDirection);
 		}
-		//TODO: play sound effect
 	}
 	
 	public void onMovementMiss() {
-		setCircleState(CircleState.Locked);
+		circleStrongState = CircleState.Locked;
 		//TODO: play sound effect
 	}
 	
-	public void setCircleState(CircleState newState) {
-		circleState = newState;
-		if(circleState.equals(CircleState.Dying)) {
-			this.setCircleIncreasingYPos(true);
-		}
+	
+	public void setCircleStrongYPositionRelativeToAxis(float circleStrongYPositionRelativeToAxis) {
+		this.circleStrongYPositionRelativeToAxis = circleStrongYPositionRelativeToAxis;
 	}
 	
-	
-	public void setCircleYPositionRelativeToAxis(float circleYPositionRelativeToAxis) {
-		this.circleYPositionRelativeToAxis = circleYPositionRelativeToAxis;
-	}
-	
-	public void setCircleIncreasingYPos(boolean circleIncreasingYPos) {
-		this.circleIncreasingYPos = circleIncreasingYPos;
+	public void setCircleWeakYPositionRelativeToAxis(float circleWeakYPositionRelativeToAxis) {
+		this.circleWeakYPositionRelativeToAxis = circleWeakYPositionRelativeToAxis;
 	}
 	
 	public void setDeletionQueued(boolean deletionQueued) {
@@ -104,31 +110,35 @@ public class BeatLine {
 		return strongBeat;
 	}
 	
-	public CircleState getCircleState() {
-		return circleState;
+	public CircleState getCircleWeakState() {
+		return circleWeakState;
+	}
+	
+	public CircleState getCircleStrongState() {
+		return circleStrongState;
 	}
 	
 	public boolean getAttackTriggered() {
 		return attackTriggered;
 	}
 	
-	public boolean getMovementTriggered() {
-		return movementTriggered;
+	public float getCircleStrongYPositionRelativeToAxis() {
+		return circleStrongYPositionRelativeToAxis;
 	}
 	
-	public float getCircleYPositionRelativeToAxis() {
-		return circleYPositionRelativeToAxis;
-	}
-	
-	public float getCircleAlpha() {
-		return circleAlpha;
+	public float getCircleWeakYPositionRelativeToAxis() {
+		return circleWeakYPositionRelativeToAxis;
 	}
 	
 	public boolean getReaddedToActionBar() {
 		return readdedToActionBar;
 	}
 	
-	public boolean getCircleIncreasingYPos() {
-		return circleIncreasingYPos;
+	public boolean getCircleWeakIncreasingYPos() {
+		return circleWeakIncreasingYPos;
+	}
+	
+	public boolean getCircleStrongIncreasingYPos() {
+		return circleStrongIncreasingYPos;
 	}
 }
