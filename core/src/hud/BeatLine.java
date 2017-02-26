@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.miv.Attack;
 import com.miv.Movement;
 import com.miv.Movement.Direction;
+import com.miv.Options;
 
 import dungeons.Floor;
 
@@ -46,14 +47,14 @@ public class BeatLine {
 		circleWeakState = CircleState.Alive;
 	}
 	
-	public void onAttackHit(Floor floor, Entity player) {
+	public void onAttackHit(Options options, Floor floor, Entity player) {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
 			circleWeakIncreasingYPos = true;
 			
 			//TODO: play sound effect
 			
-			Attack.entityAttack(floor, player);
+			Attack.entityAttack(options, floor, player);
 		}
 	}
 	
