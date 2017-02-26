@@ -1,9 +1,10 @@
 package com.miv;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 
 /**
- * Anything done using setter methods will not be saved until applyChanges() is called
+ * Anything done to volumes/window size using setter methods will not be saved until applyChanges() is called
  */
 public class Options {
 	public static final int TILE_SIZE = 32;
@@ -12,6 +13,7 @@ public class Options {
 	
 	//TODO: change this to Gdx.files.local
 	public static String assetsFilePath = "C:\\Rhythm Dungeon\\assets\\";
+	
 	public static String soundEffectsFilePath = assetsFilePath + "audio\\sound effects\\";
 	public static String musicFilePath = assetsFilePath + "audio\\music\\";
 	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\metadata.txt";
@@ -30,6 +32,10 @@ public class Options {
 	private float musicVolume = 1f;
 	
 	private float actionBarScrollInterval = 16f;
+	
+	private int attackKey1 = Input.Keys.A;
+	private int attackKey2 = Input.Keys.S;
+	private int attackBurstKey = Input.Keys.SPACE;
 	
 	// Temporary values that become permanent once changes are applied
 	private boolean fullscreenTemp;
@@ -61,31 +67,43 @@ public class Options {
 	}
 	
 	public void setFullscreen(boolean fullscreen) {
-		this.fullscreen = fullscreen;
+		fullscreenTemp = fullscreen;
 	}
 	
 	public void setWindowWidth(int windowWidth) {
-		this.windowWidth = windowWidth;
+		windowWidthTemp = windowWidth;
 	}
 	
 	public void setWindowHeight(int windowHeight) {
-		this.windowHeight = windowHeight;
+		windowHeightTemp = windowHeight;
 	}
 	
 	public void setMasterVolume(float masterVolume) {
-		this.masterVolume = masterVolume;
+		masterVolumeTemp = masterVolume;
 	}
 	
 	public void setSoundEffectsVolume(float soundEffectsVolume) {
-		this.soundEffectsVolume = soundEffectsVolume;
+		soundEffectsVolumeTemp = soundEffectsVolume;
 	}
 	
 	public void setMusicVolume(float musicVolume) {
-		this.musicVolume = musicVolume;
+		musicVolumeTemp = musicVolume;
 	}
 	
 	public void setActionBarScrollInterval(float actionBarScrollInterval) {
 		this.actionBarScrollInterval = actionBarScrollInterval;
+	}
+	
+	public void setAttackKey1(int attackKey1) {
+		this.attackKey1 = attackKey1;
+	}
+	
+	public void setAttackKey2(int attackKey2) {
+		this.attackKey2= attackKey2;
+	}
+	
+	public void setAttackBurstKey(int attackBurstKey) {
+		this.attackBurstKey = attackBurstKey;
 	}
 	
 	
@@ -115,5 +133,17 @@ public class Options {
 	
 	public float getActionBarScrollInterval() {
 		return actionBarScrollInterval;
+	}
+	
+	public int getAttackKey1() {
+		return attackKey1;
+	}
+	
+	public int getAttackKey2() {
+		return attackKey2;
+	}
+	
+	public int getAttackBurstKey() {
+		return attackBurstKey;
 	}
 }

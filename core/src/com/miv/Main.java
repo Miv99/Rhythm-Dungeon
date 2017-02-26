@@ -105,7 +105,7 @@ public class Main extends ApplicationAdapter {
 			engine.getSystem(RenderSystem.class).update(deltaTime);
 		}
 	}
-		
+	
 	@Override
 	public void dispose() {
 		
@@ -166,13 +166,10 @@ public class Main extends ApplicationAdapter {
 					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Up);
 				} else if(keycode == Input.Keys.DOWN) {
 					Movement.moveEntity(dungeon.getFloors()[dungeon.getCurrentFloor()], dungeon.getPlayer(), Direction.Down);
-				} else if(keycode == Input.Keys.Z) {
+				} else if(keycode == options.getAttackKey1()
+						|| keycode == options.getAttackKey2()) {
 					
-				} else if(keycode == Input.Keys.X) {
-					
-				} else if(keycode == Input.Keys.A) {
-					
-				} else if(keycode == Input.Keys.S) {
+				} else if(keycode == options.getAttackBurstKey()) {
 					
 				} else if(keycode == Input.Keys.ESCAPE) {
 					if(paused) {
