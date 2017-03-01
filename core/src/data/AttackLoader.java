@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Movement.Direction;
 
+import components.EnemyComponent;
 import components.HealthComponent;
 import components.PlayerComponent;
 
@@ -181,6 +182,8 @@ public class AttackLoader {
 			return HealthComponent.class;
 		} else if(string.toLowerCase().equals("player")) {
 			return PlayerComponent.class;
+		} else if(string.toLowerCase().equals("enemy")) {
+			return EnemyComponent.class;
 		} else {
 			throw new IllegalArgumentException();
 		}

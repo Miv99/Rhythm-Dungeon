@@ -74,7 +74,7 @@ public class Options {
 	
 	public static String animationsMetadataFilePath = assetsFilePath + "animations\\metadata.txt";
 	
-	public static String attacksFilePath = assetsFilePath + "attacks.txt";
+	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
 	
 	public static Options loadOptions() {
 		//TODO: load options from an options file or something; don't use a txt file

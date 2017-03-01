@@ -43,7 +43,7 @@ public class AttackData {
 		TARGET_RELATIVE_TO_SELF, 
 		// Direction determined is the direction the target is facing
 		TARGET_FACING,
-		// Direction determined is the direction the self is facing
+		// Direction determined is the direction the attacker is facing
 		SELF_FACING
 	}
 	
@@ -51,7 +51,7 @@ public class AttackData {
 	private Class<? extends Component> entityHittableRequirement;
 	// Beats after the attack starts that the tiles are actually checked for entities
 	private int attackDelayInBeats;
-	// Beats after the attack starts that the self cannot move for
+	// Beats after the attack starts that the attacker cannot move for
 	private int disabledMovementTimeInBeats;
 	private boolean warnTilesBeforeAttack;
 	// Marks which tiles are to be targetted depending TileAttackDirectionType (see its comments)
