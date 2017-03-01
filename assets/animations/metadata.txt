@@ -1,5 +1,2 @@
-animation_name=player_attack_right
-duration=1/4
-
-animation_name=player_attack_left
+animation_name=player_sword
 duration=1/4

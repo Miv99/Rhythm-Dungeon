@@ -20,11 +20,13 @@ public class AnimationComponent implements Component {
 	}
 	
 	public void startAnimation(String animationName) {
-		if(animations.get(animationName) == null) {
-			System.out.println("Missing animation: " + animationName);
-		} else {
-			animationStateTime = 0f;
-			currentAnimation = animations.get(animationName).getAnimation();
+		if(!animationName.equals("none")) {
+			if(animations.get(animationName) == null) {
+				System.out.println("Missing animation: " + animationName);
+			} else {
+				animationStateTime = 0f;
+				currentAnimation = animations.get(animationName).getAnimation();
+			}
 		}
 	}
 	

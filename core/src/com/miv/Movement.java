@@ -11,6 +11,7 @@ import data.HitboxData.HitboxType;
 import dungeons.Floor;
 import dungeons.Tile;
 import special_tiles.SpecialTile;
+import utils.MapUtils.TileDoesNotContainEntityException;
 
 public class Movement {
 	public enum Direction {
@@ -30,9 +31,7 @@ public class Movement {
 		}
 	}
 	
-	public static void moveEntity(Floor floor, Entity entity, Direction direction) {
-		//TODO: update hitboxcomponent, update imagecp,[pmemt if any
-		
+	public static void moveEntity(Floor floor, Entity entity, Direction direction) {		
 		if(isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
 			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
@@ -114,11 +113,16 @@ public class Movement {
 		}
 				
 		// Check if any of the entity's hitboxes collide with a tangible tile
+		// If any of the tiles checked contains no tangible target, the tangible occupant in that tile is set to null
 		for(int x = 0; x < hitbox.length; x++) {
 			for(int y = 0; y < hitbox[x].length; y++) {
-				if(hitbox[x][y].getTangible()
-						&& tiles[xEntity + x][yEntity + y].isTangibleTile()) {
-					return false;
+				try {
+					if(hitbox[x][y].getTangible()
+							&& tiles[xEntity + x][yEntity + y].isTangibleTile()) {
+						return false;
+					}
+				} catch(TileDoesNotContainEntityException e) {
+					tiles[xEntity + x][yEntity + y].setTangibleOccupant(null);
 				}
 			}
 		}

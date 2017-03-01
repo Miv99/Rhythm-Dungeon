@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,7 +16,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.miv.Movement.Direction;
 
 import audio.Audio;
+import components.EnemyAIComponent;
+import components.ImageComponent;
 import data.AnimationLoader;
+import data.AttackLoader;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
 import factories.DungeonFactory;
@@ -32,6 +36,7 @@ public class Main extends ApplicationAdapter {
 	private GameCamera camera;
 	
 	private Images images;
+	private AttackLoader attackLoader;
 	private AnimationLoader animationLoader;
 	private Engine engine;
 	private Dungeon dungeon;
@@ -59,7 +64,10 @@ public class Main extends ApplicationAdapter {
 		animationLoader = new AnimationLoader(images);
 		animationLoader.loadAnimations();
 		
-		entityFactory = new EntityFactory(images, animationLoader);
+		attackLoader = new AttackLoader();
+		attackLoader.loadAttacks();
+		
+		entityFactory = new EntityFactory(images, animationLoader, attackLoader);
 		
 		// Create systems
 		engine.addSystem(new AnimationSystem());
@@ -143,7 +151,7 @@ public class Main extends ApplicationAdapter {
 		camera.setFocus(player);
 		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(10, animationLoader, player, options, audio, images);
+		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, player, options, audio, images);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		camera.setDungeon(dungeon);
 		

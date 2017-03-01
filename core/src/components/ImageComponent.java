@@ -10,7 +10,7 @@ import com.miv.Movement.Direction;
 public class ImageComponent implements Component {
 	// Name of the sprite without any animations and without "_[direction]"
 	private String spriteName;
-	// The original sprites facing each direction, without any animations
+	// The original sprites facing each direction (left/right), without any animations
 	private HashMap<Direction, Sprite> directionalSprites;
 	private Direction facing;
 	
@@ -28,9 +28,9 @@ public class ImageComponent implements Component {
 	}
 	
 	public void faceDirection(Direction direction) {
-		facing = direction;
 		if(direction.equals(Direction.Left)
 				|| direction.equals(Direction.Right)) {
+			facing = direction;
 			sprite = directionalSprites.get(direction);
 		}
 	}

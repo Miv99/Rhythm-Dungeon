@@ -8,11 +8,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.miv.Movement.Direction;
 
 import components.AnimationComponent;
+import components.AttackComponent;
 import components.EnemyComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
+import components.PlayerComponent;
 import data.AnimationData;
 import data.AnimationLoader;
+import data.AttackData;
+import data.AttackLoader;
 import data.HitboxData;
 import data.HitboxData.HitboxType;
 import graphics.Images;
@@ -20,10 +24,12 @@ import graphics.Images;
 public class EntityFactory {
 	private Images images;
 	private HashMap<String, AnimationData> animationsData;
+	private HashMap<String, AttackData> attacksData;
 	
-	public EntityFactory(Images images, AnimationLoader animationLoader) {
+	public EntityFactory(Images images, AnimationLoader animationLoader, AttackLoader attackLoader) {
 		this.images = images;
 		animationsData = animationLoader.getAnimationsData();
+		attacksData = attackLoader.getAttacksData();
 	}
 	
 	/**
@@ -35,6 +41,8 @@ public class EntityFactory {
 		e.add(new EnemyComponent());
 		
 		e.add(new AnimationComponent(animationsData));
+		
+		e.add(new AttackComponent(attacksData));
 		
 		return e;
 	}
@@ -50,6 +58,11 @@ public class EntityFactory {
 		e.add(new ImageComponent("player", createDirectionalSprites("player"), startingMapPosition));
 		
 		e.add(new AnimationComponent(animationsData));
+		e.add(new AttackComponent(attacksData));
+		
+		PlayerComponent playerComponent = new PlayerComponent();
+		playerComponent.setWeaponEquipped("player_sword");
+		e.add(playerComponent);
 		
 		return e;
 	}

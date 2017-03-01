@@ -32,7 +32,7 @@ public class Tile {
 	 * Uses information on the tangibleOccupant and this tile
 	 * to determine whether the tangibleOccupant can be attacked
 	 */
-	public boolean containsAttackableEntity() {
+	public boolean containsAttackableEntity() throws TileDoesNotContainEntityException {
 		if(tangibleOccupant != null) {
 			try {
 				if(MapUtils.getEntityHitboxTypeOnTile(tangibleOccupant, this).getAttackable()) {
@@ -41,7 +41,7 @@ public class Tile {
 					return false;
 				}
 			} catch(TileDoesNotContainEntityException e) {
-				tangibleOccupant = null;
+				throw e;
 			}
 		}
 		return false;
@@ -51,7 +51,7 @@ public class Tile {
 	 * Uses information on the tangibleOccupant (if any) and hitboxType to determine
 	 * whether this tile can be touched
 	 */
-	public boolean isTangibleTile() {
+	public boolean isTangibleTile() throws TileDoesNotContainEntityException {
 		if(hitboxType.getTangible()) {
 			return true;
 		} else if(tangibleOccupant != null) {
@@ -62,7 +62,7 @@ public class Tile {
 					return false;
 				}
 			} catch(TileDoesNotContainEntityException e) {
-				tangibleOccupant = null;
+				throw e;
 			}
 		}
 		return false;

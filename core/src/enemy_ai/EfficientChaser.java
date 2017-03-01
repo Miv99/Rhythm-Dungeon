@@ -16,6 +16,6 @@ public abstract class EfficientChaser extends EnemyAI {
 
 	@Override
 	public void onNewBeat() {
-		//TODO: use A* to have the enemy 
+		//TODO: use A* to have the enemy move towards the player
 	}
 }

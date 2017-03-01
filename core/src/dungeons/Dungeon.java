@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Attack;
+import com.miv.Attack.EntityAttackParams;
 import com.miv.ComponentMappers;
 import com.miv.GameCamera;
+import com.miv.Main;
 import com.miv.Movement;
 import com.miv.Movement.Direction;
 import com.miv.Options;
@@ -20,10 +22,13 @@ import audio.Song;
 import audio.SongSelector;
 import audio.SongSelector.NoSelectableMusicException;
 import components.AnimationComponent;
+import components.EnemyAIComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
 import data.AnimationData;
 import data.AnimationLoader;
+import data.AttackData;
+import data.AttackData.TileAttackData;
 import graphics.Images;
 import hud.BeatLine;
 import utils.GeneralUtils;
@@ -33,6 +38,7 @@ import utils.GeneralUtils;
  */
 public class Dungeon {
 	public static class DungeonParams {
+		private Engine engine;
 		private int maxFloors;
 		private AnimationLoader animationLoader;
 		private Entity player;
@@ -40,7 +46,8 @@ public class Dungeon {
 		private Audio audio;
 		private Images images;
 		
-		public DungeonParams(int maxFloors, AnimationLoader animationLoader, Entity player, Options options, Audio audio, Images images) {
+		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, Entity player, Options options, Audio audio, Images images) {
+			this.engine = engine;
 			this.maxFloors = maxFloors;
 			this.animationLoader = animationLoader;
 			this.player = player;
@@ -127,8 +134,13 @@ public class Dungeon {
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
 		
+		actionBar.actionBarSystem.clearQueues();
+		
 		beatHitErrorMarginInSeconds = calculateBeatHitErrorMargin();
 		beatMissErrorMarginInSeconds = calculateBeatMissErrorMargin();
+		
+		//TODO: quickly fade out music and quickly fade to black --> play some ladder climbing noises --> disable all entity movements -->
+		// play music --> wait [music.offset] seconds --> enable all entity movements
 	}
 	
 	/**
@@ -247,14 +259,14 @@ public class Dungeon {
 			}
 		}
 		
-		public void fireAttackAction() {
+		public void fireAttackAction() {	
 			BeatLine nearestLeft = getNearestCircleFromLeft(false);
 			BeatLine nearestRight = getNearestCircleFromRight(false);
 			
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestLeft.onAttackHit(dungeonParams.options, floors[currentFloor], dungeonParams.player);
+				nearestLeft.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestRight.onAttackHit(dungeonParams.options, floors[currentFloor], dungeonParams.player);
+				nearestRight.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onAttackMiss();
 			}
@@ -355,6 +367,8 @@ public class Dungeon {
 			private float windowWidth;
 			private Array<BeatLine> beatLineAdditionQueue;
 			private Array<BeatLine> beatLineDeletionQueue;
+			private Array<EntityAttackParams> entityAttackQueue;
+			private Array<EntityAttackParams> entityAttackDeletionQueue;
 			
 			private int maxBeatCirclesOnScreen;
 			
@@ -378,6 +392,8 @@ public class Dungeon {
 				batch = new SpriteBatch();
 				beatLineAdditionQueue = new Array<BeatLine>();
 				beatLineDeletionQueue = new Array<BeatLine>();
+				entityAttackQueue = new Array<EntityAttackParams>();
+				entityAttackDeletionQueue = new Array<EntityAttackParams>();
 				this.windowWidth = windowWidth;
 				
 				maxBeatCirclesOnScreen = calculateMaxBeatsOnScreen();
@@ -439,6 +455,7 @@ public class Dungeon {
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimeUntilCursorLineInSeconds() <= 0
 								&& !b.getReaddedToActionBar()) {
+							onNewBeat();
 							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
 							b.setReaddedToActionBar(true);
 						}
@@ -450,8 +467,29 @@ public class Dungeon {
 					
 					fireBeatLineAdditionQueue();
 					fireBeatLineDeletionQueue();
+					fireEntityAttackQueue();
 				}
 				batch.end();
+			}
+			
+			private void onNewBeat() {
+				// Trigger onNewBeat() on all entities with EnemyAIComponent and the enemy AI is activated
+				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+					ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
+				}
+				
+				// Lower beat delay on all entity attack queues
+				for(EntityAttackParams params : entityAttackQueue) {
+					params.setBeatDelay(params.getBeatDelay() - 1);
+					Attack.entityAttack(params);
+				}
+			}
+			
+			/**
+			 * Used by Attack.class to wait a certain amount of beats before doing damage calculations
+			 */
+			public void queueEntityAttack(EntityAttackParams params) {
+				entityAttackQueue.add(params);
 			}
 			
 			private void queueBeatLineAddition(BeatLine newBeatLine) {
@@ -461,6 +499,13 @@ public class Dungeon {
 			private void queueBeatLineDeletion(BeatLine target) {
 				target.setDeletionQueued(true);
 				beatLineDeletionQueue.add(target);
+			}
+			
+			private void clearQueues() {
+				beatLineAdditionQueue.clear();
+				beatLineDeletionQueue.clear();
+				entityAttackQueue.clear();
+				entityAttackDeletionQueue.clear();
 			}
 			
 			private void fireBeatLineAdditionQueue() {
@@ -474,6 +519,27 @@ public class Dungeon {
 				if(beatLineDeletionQueue.size > 0) {
 					actionBar.getBeatLines().removeAll(beatLineDeletionQueue, false);
 					beatLineDeletionQueue.clear();
+				}
+			}
+			
+			private void fireEntityAttackQueue() {
+				if(entityAttackQueue.size > 0) {
+					for(EntityAttackParams params : entityAttackQueue) {
+						params.setBeatDelay(params.getBeatDelay() - 1);
+						//TODO: test this with <= instead
+						if(params.getBeatDelay() < 0) {
+							Attack.entityAttack(params);
+							entityAttackDeletionQueue.add(params);
+						}
+					}
+					fireEntityAttackDeletionQueue();
+				}
+			}
+			
+			private void fireEntityAttackDeletionQueue() {
+				if(entityAttackDeletionQueue.size > 0) {
+					entityAttackQueue.removeAll(entityAttackDeletionQueue, false);
+					entityAttackDeletionQueue.clear();
 				}
 			}
 		}

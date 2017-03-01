@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Options;
+import com.miv.Movement.Direction;
 
 import graphics.Images;
 import utils.FileUtils;
@@ -41,8 +42,16 @@ public class AnimationLoader {
 					// Fill array of sprites
 					sprites.addAll(images.loadAnimationSprites(animationName));
 					
-					AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
-					animationsData.put(animationName, animationData);
+					AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+					animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
+					
+					// Flip array of sprites to create left-facing animations
+					for(Sprite sprite : sprites) {
+						sprite.flip(true, false);
+					}
+					
+					AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+					animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
 					
 					animationName = "";
 					animationDurationInBeats = 1f;
@@ -61,8 +70,16 @@ public class AnimationLoader {
 			// Fill array of sprites
 			sprites.addAll(images.loadAnimationSprites(animationName));
 			
-			AnimationData animationData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
-			animationsData.put(animationName, animationData);
+			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+			animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
+			
+			// Flip array of sprites to create left-facing animations
+			for(Sprite sprite : sprites) {
+				sprite.flip(true, false);
+			}
+			
+			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+			animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
 		}
 	}
 	

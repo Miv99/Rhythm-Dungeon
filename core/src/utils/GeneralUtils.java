@@ -27,4 +27,19 @@ public class GeneralUtils {
 		
 		return array;
 	}
+	
+	/**
+	 * @param array - must be a square
+	 */
+	public static Object[][] verticallyFlipArray(Object[][] array) {
+		//TODO - muy importante
+		
+		return array;
+	}
+	
+	public static Object[][] rotateCounterClockwise(Object[][] array) {
+		//TODO - muy importante
+		
+		return array;
+	}
 }
