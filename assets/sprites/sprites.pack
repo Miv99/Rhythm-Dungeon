@@ -52,9 +52,23 @@ player
   orig: 32, 32
   offset: 0, 0
   index: -1
-stone_tile
+player_idle
   rotate: false
   xy: 35, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+player_idle
+  rotate: false
+  xy: 166, 171
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+stone_tile
+  rotate: false
+  xy: 200, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

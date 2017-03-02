@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.miv.ComponentMappers;
 
 import components.AnimationComponent;
@@ -37,9 +38,9 @@ public class AnimationSystem extends EntitySystem {
 			if(animation.getCurrentAnimation() != null) {
 				image.setSprite(animation.getKeyFrame());
 			}
-			if(animation.getQueuedReturnToOriginalSprite()) {
-				image.setSprite(image.getDirectionalSprite());
-				animation.setQueuedReturnToOriginalSprite(false);
+			if(animation.getQueuedIdleAnimation()) {
+				animation.startAnimation(animation.getIdleAnimationName() + "_" + image.getFacing().getStringRepresentation(), PlayMode.LOOP);
+				animation.setQueuedIdleAnimation(false);
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 Format of metadata.txt goes as follows:
 
-animation_name=(String)
-duration=(Duration of animation in beats)
+animation_name=(string)
+duration=(duration of animation in beats)
 
 Each animation is separated by a new line
 Each animations' images is the animation name followed by "_[index]"

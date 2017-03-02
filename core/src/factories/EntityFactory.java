@@ -40,7 +40,7 @@ public class EntityFactory {
 		
 		e.add(new EnemyComponent());
 		
-		e.add(new AnimationComponent(animationsData));
+		e.add(new AnimationComponent(animationsData, enemyName + "_idle"));
 		
 		e.add(new AttackComponent(attacksData));
 		
@@ -57,7 +57,7 @@ public class EntityFactory {
 		
 		e.add(new ImageComponent("player", createDirectionalSprites("player"), startingMapPosition));
 		
-		e.add(new AnimationComponent(animationsData));
+		e.add(new AnimationComponent(animationsData, "player_idle"));
 		e.add(new AttackComponent(attacksData));
 		
 		PlayerComponent playerComponent = new PlayerComponent();

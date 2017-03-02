@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.miv.Movement.Direction;
 
 import components.AnimationComponent;
@@ -137,6 +138,9 @@ public class Attack {
 		
 	}
 	
+	/**
+	 * Instantly do damage calculations. Called only from action bar queue or from Attack.entityStartAttack if there is no delay.
+	 */
 	public static void entityAttack(EntityAttackParams params) {
 		Tile[][] mapTiles = params.floor.getTiles();
 		Point targettedTilesAbsoluteMapPosition = new Point(params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x
@@ -188,10 +192,10 @@ public class Attack {
 			}
 		}
 		
-		// Do attack animation on attacker
+		// Attacker does attack animation
 		if(ComponentMappers.animationMapper.has(params.attacker)) {
 			AnimationComponent animationComponent = ComponentMappers.animationMapper.get(params.attacker);
-			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation());
+			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
 		}
 	}
 }

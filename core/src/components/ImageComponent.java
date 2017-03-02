@@ -35,6 +35,10 @@ public class ImageComponent implements Component {
 		}
 	}
 	
+	public Direction getFacing() {
+		return facing;
+	}
+	
 	/**
 	 * Returns the sprite for the direction the entity is currently facing
 	 */

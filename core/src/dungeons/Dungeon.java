@@ -483,6 +483,14 @@ public class Dungeon {
 					params.setBeatDelay(params.getBeatDelay() - 1);
 					Attack.entityAttack(params);
 				}
+				
+				// Start idle animations on any entities that aren't currently doing any animations
+				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
+					AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
+					if(animationComponent.getCurrentAnimation() == null) {
+						animationComponent.setQueuedIdleAnimation(true);
+					}
+				}
 			}
 			
 			/**
