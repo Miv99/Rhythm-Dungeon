@@ -51,7 +51,7 @@ public class EntityFactory {
 		Entity e = new Entity();
 		
 		HitboxType[][] hitbox = new HitboxType[1][1];
-		hitbox[0][0] = HitboxType.TangibleAttackable;
+		hitbox[0][0] = HitboxType.TangibleAttackableAttackOrigin;
 		HitboxData hitboxData = new HitboxData(hitbox);
 		e.add(new HitboxComponent(hitboxData, startingMapPosition));
 		

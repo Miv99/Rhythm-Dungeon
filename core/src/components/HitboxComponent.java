@@ -18,6 +18,7 @@ public class HitboxComponent implements Component {
 	private Direction facing;
 	// The last horizontal direction that the entity has faced
 	private Direction horizontalFacing;
+	private Point attackOrigin;
 	
 	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
 		hitbox = hitboxDataFacingRight.getHitbox();
@@ -27,6 +28,16 @@ public class HitboxComponent implements Component {
 		directionalHitboxes = new HashMap<Direction, HitboxType[][]>();
 		directionalHitboxes.put(Direction.Right, hitbox);
 		directionalHitboxes.put(Direction.Left, (HitboxType[][])GeneralUtils.horizontallyFlipArray(hitbox));
+		
+		// Find attack origin
+		for(int x = 0; x < hitbox.length; x++) {
+			for(int y = 0; y < hitbox[x].length; y++) {
+				if(hitbox[x][y].getAttackOrigin()) {
+					attackOrigin = new Point(x, y);
+					break;
+				}
+			}
+		}
 		
 		facing = Direction.Right;
 		horizontalFacing = Direction.Right;
@@ -38,6 +49,9 @@ public class HitboxComponent implements Component {
 				|| direction.equals(Direction.Right)) {
 			horizontalFacing = direction;
 			hitbox = directionalHitboxes.get(direction);
+			
+			// Flip attack origin horizontally
+			attackOrigin.x = hitbox.length - attackOrigin.x - 1;
 		}
 	}
 	
@@ -64,5 +78,9 @@ public class HitboxComponent implements Component {
 	
 	public HashMap<Direction, HitboxType[][]> getDirectionalHitboxes() {
 		return directionalHitboxes;
+	}
+	
+	public Point getAttackOrigin() {
+		return attackOrigin;
 	}
 }

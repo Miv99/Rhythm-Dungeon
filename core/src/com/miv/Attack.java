@@ -77,14 +77,18 @@ public class Attack {
 		AttackDirectionDeterminant directionDeterminant = attackData.getAttackDirectionDeterminant();
 		Direction attackDirection = null;
 		Point focusAbsoluteMapPosition = null;
+		Point attackerAttackOrigin = null;
 		if(directionDeterminant.equals(AttackDirectionDeterminant.SELF_FACING)) {
 			attackDirection = attackerHitboxComponent.getFacing();
+			attackerAttackOrigin = attackerHitboxComponent.getAttackOrigin();
 			focusAbsoluteMapPosition = attackerPosition;
 		} else if(directionDeterminant.equals(AttackDirectionDeterminant.TARGET_FACING)) {
 			attackDirection = ComponentMappers.hitboxMapper.get(target).getFacing();
+			attackerAttackOrigin = new Point(0, 0);
 			focusAbsoluteMapPosition = ComponentMappers.hitboxMapper.get(target).getMapPosition();
 		} else if(directionDeterminant.equals(AttackDirectionDeterminant.TARGET_RELATIVE_TO_SELF)) {
 			attackDirection = MapUtils.getRelativeDirection(ComponentMappers.hitboxMapper.get(target).getMapPosition(), attackerPosition);
+			attackerAttackOrigin = new Point(0, 0);
 			focusAbsoluteMapPosition = attackerPosition;
 		} else {
 			System.out.println("YOU FORGOT TO MAKE AN IF STATEMENT FOR " + directionDeterminant + " IN Attack.class");
@@ -112,7 +116,8 @@ public class Attack {
 			for(int x = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x; x < targettedTiles.length; x++) {
 				for(int y = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y; y < targettedTiles[x].length; y++) {
 					// x and y relative to targettedTiles
-					if(targettedTiles[targettedTilesAbsoluteMapPosition.x - (focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x)][targettedTilesAbsoluteMapPosition.y - (focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y)]
+					if(targettedTiles[targettedTilesAbsoluteMapPosition.x - (focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x) + attackerAttackOrigin.x]
+							[targettedTilesAbsoluteMapPosition.y - (focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y) + attackerAttackOrigin.y]
 							.getIsAttack()) {
 						// TODO: Do animation on tiles by spawning entities with only animation+image components on them
 					}
