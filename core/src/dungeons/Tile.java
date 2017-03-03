@@ -1,6 +1,8 @@
 package dungeons;
 
 import java.awt.Point;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -8,12 +10,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import data.HitboxData.HitboxType;
 import special_tiles.SpecialTile;
 import utils.MapUtils;
-import utils.MapUtils.TileDoesNotContainEntityException;
 
 public class Tile {
-	// The tangible entity that is occupying the tile
-	// The same entity may occupy multiple tiles
-	private Entity tangibleOccupant;
+	private Set<Entity> attackableOccupants;
+	private Set<Entity> tangibleOccupants;
 	
 	// Sprite of the tile
 	private Sprite sprite;
@@ -26,46 +26,21 @@ public class Tile {
 	
 	public Tile(Point mapPosition) {
 		this.mapPosition = mapPosition;
+		attackableOccupants = new HashSet<Entity>();
+		tangibleOccupants = new HashSet<Entity>();
 	}
 	
-	/**
-	 * Uses information on the tangibleOccupant and this tile
-	 * to determine whether the tangibleOccupant can be attacked
-	 */
-	public boolean containsAttackableEntity() throws TileDoesNotContainEntityException {
-		if(tangibleOccupant != null) {
-			try {
-				if(MapUtils.getEntityHitboxTypeOnTile(tangibleOccupant, this).getAttackable()) {
-					return true;
-				} else {
-					return false;
-				}
-			} catch(TileDoesNotContainEntityException e) {
-				throw e;
-			}
-		}
-		return false;
+	public boolean containsAttackableEntity() {
+		return attackableOccupants.size() > 0;
 	}
 	
-	/**
-	 * Uses information on the tangibleOccupant (if any) and hitboxType to determine
-	 * whether this tile can be touched
-	 */
-	public boolean isTangibleTile() throws TileDoesNotContainEntityException {
-		if(hitboxType.getTangible()) {
+	public boolean isTangibleTile() {
+		if(hitboxType.getTangible()
+				|| tangibleOccupants.size() > 0) {
 			return true;
-		} else if(tangibleOccupant != null) {
-			try {
-				if(MapUtils.getEntityHitboxTypeOnTile(tangibleOccupant, this).getTangible()) {
-					return true;
-				} else {
-					return false;
-				}
-			} catch(TileDoesNotContainEntityException e) {
-				throw e;
-			}
+		} else {
+			return false;
 		}
-		return false;
 	}
 	
 	public void setSprite(Sprite sprite) {
@@ -76,16 +51,16 @@ public class Tile {
 		this.hitboxType = hitboxType;
 	}
 	
-	public void setTangibleOccupant(Entity newOccupant) {
-		this.tangibleOccupant =  newOccupant;
-	}
-	
 	public void setSpecialTile(SpecialTile specialTile) {
 		this.specialTile = specialTile;
 	}
 	
-	public Entity getTangibleOccupant() {
-		return tangibleOccupant;
+	public Set<Entity> getAttackableOccupants() {
+		return attackableOccupants;
+	}
+	
+	public Set<Entity> getTangibleOccupants() {
+		return tangibleOccupants;
 	}
 	
 	public Sprite getSprite() {

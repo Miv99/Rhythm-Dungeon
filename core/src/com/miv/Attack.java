@@ -20,7 +20,6 @@ import dungeons.Dungeon;
 import dungeons.Floor;
 import dungeons.Tile;
 import utils.MapUtils;
-import utils.MapUtils.TileDoesNotContainEntityException;
 
 public class Attack {
 	public static class EntityAttackParams {
@@ -163,22 +162,16 @@ public class Attack {
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
 		for(int x = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x; x < params.targettedTiles.length; x++) {
 			for(int y = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y; y < params.targettedTiles[x].length; y++) {
-				// x and y relative to targettedTiles
+				// Get x and y relative to targettedTiles
 				if(params.targettedTiles[targettedTilesAbsoluteMapPosition.x - (params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x)]
 						[targettedTilesAbsoluteMapPosition.y - (params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y)]
 						.getIsAttack()) {
-					// Get entity that resides on the absolute tile
-					try {
-						if(mapTiles[x][y].containsAttackableEntity()) {
-							Entity occupant = params.floor.getTiles()[x][y].getTangibleOccupant();
-							
-							// Check if occupant has all entityHittableRequirements
-							if(occupant.getComponent(entityHittableRequirement) != null) {
-								attackedEntities.add(occupant);
-							}
+					// Get attackble entities that reside on the absolute tile
+					for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
+						// Check if occupant has the entityHittableRequirement component
+						if(occupant.getComponent(entityHittableRequirement) != null) {
+							attackedEntities.add(occupant);
 						}
-					} catch(TileDoesNotContainEntityException e) {
-						mapTiles[x][y].setTangibleOccupant(null);
 					}
 					
 					// TODO: Do animation on tiles by spawning entities with only animation+image components on them

@@ -11,7 +11,6 @@ import data.HitboxData.HitboxType;
 import dungeons.Floor;
 import dungeons.Tile;
 import special_tiles.SpecialTile;
-import utils.MapUtils.TileDoesNotContainEntityException;
 
 public class Movement {
 	public enum Direction {
@@ -36,10 +35,20 @@ public class Movement {
 			// Update hitbox and image positions
 			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
 			ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
+			HitboxType[][] hitbox = hitboxComponent.getHitbox();
 			Point hitboxPosition = hitboxComponent.getMapPosition();
 			Point imagePosition = imageComponent.getMapPosition();
 			int xNew = hitboxPosition.x;
 			int yNew = hitboxPosition.y;
+			
+			// Remove the entity from the set of occupants on all tiles the entity is currently on
+			Tile[][] tiles = floor.getTiles();
+			for(int x = hitboxPosition.x; x < hitbox.length; x++) {
+				for(int y = hitboxPosition.y; y < hitbox[x - hitboxPosition.x].length; y++) {
+					tiles[x][y].getAttackableOccupants().remove(entity);
+					tiles[x][y].getTangibleOccupants().remove(entity);
+				}
+			}
 			
 			if(direction.equals(Direction.Up)) {
 				yNew++;
@@ -53,12 +62,15 @@ public class Movement {
 			hitboxPosition.setLocation(xNew, yNew);
 			imagePosition.setLocation(xNew, yNew);
 		
-			// Update tangibleOccupant on all tiles in the floor that the entity's hitboxes now preside in
-			Tile[][] tiles = floor.getTiles();
-			HitboxType[][] hitbox = hitboxComponent.getHitbox();
+			// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
 			for(int x = xNew; x < xNew + hitbox.length; x++) {
-				for(int y = yNew; y < yNew + hitbox[0].length; y++) {
-					tiles[x][y].setTangibleOccupant(entity);
+				for(int y = yNew; y < yNew + hitbox[x - xNew].length; y++) {
+					if(hitbox[x - xNew][y - yNew].getTangible()) {
+						tiles[x][y].getTangibleOccupants().add(entity);
+					}
+					if(hitbox[x - xNew][y - yNew].getAttackable()) {
+						tiles[x][y].getAttackableOccupants().add(entity);
+					}
 				}
 			}
 			
@@ -113,16 +125,11 @@ public class Movement {
 		}
 				
 		// Check if any of the entity's hitboxes collide with a tangible tile
-		// If any of the tiles checked contains no tangible target, the tangible occupant in that tile is set to null
 		for(int x = 0; x < hitbox.length; x++) {
 			for(int y = 0; y < hitbox[x].length; y++) {
-				try {
-					if(hitbox[x][y].getTangible()
-							&& tiles[xEntity + x][yEntity + y].isTangibleTile()) {
-						return false;
-					}
-				} catch(TileDoesNotContainEntityException e) {
-					tiles[xEntity + x][yEntity + y].setTangibleOccupant(null);
+				if(hitbox[x][y].getTangible()
+						&& tiles[xEntity + x][yEntity + y].isTangibleTile()) {
+					return false;
 				}
 			}
 		}
