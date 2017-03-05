@@ -195,14 +195,13 @@ public class AttackLoader {
 			for(int y = 0; y < tileAttackData[x].length; y++) {
 				char c = strings.get(x).charAt(y);
 				if(c == '#') {
-					TileAttackData t = new TileAttackData();
-					t.setIsFocus(true);
-					tileAttackData[x][y] = t;
+					if(animationMap.containsKey('#')) {
+						tileAttackData[x][y] = new TileAttackData(true, true, animationMap.get('#'));
+					} else {
+						tileAttackData[x][y] = new TileAttackData(true, false, "none");
+					}
 				} else if(c != '-' && animationMap.containsKey(c)) {
-					TileAttackData t = new TileAttackData();
-					t.setIsAttack(true);
-					t.setAnimationOnTileName(animationMap.get(c));
-					tileAttackData[x][y] = t;
+					tileAttackData[x][y] = new TileAttackData(false, true, animationMap.get(c));
 				}
 			}
 		}

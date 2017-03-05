@@ -29,6 +29,7 @@ direction=TARGET_RELATIVE_TO_SELF
 auto_rotate=true
 attack_delay=1
 disable_movement=1
+'#'=none
 '0'=none
 right=[
 --0

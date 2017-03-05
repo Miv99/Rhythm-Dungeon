@@ -1,14 +1,8 @@
 package enemy_ai;
 
-import com.badlogic.ashley.core.Entity;
-
 public abstract class EfficientChaser extends EnemyAI {
-	private Entity player;
-	private Entity self;
-	
-	public EfficientChaser(Entity self, Entity player) {
-		this.player = player;
-		this.self = self;
+	public EfficientChaser(EnemyAIParams params) {
+		super(params);
 	}
 
 	@Override

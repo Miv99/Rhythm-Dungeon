@@ -13,6 +13,12 @@ public class AttackData {
 		private boolean isAttack;
 		private String animationOnTileName;
 		
+		public TileAttackData(boolean isFocus, boolean isAttack, String animationOnTileName) {
+			this.isFocus = isFocus;
+			this.isAttack = isAttack;
+			this.animationOnTileName = animationOnTileName;
+		}
+		
 		public void setIsFocus(boolean isFocus) {
 			this.isFocus = isFocus;
 		}
