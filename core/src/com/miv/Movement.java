@@ -2,14 +2,19 @@ package com.miv;
 
 import java.awt.Point;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 
 import audio.Song;
+import components.EnemyAIComponent;
+import components.FriendlyAIComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Floor;
 import dungeons.Tile;
+import entity_ai.EntityAI;
 import special_tiles.SpecialTile;
 
 public class Movement {
@@ -30,7 +35,7 @@ public class Movement {
 		}
 	}
 	
-	public static void moveEntity(Floor floor, Entity entity, Direction direction) {		
+	public static void moveEntity(Engine engine, Floor floor, Entity entity, Direction direction) {		
 		if(isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
 			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
@@ -89,7 +94,29 @@ public class Movement {
 				}
 			}
 			
-			//TODO: Activate all enemy AI within range of the player
+			// If the entity moving is a player, check if it goes in range of any enemy AI
+			if(ComponentMappers.playerMapper.has(entity)) {
+				for(Entity enemy : engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+					Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+					EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+					if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+							>= ai.getActivationRadiusInTiles()) {
+						ai.setActivated(true);
+					}
+				}
+			}
+			
+			// If the entity moving is an enemy, check if it goes in range of any friendly AI
+			if(ComponentMappers.enemyMapper.has(entity)) {
+				for(Entity enemy : engine.getEntitiesFor(Family.all(FriendlyAIComponent.class).get())) {
+					Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+					EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+					if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+							>= ai.getActivationRadiusInTiles()) {
+						ai.setActivated(true);
+					}
+				}
+			}
 		}
 	}
 	

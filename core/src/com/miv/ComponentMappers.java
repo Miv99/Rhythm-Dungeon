@@ -6,6 +6,7 @@ import components.AnimationComponent;
 import components.AttackComponent;
 import components.EnemyAIComponent;
 import components.EnemyComponent;
+import components.FriendlyAIComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
@@ -20,4 +21,5 @@ public class ComponentMappers {
 	public static ComponentMapper<EnemyAIComponent> enemyAIMapper = ComponentMapper.getFor(EnemyAIComponent.class);
 	public static ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
 	public static ComponentMapper<HealthComponent> healthMapper = ComponentMapper.getFor(HealthComponent.class);
+	public static ComponentMapper<FriendlyAIComponent> friendlyAIMapper = ComponentMapper.getFor(FriendlyAIComponent.class);
 }

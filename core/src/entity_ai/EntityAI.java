@@ -1,11 +1,11 @@
-package enemy_ai;
+package entity_ai;
 
 import com.badlogic.ashley.core.Entity;
 import com.miv.Options;
 
 import dungeons.Dungeon;
 
-public abstract class EnemyAI {
+public abstract class EntityAI {
 	public static class EnemyAIParams {
 		protected Entity self;
 		protected Entity target;
@@ -35,7 +35,7 @@ public abstract class EnemyAI {
 	protected Entity target;
 	protected Entity self;
 		
-	public EnemyAI(EnemyAIParams params) {
+	public EntityAI(EnemyAIParams params) {
 		this.options = params.options;
 		this.dungeon = params.dungeon;
 		this.target = params.target;
@@ -44,7 +44,7 @@ public abstract class EnemyAI {
 	}
 	
 	// Triggered when player comes within activation range of the enemy entity
-	public abstract void onActivation();
+	protected abstract void onActivation();
 	
 	// Triggered whenever there is a new beat from the ActionBar
 	public abstract void onNewBeat();

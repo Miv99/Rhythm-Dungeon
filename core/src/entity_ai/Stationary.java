@@ -1,6 +1,6 @@
-package enemy_ai;
+package entity_ai;
 
-public abstract class Stationary extends EnemyAI {
+public abstract class Stationary extends EntityAI {
 	public Stationary(EnemyAIParams params) {
 		super(params);
 	}

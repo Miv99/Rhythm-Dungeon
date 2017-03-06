@@ -278,10 +278,10 @@ public class Dungeon {
 			
 			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestLeft.getStrongBeat()) {
-				nearestLeft.onMovementHit(floors[currentFloor], dungeonParams.player, movementDirection);
+				nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestRight.getStrongBeat()) {
-				nearestRight.onMovementHit(floors[currentFloor], dungeonParams.player, movementDirection);
+				nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onMovementMiss();
 			}

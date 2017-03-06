@@ -1,4 +1,4 @@
-package enemy_ai;
+package entity_ai;
 
 import com.badlogic.ashley.core.Component;
 import com.miv.Attack;

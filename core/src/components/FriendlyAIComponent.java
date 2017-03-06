@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 
 import entity_ai.EntityAI;
 
-public class EnemyAIComponent implements Component {
+public class FriendlyAIComponent implements Component {
 	private EntityAI entityAI;
 	
 	public void setEnemyAI(EntityAI entityAI) {

@@ -1,6 +1,6 @@
-package enemy_ai;
+package entity_ai;
 
-public abstract class EfficientChaser extends EnemyAI {
+public abstract class EfficientChaser extends EntityAI {
 	public EfficientChaser(EnemyAIParams params) {
 		super(params);
 	}
