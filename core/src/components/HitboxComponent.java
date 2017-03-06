@@ -22,6 +22,7 @@ public class HitboxComponent implements Component {
 	private Point attackOrigin;
 	
 	private boolean movementDisabled;
+	private int movementDisabledTimeInBeats;
 	
 	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
 		hitbox = hitboxDataFacingRight.getHitbox();
@@ -48,6 +49,15 @@ public class HitboxComponent implements Component {
 		horizontalFacing = Direction.Right;
 	}
 	
+	public void onNewBeat() {
+		if(movementDisabled) {
+			movementDisabledTimeInBeats--;
+			if(movementDisabledTimeInBeats <= 0) {
+				movementDisabled = false;
+			}
+		}
+	}
+	
 	public void faceDirection(Direction direction) {
 		facing = direction;
 		if(direction.equals(Direction.Left)
@@ -65,8 +75,9 @@ public class HitboxComponent implements Component {
 		mapPosition.y = y;
 	}
 	
-	public void setMovementDisabled(boolean movementDisabled) {
-		this.movementDisabled = movementDisabled;
+	public void disableMovement(int movementDisabledTimeInBeats) {
+		movementDisabled = true;
+		this.movementDisabledTimeInBeats = movementDisabledTimeInBeats;
 	}
 	
 	public HitboxType[][] getHitbox() {

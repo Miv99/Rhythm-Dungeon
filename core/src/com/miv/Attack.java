@@ -130,6 +130,7 @@ public class Attack {
 			}
 			
 			if(attackData.getDisabledMovementTimeInBeats() > 0) {
+				attackerHitboxComponent.disableMovement(attackData.getDisabledMovementTimeInBeats());
 				//TODO: allow attacker to move after ^ beats
 			}
 		}

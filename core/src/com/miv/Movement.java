@@ -34,7 +34,7 @@ public class Movement {
 		}
 	}
 	
-	public static void moveEntity(Engine engine, Floor floor, Entity entity, Direction direction) {		
+	public static void moveEntity(Engine engine, Floor floor, Entity entity, Direction direction) {
 		if(!floor.getActionsDisabled()
 				&& isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
@@ -48,8 +48,8 @@ public class Movement {
 			
 			// Remove the entity from the set of occupants on all tiles the entity is currently on
 			Tile[][] tiles = floor.getTiles();
-			for(int x = hitboxPosition.x; x < hitbox.length; x++) {
-				for(int y = hitboxPosition.y; y < hitbox[x - hitboxPosition.x].length; y++) {
+			for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
+				for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
 					tiles[x][y].getAttackableOccupants().remove(entity);
 					tiles[x][y].getTangibleOccupants().remove(entity);
 				}

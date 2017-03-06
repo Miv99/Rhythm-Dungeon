@@ -494,9 +494,12 @@ public class Dungeon {
 			}
 			
 			private void onNewBeat() {
-				// Trigger onNewBeat() on all entities with EnemyAIComponent and the enemy AI is activated
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
 					ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
+				}
+				
+				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
+					ComponentMappers.hitboxMapper.get(entity).onNewBeat();
 				}
 				
 				// Lower beat delay on all entity attack queues
