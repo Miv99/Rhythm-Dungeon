@@ -6,7 +6,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 
-import audio.Song;
 import components.EnemyAIComponent;
 import components.FriendlyAIComponent;
 import components.HitboxComponent;
@@ -36,7 +35,8 @@ public class Movement {
 	}
 	
 	public static void moveEntity(Engine engine, Floor floor, Entity entity, Direction direction) {		
-		if(isValidMovement(floor.getTiles(), entity, direction)) {
+		if(!floor.getActionsDisabled()
+				&& isValidMovement(floor.getTiles(), entity, direction)) {
 			// Update hitbox and image positions
 			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
 			ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);

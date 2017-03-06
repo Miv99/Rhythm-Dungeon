@@ -90,6 +90,8 @@ public class Dungeon {
 	private float beatHitErrorMarginInSeconds;
 	private float beatMissErrorMarginInSeconds;
 	
+	private float actionsDisabledTimeLeftInSeconds;
+		
 	public Dungeon(DungeonParams dungeonParams) {
 		this.dungeonParams = dungeonParams;
 		actionBar = new ActionBar();
@@ -139,8 +141,10 @@ public class Dungeon {
 		beatHitErrorMarginInSeconds = calculateBeatHitErrorMargin();
 		beatMissErrorMarginInSeconds = calculateBeatMissErrorMargin();
 		
-		//TODO: quickly fade out music and quickly fade to black --> play some ladder climbing noises --> disable all entity movements -->
-		// play music --> wait [music.offset] seconds --> enable all entity movements
+		//TODO: quickly fade out music and quickly fade to black --> play some ladder climbing noises --> disable all entity movements --> play music
+		
+		// Disable entity actions for slightly less than the song's offset so that the player can move even if the movement action is fired early
+		disableEntityActions(song.getOffsetInSeconds() - getBeatMissErrorMarginInSeconds());
 	}
 	
 	/**
@@ -157,9 +161,20 @@ public class Dungeon {
 		return song;
 	}
 	
+	private void disableEntityActions(float timeInSeconds) {
+		
+	}
+	
 	public void update(float deltaTime) {
 		tileRenderSystem.update(deltaTime);
 		actionBar.actionBarSystem.update(deltaTime);
+		
+		if(floors[currentFloor].getActionsDisabled()) {
+			actionsDisabledTimeLeftInSeconds -= deltaTime;
+			if(actionsDisabledTimeLeftInSeconds <= 0) {
+				floors[currentFloor].setActionsDisabled(false);
+			}
+		}
 	}
 	
 	public void setFloors(Floor[] floors) {
@@ -263,11 +278,14 @@ public class Dungeon {
 			BeatLine nearestLeft = getNearestCircleFromLeft(false);
 			BeatLine nearestRight = getNearestCircleFromRight(false);
 			
-			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+			if(nearestLeft != null
+					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				nearestLeft.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
-			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+			} else if(nearestRight != null
+					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				nearestRight.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
-			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
+			} else if(nearestRight != null
+					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onAttackMiss();
 			}
 		}
@@ -276,13 +294,16 @@ public class Dungeon {
 			BeatLine nearestLeft = getNearestCircleFromLeft(true);
 			BeatLine nearestRight = getNearestCircleFromRight(true);
 			
-			if(Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
+			if(nearestLeft != null
+					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestLeft.getStrongBeat()) {
 				nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
-			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
+			} else if(nearestRight != null
+					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 					&& nearestRight.getStrongBeat()) {
 				nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
-			} else if(Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
+			} else if(nearestRight != null
+					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onMovementMiss();
 			}
 		}

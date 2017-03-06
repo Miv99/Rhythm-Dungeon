@@ -21,6 +21,8 @@ public class HitboxComponent implements Component {
 	// Point on hitbox where attacks originate from; defaulted to (0, 0) if none specified from HitboxData
 	private Point attackOrigin;
 	
+	private boolean movementDisabled;
+	
 	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
 		hitbox = hitboxDataFacingRight.getHitbox();
 		this.mapPosition = mapPosition;
@@ -63,6 +65,10 @@ public class HitboxComponent implements Component {
 		mapPosition.y = y;
 	}
 	
+	public void setMovementDisabled(boolean movementDisabled) {
+		this.movementDisabled = movementDisabled;
+	}
+	
 	public HitboxType[][] getHitbox() {
 		return hitbox;
 	}
@@ -85,5 +91,9 @@ public class HitboxComponent implements Component {
 	
 	public Point getAttackOrigin() {
 		return attackOrigin;
+	}
+	
+	public boolean getMovementDisabled() {
+		return movementDisabled;
 	}
 }
