@@ -5,7 +5,9 @@ import java.awt.Point;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 
+import components.AnimationComponent;
 import components.EnemyAIComponent;
 import components.FriendlyAIComponent;
 import components.HitboxComponent;
@@ -38,6 +40,7 @@ public class Movement {
 		Tile[][] tiles = floor.getTiles();
 		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
 		ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
+		AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
 		Direction horizontalFacing = hitboxComponent.getHorizontalFacing();
 
 		if(!floor.getActionsDisabled()) {
@@ -83,6 +86,7 @@ public class Movement {
 				
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);
+				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
 				
 				// Trigger special tile events, if any
 				SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
@@ -124,6 +128,7 @@ public class Movement {
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);
+				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
 			}
 		}
 	}

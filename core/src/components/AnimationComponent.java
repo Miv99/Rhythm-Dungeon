@@ -17,6 +17,7 @@ public class AnimationComponent implements Component {
 	private Animation<Sprite> currentAnimation;
 	// Idle animation will be started on each new beat if currentAnimation is null
 	private String idleAnimationName;
+	private boolean playingIdleAnimation;
 	
 	public AnimationComponent(HashMap<String, AnimationData> animations, String idleAnimationName) {
 		this.animations = animations;
@@ -35,9 +36,40 @@ public class AnimationComponent implements Component {
 		}
 	}
 	
+	/**
+	 * Transitions into a new animation without changing the animation state time.
+	 * Used to ensure animations are timed correctly to the beat.
+	 */
+	public void transitionAnimation(String newAnimationName, PlayMode animationPlayMode) {
+		if(!newAnimationName.equals("none")) {
+			if(animations.get(newAnimationName) == null) {
+				System.out.println("Missing animation: " + newAnimationName);
+			} else {
+				currentAnimation = animations.get(newAnimationName).getAnimation();
+				currentAnimation.setPlayMode(animationPlayMode);
+			}
+		}
+	}
+	
 	public void cancelAnimation() {
 		animationStateTime = 0f;
 		currentAnimation = null;
+		playingIdleAnimation = false;
+	}
+	
+	/**
+	 * Returns whether or not the current animation is one that is not the idle animation. Returns false if no animation in progress.
+	 */
+	public boolean isInNonIdleAnimation() {
+		if(currentAnimation == null) {
+			return false;
+		} else {
+			return !playingIdleAnimation;
+		}
+	}
+	
+	public void setPlayingIdleAnimation(boolean playingIdleAnimation) {
+		this.playingIdleAnimation = playingIdleAnimation;
 	}
 	
 	public String getIdleAnimationName() {

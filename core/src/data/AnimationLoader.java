@@ -37,20 +37,21 @@ public class AnimationLoader {
 				} else if(line.startsWith("duration=")) {
 					animationDurationInBeats = GeneralUtils.toFloat(line.replace("duration=", ""));
 				} else if(line.equals("")) {
-					Array<Sprite> sprites = new Array<Sprite>();
+					Array<Sprite> rightSprites = new Array<Sprite>();
+					rightSprites.addAll(images.loadAnimationSprites(animationName));
 					
-					// Fill array of sprites
-					sprites.addAll(images.loadAnimationSprites(animationName));
-					
-					AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+					AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
 					animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
 					
-					// Flip array of sprites to create left-facing animations
-					for(Sprite sprite : sprites) {
+					Array<Sprite> leftSprites = new Array<Sprite>();
+					leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
+					
+					// Flip sprites to create left-facing animations
+					for(Sprite sprite : leftSprites) {
 						sprite.flip(true, false);
 					}
 					
-					AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+					AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
 					animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
 					
 					animationName = "";
@@ -65,20 +66,21 @@ public class AnimationLoader {
 			lineCount++;
 		}
 		if(!animationName.equals("")) {
-			Array<Sprite> sprites = new Array<Sprite>();
+			Array<Sprite> rightSprites = new Array<Sprite>();
+			rightSprites.addAll(images.loadAnimationSprites(animationName));
 			
-			// Fill array of sprites
-			sprites.addAll(images.loadAnimationSprites(animationName));
-			
-			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
 			animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
 			
-			// Flip array of sprites to create left-facing animations
-			for(Sprite sprite : sprites) {
+			Array<Sprite> leftSprites = new Array<Sprite>();
+			leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
+			
+			// Flip sprites to create left-facing animations
+			for(Sprite sprite : leftSprites) {
 				sprite.flip(true, false);
 			}
 			
-			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, sprites), sprites.size, animationDurationInBeats);
+			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
 			animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
 		}
 	}

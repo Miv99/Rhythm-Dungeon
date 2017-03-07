@@ -56,4 +56,17 @@ public class Images {
 		}
 		return sprites;
 	}
+	
+	/**
+	 * Used for sprites that are part of animations. DOES NOT attempt to get the sprite from the hashmap of all already-created sprites. 
+	 * A new sprite object is created each time.
+	 */
+	public Array<Sprite> forceLoadNewAnimationSprites(String animationName) {
+		Array<Sprite> sprites = new Array<Sprite>();
+		for(AtlasRegion region : spritesAtlas.findRegions(animationName)) {
+			sprites.add(new Sprite(region));
+		}
+		loadedAnimationSprites.put(animationName, sprites);
+		return sprites;
+	}
 }

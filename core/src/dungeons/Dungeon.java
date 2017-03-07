@@ -476,7 +476,7 @@ public class Dungeon {
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimeUntilCursorLineInSeconds() <= 0
 								&& !b.getReaddedToActionBar()) {
-							onNewBeat();
+							onNewBeat(b.getStrongBeat());
 							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
 							b.setReaddedToActionBar(true);
 						}
@@ -493,26 +493,28 @@ public class Dungeon {
 				batch.end();
 			}
 			
-			private void onNewBeat() {
-				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
-					ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
-				}
-				
-				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
-					ComponentMappers.hitboxMapper.get(entity).onNewBeat();
-				}
-				
-				// Lower beat delay on all entity attack queues
-				for(EntityAttackParams params : entityAttackQueue) {
-					params.setBeatDelay(params.getBeatDelay() - 1);
-					Attack.entityAttack(params);
-				}
-				
-				// Start idle animations on any entities that aren't currently doing any animations
-				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
-					AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
-					if(animationComponent.getCurrentAnimation() == null) {
-						animationComponent.setQueuedIdleAnimation(true);
+			private void onNewBeat(boolean strongBeat) {
+				if(strongBeat) {
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+						ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
+					}
+					
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
+						ComponentMappers.hitboxMapper.get(entity).onNewBeat();
+					}
+					
+					// Lower beat delay on all entity attack queues
+					for(EntityAttackParams params : entityAttackQueue) {
+						params.setBeatDelay(params.getBeatDelay() - 1);
+						Attack.entityAttack(params);
+					}
+					
+					// Start idle animations on any entities that aren't currently doing any animations
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
+						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
+						if(!animationComponent.isInNonIdleAnimation()) {
+							animationComponent.setQueuedIdleAnimation(true);
+						}
 					}
 				}
 			}

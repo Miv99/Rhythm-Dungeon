@@ -39,7 +39,8 @@ public class AnimationSystem extends EntitySystem {
 				image.setSprite(animation.getKeyFrame());
 			}
 			if(animation.getQueuedIdleAnimation()) {
-				animation.startAnimation(animation.getIdleAnimationName() + "_" + image.getFacing().getStringRepresentation(), PlayMode.LOOP);
+				animation.startAnimation(animation.getIdleAnimationName() + "_" + image.getFacing().getStringRepresentation(), PlayMode.NORMAL);
+				animation.setPlayingIdleAnimation(true);
 				animation.setQueuedIdleAnimation(false);
 			}
 		}
