@@ -35,89 +35,108 @@ public class Movement {
 	}
 	
 	public static void moveEntity(Engine engine, Floor floor, Entity entity, Direction direction) {
-		if(!floor.getActionsDisabled()
-				&& isValidMovement(floor.getTiles(), entity, direction)) {
-			// Update hitbox and image positions
-			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-			ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
-			HitboxType[][] hitbox = hitboxComponent.getHitbox();
-			Point hitboxPosition = hitboxComponent.getMapPosition();
-			Point imagePosition = imageComponent.getMapPosition();
-			int xNew = hitboxPosition.x;
-			int yNew = hitboxPosition.y;
-			
-			// Remove the entity from the set of occupants on all tiles the entity is currently on
-			Tile[][] tiles = floor.getTiles();
-			for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
-				for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
-					tiles[x][y].getAttackableOccupants().remove(entity);
-					tiles[x][y].getTangibleOccupants().remove(entity);
-				}
-			}
-			
-			if(direction.equals(Direction.Up)) {
-				yNew++;
-			} else if(direction.equals(Direction.Down)) {
-				yNew--;
-			} else if(direction.equals(Direction.Left)) {
-				xNew--;
-			} else if(direction.equals(Direction.Right)) {
-				xNew++;
-			}
-			hitboxPosition.setLocation(xNew, yNew);
-			imagePosition.setLocation(xNew, yNew);
-		
-			// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
-			for(int x = xNew; x < xNew + hitbox.length; x++) {
-				for(int y = yNew; y < yNew + hitbox[x - xNew].length; y++) {
-					if(hitbox[x - xNew][y - yNew].getTangible()) {
-						tiles[x][y].getTangibleOccupants().add(entity);
-					}
-					if(hitbox[x - xNew][y - yNew].getAttackable()) {
-						tiles[x][y].getAttackableOccupants().add(entity);
+		Tile[][] tiles = floor.getTiles();
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
+		Direction horizontalFacing = hitboxComponent.getHorizontalFacing();
+
+		if(!floor.getActionsDisabled()) {
+			if(isValidMovement(tiles, entity, direction)) {
+				HitboxType[][] hitbox = hitboxComponent.getHitbox();
+				Point hitboxPosition = hitboxComponent.getMapPosition();
+				Point imagePosition = imageComponent.getMapPosition();
+				int xNew = hitboxPosition.x;
+				int yNew = hitboxPosition.y;
+				
+				// Remove the entity from the set of occupants on all tiles the entity is currently on
+				for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
+					for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
+						tiles[x][y].getAttackableOccupants().remove(entity);
+						tiles[x][y].getTangibleOccupants().remove(entity);
 					}
 				}
-			}
+				
+				// Update hitbox and image positions
+				if(direction.equals(Direction.Up)) {
+					yNew++;
+				} else if(direction.equals(Direction.Down)) {
+					yNew--;
+				} else if(direction.equals(Direction.Left)) {
+					xNew--;
+				} else if(direction.equals(Direction.Right)) {
+					xNew++;
+				}
+				hitboxPosition.setLocation(xNew, yNew);
+				imagePosition.setLocation(xNew, yNew);
 			
-			hitboxComponent.faceDirection(direction);
-			imageComponent.faceDirection(direction);
-			
-			// Trigger special tile events, if any
-			SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
-			if(specialTile != null 
-					&& !specialTile.getDeactivated()) {
+				// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
+				for(int x = xNew; x < xNew + hitbox.length; x++) {
+					for(int y = yNew; y < yNew + hitbox[x - xNew].length; y++) {
+						if(hitbox[x - xNew][y - yNew].getTangible()) {
+							tiles[x][y].getTangibleOccupants().add(entity);
+						}
+						if(hitbox[x - xNew][y - yNew].getAttackable()) {
+							tiles[x][y].getAttackableOccupants().add(entity);
+						}
+					}
+				}
+				
+				hitboxComponent.faceDirection(direction);
+				imageComponent.faceDirection(direction);
+				
+				// Trigger special tile events, if any
+				SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
+				if(specialTile != null 
+						&& !specialTile.getDeactivated()) {
+					if(ComponentMappers.playerMapper.has(entity)) {
+						specialTile.onPlayerTrigger();
+					}
+					if(ComponentMappers.enemyMapper.has(entity)) {
+						specialTile.onEnemyTrigger();
+					}
+				}
+				
+				// If the entity moving is a player, check if it goes in range of any enemy AI
 				if(ComponentMappers.playerMapper.has(entity)) {
-					specialTile.onPlayerTrigger();
+					for(Entity enemy : engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+								>= ai.getActivationRadiusInTiles()) {
+							ai.setActivated(true);
+						}
+					}
 				}
+				
+				// If the entity moving is an enemy, check if it goes in range of any friendly AI
 				if(ComponentMappers.enemyMapper.has(entity)) {
-					specialTile.onEnemyTrigger();
-				}
-			}
-			
-			// If the entity moving is a player, check if it goes in range of any enemy AI
-			if(ComponentMappers.playerMapper.has(entity)) {
-				for(Entity enemy : engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
-					Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
-					EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
-					if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
-							>= ai.getActivationRadiusInTiles()) {
-						ai.setActivated(true);
+					for(Entity enemy : engine.getEntitiesFor(Family.all(FriendlyAIComponent.class).get())) {
+						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+								>= ai.getActivationRadiusInTiles()) {
+							ai.setActivated(true);
+						}
 					}
 				}
-			}
-			
-			// If the entity moving is an enemy, check if it goes in range of any friendly AI
-			if(ComponentMappers.enemyMapper.has(entity)) {
-				for(Entity enemy : engine.getEntitiesFor(Family.all(FriendlyAIComponent.class).get())) {
-					Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
-					EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
-					if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
-							>= ai.getActivationRadiusInTiles()) {
-						ai.setActivated(true);
-					}
-				}
+			} else if(((horizontalFacing.equals(Direction.Left) && direction.equals(Direction.Right)) || (horizontalFacing.equals(Direction.Right) && direction.equals(Direction.Left)))
+					&& isValidTurn(tiles, entity, direction)) {
+				// Entity turns but does not move
+				hitboxComponent.faceDirection(direction);
+				imageComponent.faceDirection(direction);
 			}
 		}
+	}
+	
+	/**
+	 * Checks if the entity can turn horizontally
+	 */
+	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction horizontalDirection) {
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		HitboxType[][] hitbox = hitboxComponent.getDirectionalHitboxes().get(horizontalDirection);
+		Point mapPosition = hitboxComponent.getMapPosition();
+		
+		return isValidPosition(tiles, hitbox, mapPosition.x, mapPosition.y);
 	}
 	
 	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
@@ -143,7 +162,11 @@ public class Movement {
 			xEntity++;
 		}
 		
-		// Check if the entity is moving out of bounds
+		return isValidPosition(tiles, hitbox, xEntity, yEntity);
+	}
+	
+	private static boolean isValidPosition(Tile[][] tiles, HitboxType[][] hitbox, int xEntity, int yEntity) {
+		// Check if the entity out of bounds
 		if(xEntity + hitbox.length > tiles.length
 				|| yEntity + hitbox[0].length > tiles[0].length
 				|| xEntity < 0
