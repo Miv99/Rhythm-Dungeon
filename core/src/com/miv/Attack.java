@@ -178,9 +178,6 @@ public class Attack {
 		for(Entity attacked : attackedEntities) {
 			HealthComponent healthComponent = ComponentMappers.healthMapper.get(attacked);
 			healthComponent.setHealth(healthComponent.getHealth() - damage);
-			if(healthComponent.getHealth() <= 0) {
-				Death.killEntity(attacked);
-			}
 		}
 		
 		// Attacker does attack animation

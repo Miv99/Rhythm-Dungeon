@@ -26,6 +26,7 @@ import factories.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
 import systems.AnimationSystem;
+import systems.DeathSystem;
 import systems.RenderSystem;
 
 public class Main extends ApplicationAdapter {	
@@ -70,6 +71,7 @@ public class Main extends ApplicationAdapter {
 		entityFactory = new EntityFactory(images, animationLoader, attackLoader);
 		
 		// Create systems
+		engine.addSystem(new DeathSystem(engine));
 		engine.addSystem(new AnimationSystem());
 		RenderSystem renderSystem = new RenderSystem();
 		engine.addSystem(renderSystem);
