@@ -289,39 +289,43 @@ public class Dungeon {
 			}
 		}
 		
-		public void fireAttackAction() {	
-			BeatLine nearestLeft = getNearestCircleFromLeft(false);
-			BeatLine nearestRight = getNearestCircleFromRight(false);
-			
-			if(nearestLeft != null
-					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
-				nearestLeft.setCircleWeakIncreasingYPos(true);
-			} else if(nearestRight != null
-					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
-				nearestRight.setCircleWeakIncreasingYPos(true);
-			} else if(nearestRight != null
-					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
-				nearestRight.onAttackMiss();
+		public void fireAttackAction() {
+			if(!floors[currentFloor].getActionsDisabled()) {
+				BeatLine nearestLeft = getNearestCircleFromLeft(false);
+				BeatLine nearestRight = getNearestCircleFromRight(false);
+				
+				if(nearestLeft != null
+						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+					playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+					nearestLeft.setCircleWeakIncreasingYPos(true);
+				} else if(nearestRight != null
+						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+					playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+					nearestRight.setCircleWeakIncreasingYPos(true);
+				} else if(nearestRight != null
+						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
+					nearestRight.onAttackMiss();
+				}
 			}
 		}
 		
 		public void fireMovementAction(Direction movementDirection) {
-			BeatLine nearestLeft = getNearestCircleFromLeft(true);
-			BeatLine nearestRight = getNearestCircleFromRight(true);
-			
-			if(nearestLeft != null
-					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
-					&& nearestLeft.getStrongBeat()) {
-				nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
-			} else if(nearestRight != null
-					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
-					&& nearestRight.getStrongBeat()) {
-				nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
-			} else if(nearestRight != null
-					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
-				nearestRight.onMovementMiss();
+			if(!floors[currentFloor].getActionsDisabled() && !ComponentMappers.hitboxMapper.get(dungeonParams.player).getMovementDisabled()) {
+				BeatLine nearestLeft = getNearestCircleFromLeft(true);
+				BeatLine nearestRight = getNearestCircleFromRight(true);
+				
+				if(nearestLeft != null
+						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
+						&& nearestLeft.getStrongBeat()) {
+					nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
+				} else if(nearestRight != null
+						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
+						&& nearestRight.getStrongBeat()) {
+					nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
+				} else if(nearestRight != null
+						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
+					nearestRight.onMovementMiss();
+				}
 			}
 		}
 		
@@ -522,19 +526,21 @@ public class Dungeon {
 			}
 			
 			private void onNewBeat(boolean strongBeat) {
+				float deltaBeat = 1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
+				
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
 					for(WarningTile warningTile : ComponentMappers.attackMapper.get(entity).getWarningTiles()) {
-						warningTile.onNewBeat(1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat());
+						warningTile.onNewBeat(deltaBeat);
 					}
+				}
+				
+				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
+					ComponentMappers.hitboxMapper.get(entity).onNewBeat(deltaBeat);
 				}
 				
 				if(strongBeat) {					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
 						ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
-					}
-					
-					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
-						ComponentMappers.hitboxMapper.get(entity).onNewBeat();
 					}
 					
 					// Lower beat delay on all entity attack queues

@@ -41,9 +41,8 @@ public class Movement {
 		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
 		ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
 		AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
-		Direction horizontalFacing = hitboxComponent.getHorizontalFacing();
 
-		if(!floor.getActionsDisabled()) {
+		if(!floor.getActionsDisabled() && !hitboxComponent.getMovementDisabled()) {
 			if(isValidMovement(tiles, entity, direction)) {
 				HitboxType[][] hitbox = hitboxComponent.getHitbox();
 				Point hitboxPosition = hitboxComponent.getMapPosition();

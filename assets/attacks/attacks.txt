@@ -5,7 +5,7 @@ direction=SELF_FACING
 auto_rotate=true
 warn_tiles=true
 attack_delay=3
-disable_movement=2
+disable_movement=3
 '0'=none
 right=[
 #0
