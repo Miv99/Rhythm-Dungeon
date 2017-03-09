@@ -54,7 +54,6 @@ public class BeatLine {
 	public void onAttackHit(Options options, Dungeon dungeon, Entity player, Entity target, String attackName) {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
-			circleWeakIncreasingYPos = true;
 			
 			//TODO: play sound effect
 			
@@ -82,6 +81,9 @@ public class BeatLine {
 		//TODO: play sound effect
 	}
 	
+	public void setCircleWeakIncreasingYPos(boolean circleWeakIncreasingYPos) {
+		this.circleWeakIncreasingYPos = circleWeakIncreasingYPos;
+	}
 	
 	public void setCircleStrongYPositionRelativeToAxis(float circleStrongYPositionRelativeToAxis) {
 		this.circleStrongYPositionRelativeToAxis = circleStrongYPositionRelativeToAxis;

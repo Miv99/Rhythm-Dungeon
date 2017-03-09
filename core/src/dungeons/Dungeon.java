@@ -296,9 +296,11 @@ public class Dungeon {
 			if(nearestLeft != null
 					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+				nearestLeft.setCircleWeakIncreasingYPos(true);
 			} else if(nearestRight != null
 					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 				playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+				nearestRight.setCircleWeakIncreasingYPos(true);
 			} else if(nearestRight != null
 					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onAttackMiss();

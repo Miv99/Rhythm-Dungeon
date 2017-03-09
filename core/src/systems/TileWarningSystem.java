@@ -46,12 +46,25 @@ public class TileWarningSystem extends EntitySystem {
 		Gdx.gl.glEnable(GL30.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
 		
+		float r;
+		float g;
+		float b;
 		for(Entity e : entities) {
+			if(ComponentMappers.playerMapper.has(e)) {
+				r = 0f;
+				g = 0.72f;
+				b = 0f;
+			} else {
+				r = 0.72f;
+				g = 0f;
+				b = 0f;
+			}
+			
 			AttackComponent attack = ComponentMappers.attackMapper.get(e);
 			
 			for(WarningTile tile : attack.getWarningTiles()) {
 				// Change alpha of red color depending on how many beats remain until attack hits the warning tile
-				shapeRenderer.setColor(0.72f, 0f, 0f, 
+				shapeRenderer.setColor(r, g, b, 
 						((tile.getMaxTimeUntilAttackInBeats() - tile.getTimeUntilAttackInBeats())/tile.getMaxTimeUntilAttackInBeats() * 0.8f) + 0.2f);
 				
 				shapeRenderer.rect(tile.getX() * Options.TILE_SIZE, tile.getY() * Options.TILE_SIZE, Options.TILE_SIZE, Options.TILE_SIZE);
