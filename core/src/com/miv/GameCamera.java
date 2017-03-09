@@ -8,12 +8,14 @@ import com.badlogic.gdx.math.Vector3;
 
 import dungeons.Dungeon;
 import systems.RenderSystem;
+import systems.TileWarningSystem;
 
 public class GameCamera extends OrthographicCamera {
 	private final float lerpSpeed = 0.08f;
 	
 	private Dungeon dungeon;
 	private RenderSystem renderSystem;
+	private TileWarningSystem tileWarningSystem;
 	private Entity focus;
 	
 	public GameCamera(float viewportWidth, float viewportHeight) {
@@ -26,6 +28,10 @@ public class GameCamera extends OrthographicCamera {
 	
 	public void setRenderSystem(RenderSystem renderSystem) {
 		this.renderSystem = renderSystem;
+	}
+	
+	public void setTileWarningSystem(TileWarningSystem tileWarningSystem) {
+		this.tileWarningSystem = tileWarningSystem;
 	}
 	
 	public void setPosition(float x, float y) {
@@ -65,6 +71,9 @@ public class GameCamera extends OrthographicCamera {
 		}
 		if(renderSystem != null) {
 			renderSystem.getBatch().setProjectionMatrix(combined);
+		}
+		if(tileWarningSystem != null) {
+			tileWarningSystem.getShapeRenderer().setProjectionMatrix(combined);
 		}
 		update(true);
 	}

@@ -5,6 +5,7 @@ animation_name=(name of animation that the attacker does)
 can_hit=all/player/enemy (type of entity that can be attacked by this attack)
 direction=SELF_FACING/TARGET_FACING/TARGET_RELATIVE_TO_SELF (how the direction of the attack is determined; see below*)
 auto_rotate=true/false
+warn_tiles=true/false
 attack_delay=(integer of number of beats after the attack starts that the damage calculations are done)
 disable_movement=(integer of number of beats after the attack starts that the attacker is able to move)
 '(any single character)'=(name of animation that is drawn on the tile with the specified character)

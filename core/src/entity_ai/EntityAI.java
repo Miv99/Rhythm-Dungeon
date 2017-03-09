@@ -4,16 +4,19 @@ import com.badlogic.ashley.core.Entity;
 import com.miv.Options;
 
 import dungeons.Dungeon;
+import factories.EntityFactory;
 
 public abstract class EntityAI {
 	public static class EnemyAIParams {
+		protected EntityFactory entityFactory;
 		protected Entity self;
 		protected Entity target;
 		protected int activationRadiusInTiles;
 		protected Options options;
 		protected Dungeon dungeon;
 		
-		public EnemyAIParams(Options options, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
+		public EnemyAIParams(EntityFactory entityFactory, Options options, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
+			this.entityFactory = entityFactory;
 			this.options = options;
 			this.dungeon = dungeon;
 			this.self = self;
@@ -24,6 +27,7 @@ public abstract class EntityAI {
 	
 	protected Options options;
 	protected Dungeon dungeon;
+	protected EntityFactory entityFactory;
 	
 	// The number of tiles any entity with PlayerComponent must
 	// come within the enemy entity for the enemy entity
@@ -36,6 +40,7 @@ public abstract class EntityAI {
 	protected Entity self;
 		
 	public EntityAI(EnemyAIParams params) {
+		this.entityFactory = params.entityFactory;
 		this.options = params.options;
 		this.dungeon = params.dungeon;
 		this.target = params.target;

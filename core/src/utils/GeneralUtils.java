@@ -1,5 +1,11 @@
 package utils;
 
+import data.AttackData.TileAttackData;
+import data.HitboxData.HitboxType;
+
+/**
+ * WARNING: All my 2D arrays are (cols x rows)
+ */
 public class GeneralUtils {
 	public static float toFloat(String string) throws NumberFormatException {
 		try {
@@ -18,28 +24,51 @@ public class GeneralUtils {
 		return fileName.substring(0, fileName.lastIndexOf("."));
 	}
 	
-	public static Object[][] horizontallyFlipArray(Object[][] array) {
-		for(int i = 0; i < (array.length / 2); i++) {
-			Object[] temp = array[i];
-			array[i] = array[array.length - i - 1];
-			array[array.length - i - 1] = temp;
+	public static TileAttackData[][] verticallyFlipArray(TileAttackData[][] array) {
+		TileAttackData[][] newArray = new TileAttackData[array.length][array[0].length];
+
+		for(int x = 0; x < array.length; x++) {
+			for(int y = 0; y < newArray[x].length; y++) {
+				newArray[x][y] = array[x][newArray[x].length - y - 1];
+			}
 		}
 		
-		return array;
+		return newArray;
 	}
 	
-	/**
-	 * @param array - must be a square
-	 */
-	public static Object[][] verticallyFlipArray(Object[][] array) {
-		//TODO - muy importante
+	public static HitboxType[][] horizontallyFlipArray(HitboxType[][] array) {
+		HitboxType[][] newArray = new HitboxType[array.length][array[0].length];
+
+		for(int x = 0; x < newArray.length; x++) {
+			for(int y = 0; y < newArray[x].length; y++) {
+				newArray[x][y] = array[newArray.length - x - 1][y];
+			}
+		}
 		
-		return array;
+		return newArray;
 	}
 	
-	public static Object[][] rotateCounterClockwise(Object[][] array) {
-		//TODO - muy importante
+	public static TileAttackData[][] horizontallyFlipArray(TileAttackData[][] array) {
+		TileAttackData[][] newArray = new TileAttackData[array.length][array[0].length];
+
+		for(int x = 0; x < newArray.length; x++) {
+			for(int y = 0; y < newArray[x].length; y++) {
+				newArray[x][y] = array[newArray.length - x - 1][y];
+			}
+		}
 		
-		return array;
+		return newArray;
+	}
+	
+	public static TileAttackData[][] rotateClockwise(TileAttackData[][] array) {
+		TileAttackData[][] newArray = new TileAttackData[array[0].length][array.length];
+		
+		for(int x = 0; x < newArray.length; x++) {
+			for(int y = 0; y < newArray[x].length; y++) {
+				newArray[x][y] = array[newArray[x].length - y - 1][x];
+			}
+		}
+		
+		return newArray;
 	}
 }

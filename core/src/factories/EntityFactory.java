@@ -3,6 +3,7 @@ package factories;
 import java.awt.Point;
 import java.util.HashMap;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.miv.Movement.Direction;

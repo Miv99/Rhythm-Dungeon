@@ -22,6 +22,7 @@ import audio.Song;
 import audio.SongSelector;
 import audio.SongSelector.NoSelectableMusicException;
 import components.AnimationComponent;
+import components.AttackComponent;
 import components.EnemyAIComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
@@ -31,6 +32,7 @@ import data.AttackData;
 import data.AttackData.TileAttackData;
 import graphics.Images;
 import hud.BeatLine;
+import special_tiles.WarningTile;
 import utils.GeneralUtils;
 
 /**
@@ -228,6 +230,7 @@ public class Dungeon {
 		
 		public void update(float deltaTime) {
 			batch.begin();
+			// Draw tiles
 			for(Tile[] col : floors[currentFloor].getTiles()) {
 				for(Tile tile : col) {
 					Point mapPosition = tile.getMapPosition();
@@ -246,13 +249,25 @@ public class Dungeon {
 	
 	
 	public class ActionBar {
+		private class PlayerAttack {
+			private BeatLine triggeredBeatLine;
+			private String weaponEquipped;
+			
+			PlayerAttack(BeatLine triggeredBeatLine, String weaponEquipped) {
+				this.triggeredBeatLine = triggeredBeatLine;
+				this.weaponEquipped = weaponEquipped;
+			}
+		}
+		
 		private Array<BeatLine> beatLines = new Array<BeatLine>();
+		private Array<PlayerAttack> playerAttackQueue = new Array<PlayerAttack>();
 		
 		private boolean paused;
 				
 		private ActionBarSystem actionBarSystem;
 		
 		public ActionBar() {
+			beatLines = new Array<BeatLine>();
 			actionBarSystem = new ActionBarSystem(dungeonParams.options.getWindowWidth());
 		}
 		
@@ -280,10 +295,10 @@ public class Dungeon {
 			
 			if(nearestLeft != null
 					&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestLeft.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
+				playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
 			} else if(nearestRight != null
 					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-				nearestRight.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped());
+				playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
 			} else if(nearestRight != null
 					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onAttackMiss();
@@ -305,6 +320,12 @@ public class Dungeon {
 			} else if(nearestRight != null
 					&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 				nearestRight.onMovementMiss();
+			}
+		}
+		
+		public void firePlayerActionsQueue() {
+			for(PlayerAttack attack : playerAttackQueue) {
+				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped);
 			}
 		}
 		
@@ -480,6 +501,11 @@ public class Dungeon {
 							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
 							b.setReaddedToActionBar(true);
 						}
+						if(!b.getFiredPlayerActionQueue()
+								&& b.getTimeUntilCursorLineInSeconds() < -beatHitErrorMarginInSeconds) {
+							firePlayerActionsQueue();
+							b.setFiredPlayerActionQueue(true);
+						}
 						if(x + circleStrongBeatWidth < 0
 								&& !b.getDeletionQueued()) {
 							queueBeatLineDeletion(b);
@@ -494,7 +520,13 @@ public class Dungeon {
 			}
 			
 			private void onNewBeat(boolean strongBeat) {
-				if(strongBeat) {
+				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
+					for(WarningTile warningTile : ComponentMappers.attackMapper.get(entity).getWarningTiles()) {
+						warningTile.onNewBeat(1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat());
+					}
+				}
+				
+				if(strongBeat) {					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
 						ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
 					}

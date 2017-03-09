@@ -59,6 +59,8 @@ public class AttackLoader {
 					animationName = line.replace("animation_name=", "");
 				} else if(line.startsWith("auto_rotate=")) {
 					autoRotate = Boolean.valueOf(line.replace("auto_rotate=", ""));
+				} else if(line.startsWith("warn_tiles=")) {
+					warnTilesBeforeAttack = Boolean.valueOf(line.replace("warn_tiles=", ""));
 				} else if(line.startsWith("can_hit=")) {
 					hittableRequirement = parseHittableRequirementString(line.replace("can_hit=", ""));
 				} else if(line.startsWith("right=[")) {
@@ -190,10 +192,10 @@ public class AttackLoader {
 	}
 	
 	private TileAttackData[][] parseTileAttackDataStrings(HashMap<Character, String> animationMap, Array<String> strings) {
-		TileAttackData[][] tileAttackData = new TileAttackData[strings.size][strings.first().length()];
+		TileAttackData[][] tileAttackData = new TileAttackData[strings.first().length()][strings.size];
 		for(int x = 0; x < tileAttackData.length; x++) {
 			for(int y = 0; y < tileAttackData[x].length; y++) {
-				char c = strings.get(x).charAt(y);
+				char c = strings.get(y).charAt(x);
 				if(c == '#') {
 					if(animationMap.containsKey('#')) {
 						tileAttackData[x][y] = new TileAttackData(true, true, animationMap.get('#'));
@@ -202,6 +204,8 @@ public class AttackLoader {
 					}
 				} else if(c != '-' && animationMap.containsKey(c)) {
 					tileAttackData[x][y] = new TileAttackData(false, true, animationMap.get(c));
+				} else if(c == '-') {
+					tileAttackData[x][y] = new TileAttackData(false, false, "none");
 				}
 			}
 		}

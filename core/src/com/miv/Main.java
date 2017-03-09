@@ -28,6 +28,7 @@ import graphics.Images;
 import systems.AnimationSystem;
 import systems.DeathSystem;
 import systems.RenderSystem;
+import systems.TileWarningSystem;
 
 public class Main extends ApplicationAdapter {	
 	private boolean paused;
@@ -71,12 +72,15 @@ public class Main extends ApplicationAdapter {
 		entityFactory = new EntityFactory(images, animationLoader, attackLoader);
 		
 		// Create systems
+		TileWarningSystem tileWarningSystem = new TileWarningSystem();
+		engine.addSystem(tileWarningSystem);
 		engine.addSystem(new DeathSystem(engine));
 		engine.addSystem(new AnimationSystem());
 		RenderSystem renderSystem = new RenderSystem();
 		engine.addSystem(renderSystem);
 		
 		camera.setRenderSystem(renderSystem);
+		camera.setTileWarningSystem(tileWarningSystem);
 		
 		// Create and set input handler
 		im = new InputMultiplexer();

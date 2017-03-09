@@ -10,9 +10,7 @@ public class Death {
 		// Remove warning tiles
 		if(ComponentMappers.attackMapper.has(entity)) {
 			AttackComponent attackComponent = ComponentMappers.attackMapper.get(entity);
-			for(Entity warningTile : attackComponent.getWarningTiles()) {
-				engine.removeEntity(warningTile);
-			}
+			attackComponent.getWarningTiles().clear();
 		}
 		
 		//TODO: do some death animation thing (use same animation for every entity death) and remove entity from engine after animation finishes

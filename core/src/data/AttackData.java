@@ -101,10 +101,12 @@ public class AttackData {
 		// Rotate target tiles
 		directionalTilesAttackData = new HashMap<Direction, TileAttackData[][]>();
 		directionalTilesAttackData.put(Direction.Right, targetTilesFacingRight);
-		directionalTilesAttackData.put(Direction.Left, (TileAttackData[][])GeneralUtils.horizontallyFlipArray(targetTilesFacingRight));
-		TileAttackData[][] rotatedCounterClockwise = (TileAttackData[][])GeneralUtils.rotateCounterClockwise(targetTilesFacingRight);
-		directionalTilesAttackData.put(Direction.Down, rotatedCounterClockwise);
-		directionalTilesAttackData.put(Direction.Up, (TileAttackData[][])GeneralUtils.verticallyFlipArray(rotatedCounterClockwise));
+		TileAttackData[][] targetTilesFacingLeft = GeneralUtils.horizontallyFlipArray(targetTilesFacingRight);
+		directionalTilesAttackData.put(Direction.Left, targetTilesFacingLeft);
+		TileAttackData[][] targetTilesFacingUp = GeneralUtils.rotateClockwise(targetTilesFacingLeft);
+		directionalTilesAttackData.put(Direction.Up, targetTilesFacingUp);
+		TileAttackData[][] targetTilesFacingDown = GeneralUtils.verticallyFlipArray(targetTilesFacingUp);
+		directionalTilesAttackData.put(Direction.Down, targetTilesFacingDown);
 	}
 	
 	public String getAttackerAnimationName() {

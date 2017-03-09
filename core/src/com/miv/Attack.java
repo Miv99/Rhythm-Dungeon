@@ -7,18 +7,22 @@ import java.util.Set;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.utils.Array;
 import com.miv.Movement.Direction;
 
 import components.AnimationComponent;
 import components.AttackComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
+import components.ImageComponent;
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
 import dungeons.Dungeon;
 import dungeons.Floor;
 import dungeons.Tile;
+import factories.EntityFactory;
+import special_tiles.WarningTile;
 import utils.MapUtils;
 
 public class Attack {	
@@ -67,7 +71,7 @@ public class Attack {
 	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData) {
 		Floor floor = dungeon.getFloors()[dungeon.getCurrentFloor()];
 
-		if(!floor.getActionsDisabled()) {			
+		if(!floor.getActionsDisabled()) {
 			HitboxComponent attackerHitboxComponent = ComponentMappers.hitboxMapper.get(attacker);
 			Point attackerPosition = attackerHitboxComponent.getMapPosition();
 					
@@ -98,21 +102,22 @@ public class Attack {
 				for(int y = 0; y < targettedTiles[x].length; y++) {
 					if(targettedTiles[x][y].getIsFocus()) {
 						focusPositionRelativeToTargetttedTiles = new Point(x, y);
+						break;
 					}
 				}
 			}
 			
-			// Warn tiles
+			// Warn tiles of incoming attacks
+			AttackComponent attackComponent = ComponentMappers.attackMapper.get(attacker);
+			Array<WarningTile> warningTiles = attackComponent.getWarningTiles();
 			if(attackData.getWarnTilesBeforeAttack()) {
-				Tile[][] mapTiles = floor.getTiles();
-				Point targettedTilesAbsoluteMapPosition = new Point(focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x, focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y);
-				for(int x = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x; x < targettedTiles.length; x++) {
-					for(int y = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y; y < targettedTiles[x].length; y++) {
-						// x and y relative to targettedTiles
-						if(targettedTiles[targettedTilesAbsoluteMapPosition.x - (focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x) + attackerAttackOrigin.x]
-								[targettedTilesAbsoluteMapPosition.y - (focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y) + attackerAttackOrigin.y]
-								.getIsAttack()) {
-							// TODO: spawn entities with only image components on them
+				for(int x = 0; x < targettedTiles.length; x++) {
+					for(int y = 0; y < targettedTiles[x].length; y++) {
+						// x and y iterations so far
+						if(targettedTiles[x + attackerAttackOrigin.x][y + attackerAttackOrigin.y].getIsAttack()) {
+							warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), 
+									x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x, 
+									y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y));
 						}
 					}
 				}
@@ -145,30 +150,31 @@ public class Attack {
 		
 		// Check if attacker or target is dead
 		if(params.attacker == null 
-				|| params.target == null 
-				|| ComponentMappers.healthMapper.get(params.attacker).getHealth() <= 0) {
-			//TODO: unwarn all affected by removing the warning entities
+				|| (ComponentMappers.healthMapper.has(params.attacker) && ComponentMappers.healthMapper.get(params.attacker).getHealth() <= 0)) {
+			return;
 		}
 		
 		// Get entities that are attacked
 		Set<Entity> attackedEntities = new HashSet<Entity>();
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
 		for(int x = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x; x < params.targettedTiles.length; x++) {
-			for(int y = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y; y < params.targettedTiles[x].length; y++) {
-				// Get x and y relative to targettedTiles
-				if(params.targettedTiles[targettedTilesAbsoluteMapPosition.x - (params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x)]
-						[targettedTilesAbsoluteMapPosition.y - (params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y)]
-						.getIsAttack()) {
-					// Get attackble entities that reside on the absolute tile
-					for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
-						// Check if occupant has the entityHittableRequirement component
-						if(occupant.getComponent(entityHittableRequirement) != null) {
-							attackedEntities.add(occupant);
-						}
+			try {
+				for(int y = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y; y < params.targettedTiles[x].length; y++) {
+					// Get x and y relative to targettedTiles
+					if(params.targettedTiles[targettedTilesAbsoluteMapPosition.x - (params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x)]
+							[targettedTilesAbsoluteMapPosition.y - (params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y)]
+							.getIsAttack()) {
+							// Get attackble entities that reside on the absolute tile
+							for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
+								// Check if occupant has the entityHittableRequirement component
+								if(occupant.getComponent(entityHittableRequirement) != null) {
+									attackedEntities.add(occupant);
+								}
+							}
 					}
-					
-					// TODO: Do animation on tiles by spawning entities with only animation+image components on them
 				}
+			} catch(ArrayIndexOutOfBoundsException e) {
+				
 			}
 		}
 				
@@ -176,8 +182,10 @@ public class Attack {
 		int damage = 4;
 		damage *= params.options.getDifficulty().getPlayerDamageMultiplier();
 		for(Entity attacked : attackedEntities) {
-			HealthComponent healthComponent = ComponentMappers.healthMapper.get(attacked);
-			healthComponent.setHealth(healthComponent.getHealth() - damage);
+			if(!attacked.equals(params.attacker) && ComponentMappers.healthMapper.has(attacked)) {
+				HealthComponent healthComponent = ComponentMappers.healthMapper.get(attacked);
+				healthComponent.setHealth(healthComponent.getHealth() - damage);
+			}
 		}
 		
 		// Attacker does attack animation

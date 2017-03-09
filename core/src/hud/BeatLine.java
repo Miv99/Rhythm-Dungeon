@@ -38,6 +38,8 @@ public class BeatLine {
 	private boolean deletionQueued;
 	// If a duplicate BeatLine has been added to the ActionBar again
 	private boolean readdedToActionBar;
+	// If the BeatLine has fired the player action queue in ActionBarSystem
+	private boolean firedPlayerActionQueue;
 	
 	public BeatLine(float timeUntiLCursorLineInSeconds, boolean strongBeat) {
 		this.timeUntilCursorLineInSeconds = timeUntiLCursorLineInSeconds;
@@ -101,12 +103,20 @@ public class BeatLine {
 		this.readdedToActionBar = readdedToActionBar;
 	}
 	
+	public void setFiredPlayerActionQueue(boolean firedPlayerActionQueue) {
+		this.firedPlayerActionQueue = firedPlayerActionQueue;
+	}
+	
 	public boolean getDeletionQueued() {
 		return deletionQueued;
 	}
 	
 	public float getTimeUntilCursorLineInSeconds() {
 		return timeUntilCursorLineInSeconds;
+	}
+	
+	public boolean getFiredPlayerActionQueue() {
+		return firedPlayerActionQueue;
 	}
 	
 	public boolean getStrongBeat() {

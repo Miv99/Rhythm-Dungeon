@@ -123,7 +123,7 @@ public class Movement {
 						}
 					}
 				}
-			} else if(((horizontalFacing.equals(Direction.Left) && direction.equals(Direction.Right)) || (horizontalFacing.equals(Direction.Right) && direction.equals(Direction.Left)))
+			} else if((direction.equals(Direction.Right) || direction.equals(Direction.Left))
 					&& isValidTurn(tiles, entity, direction)) {
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
@@ -141,7 +141,7 @@ public class Movement {
 		HitboxType[][] hitbox = hitboxComponent.getDirectionalHitboxes().get(horizontalDirection);
 		Point mapPosition = hitboxComponent.getMapPosition();
 		
-		return isValidPosition(tiles, hitbox, mapPosition.x, mapPosition.y);
+		return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
 	}
 	
 	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
@@ -167,10 +167,10 @@ public class Movement {
 			xEntity++;
 		}
 		
-		return isValidPosition(tiles, hitbox, xEntity, yEntity);
+		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
 	}
 	
-	private static boolean isValidPosition(Tile[][] tiles, HitboxType[][] hitbox, int xEntity, int yEntity) {
+	private static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
 		// Check if the entity out of bounds
 		if(xEntity + hitbox.length > tiles.length
 				|| yEntity + hitbox[0].length > tiles[0].length
@@ -178,12 +178,12 @@ public class Movement {
 				|| yEntity < 0) {
 			return false;
 		}
-				
+		
 		// Check if any of the entity's hitboxes collide with a tangible tile
 		for(int x = 0; x < hitbox.length; x++) {
 			for(int y = 0; y < hitbox[x].length; y++) {
 				if(hitbox[x][y].getTangible()
-						&& tiles[xEntity + x][yEntity + y].isTangibleTile()) {
+						&& tiles[xEntity + x][yEntity + y].isTangibleTile(entity)) {
 					return false;
 				}
 			}

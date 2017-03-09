@@ -43,6 +43,22 @@ public class Tile {
 		}
 	}
 	
+	/**
+	 * Checks if this tile is a tangible tile type or has any tangible occupants
+	 * that do not include the entityToIgnore
+	 */
+	public boolean isTangibleTile(Entity entityToIgnore) {
+		if(hitboxType.getTangible()
+				|| tangibleOccupants.size() > 1) {
+			return true;
+		} else if(tangibleOccupants.size() == 1
+				&& tangibleOccupants.contains(entityToIgnore)) {
+			return false;
+		} else {
+			return false;
+		}
+	}
+	
 	public void setSprite(Sprite sprite) {
 		this.sprite = sprite;
 	}

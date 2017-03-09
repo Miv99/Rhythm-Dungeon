@@ -31,7 +31,8 @@ public class HitboxComponent implements Component {
 		// Create directional hitboxes for facing left and right
 		directionalHitboxes = new HashMap<Direction, HitboxType[][]>();
 		directionalHitboxes.put(Direction.Right, hitbox);
-		directionalHitboxes.put(Direction.Left, (HitboxType[][])GeneralUtils.horizontallyFlipArray(hitbox));
+		HitboxType[][] hitboxFacingLeft = GeneralUtils.horizontallyFlipArray(hitbox);
+		directionalHitboxes.put(Direction.Left, hitboxFacingLeft);
 		
 		// Find attack origin
 		attackOrigin = new Point(0, 0);
@@ -66,7 +67,7 @@ public class HitboxComponent implements Component {
 			hitbox = directionalHitboxes.get(direction);
 			
 			// Flip attack origin horizontally
-			attackOrigin.x = hitbox.length - attackOrigin.x - 1;
+			attackOrigin.x = hitbox[0].length - attackOrigin.x - 1;
 		}
 	}
 	
