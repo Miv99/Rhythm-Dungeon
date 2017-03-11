@@ -142,7 +142,7 @@ public class Dungeon {
 		
 		// Spawn in entities
 		for(Entity e : floors[currentFloor].getEntitiesToBeSpawned()) {
-			dungeonParams.engine.addEntity(e);
+			dungeonParams.entityFactory.spawnEntity(floors[currentFloor].getTiles(), e);
 		}
 		
 		// Choose song to play

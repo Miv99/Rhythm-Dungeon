@@ -36,11 +36,30 @@ public class Options {
 		}
 	}
 	
+	public static final int TILE_SIZE = 32;
+	
+	//TODO: change this to Gdx.files.local
+	public static String assetsFilePath = "C:\\Rhythm Dungeon\\assets\\";
+	
+	public static String soundEffectsFilePath = assetsFilePath + "audio\\sound effects\\";
+	public static String musicFilePath = assetsFilePath + "audio\\music\\";
+	
+	public static String spritesPackFilePath = assetsFilePath + "sprites\\sprites.pack";
+	public static String spritesImageFileDir = assetsFilePath + "sprites\\";
+	
+	public static String animationsDataFilePath = assetsFilePath + "animations\\animations.txt";
+	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\songs.txt";
+	public static String hitboxesDataFilePath = assetsFilePath + "hitboxes\\hitboxes.txt";
+	
+	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
+	
+	
+	
 	private boolean fullscreen;
 	private int windowWidth = 1600;
 	private int windowHeight = 900;
 	
-	private float masterVolume = 0.5f;
+	private float masterVolume = 0.1f;
 	private float soundEffectsVolume = 1f;
 	private float musicVolume = 1f;
 	
@@ -59,22 +78,6 @@ public class Options {
 	private transient float masterVolumeTemp = 1f;
 	private transient float soundEffectsVolumeTemp = 1f;
 	private transient float musicVolumeTemp = 1f;
-	
-	public static final int TILE_SIZE = 32;
-	
-	//TODO: change this to Gdx.files.local
-	public static String assetsFilePath = "C:\\Rhythm Dungeon\\assets\\";
-	
-	public static String soundEffectsFilePath = assetsFilePath + "audio\\sound effects\\";
-	public static String musicFilePath = assetsFilePath + "audio\\music\\";
-	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\songs.txt";
-	
-	public static String spritesPackFilePath = assetsFilePath + "sprites\\sprites.pack";
-	public static String spritesImageFileDir = assetsFilePath + "sprites\\";
-	
-	public static String animationsMetadataFilePath = assetsFilePath + "animations\\animations.txt";
-	
-	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
 	
 	public static Options loadOptions() {
 		//TODO: load options from an options file or something; don't use a txt file

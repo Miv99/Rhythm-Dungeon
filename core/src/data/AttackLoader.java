@@ -97,39 +97,41 @@ public class AttackLoader {
 				} else if(line.startsWith("disable_movement=")) {
 					disabledMovementTime = Integer.valueOf(line.replaceAll("disable_movement=", ""));
 				} else if(line.equals("")) {
-					if(autoRotate) {
-						AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-								disabledMovementTime, animationName, tileAttackDataRight);
-						attacksData.put(attackName, attackData);
-					} else {
-						HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
-						directionalTileAttackData.put(Direction.Right, tileAttackDataRight);
-						directionalTileAttackData.put(Direction.Left, tileAttackDataLeft);
-						directionalTileAttackData.put(Direction.Up, tileAttackDataUp);
-						directionalTileAttackData.put(Direction.Down, tileAttackDataDown);
+					if(!attackName.equals("")) {
+						if(autoRotate) {
+							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+									disabledMovementTime, animationName, tileAttackDataRight);
+							attacksData.put(attackName, attackData);
+						} else {
+							HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
+							directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
+							directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
+							directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
+							directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
+							
+							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+									disabledMovementTime, animationName, directionalTileAttackData);
+							attacksData.put(attackName, attackData);
+						}
 						
-						AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-								disabledMovementTime, animationName, directionalTileAttackData);
-						attacksData.put(attackName, attackData);
+						attackName = "";
+						animationName = "";
+						directionDeterminant = null;
+						autoRotate = false;
+						recordingRight = false;
+						recordingLeft = false;
+						recordingUp = false;
+						recordingDown = false;
+						recordingBuffer.clear();
+						tileAttackDataRight = null;
+						tileAttackDataLeft = null;
+						tileAttackDataUp = null;
+						tileAttackDataDown = null;
+						attackDelay = 0;
+						warnTilesBeforeAttack = false;
+						disabledMovementTime = 0;
+						animationMap.clear();
 					}
-					
-					attackName = "";
-					animationName = "";
-					directionDeterminant = null;
-					autoRotate = false;
-					recordingRight = false;
-					recordingLeft = false;
-					recordingUp = false;
-					recordingDown = false;
-					recordingBuffer.clear();
-					tileAttackDataRight = null;
-					tileAttackDataLeft = null;
-					tileAttackDataUp = null;
-					tileAttackDataDown = null;
-					attackDelay = 0;
-					warnTilesBeforeAttack = false;
-					disabledMovementTime = 0;
-					animationMap.clear();
 				} else {
 					System.out.println("Attacks data invalid format at line " + lineCount);
 				}
@@ -149,33 +151,15 @@ public class AttackLoader {
 				attacksData.put(attackName, attackData);
 			} else {
 				HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
-				directionalTileAttackData.put(Direction.Right, tileAttackDataRight);
-				directionalTileAttackData.put(Direction.Left, tileAttackDataLeft);
-				directionalTileAttackData.put(Direction.Up, tileAttackDataUp);
-				directionalTileAttackData.put(Direction.Down, tileAttackDataDown);
+				directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
+				directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
+				directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
+				directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
 				
 				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
 						disabledMovementTime, animationName, directionalTileAttackData);
 				attacksData.put(attackName, attackData);
 			}
-			
-			attackName = "";
-			animationName = "";
-			directionDeterminant = null;
-			autoRotate = false;
-			recordingRight = false;
-			recordingLeft = false;
-			recordingUp = false;
-			recordingDown = false;
-			recordingBuffer.clear();
-			tileAttackDataRight = null;
-			tileAttackDataLeft = null;
-			tileAttackDataUp = null;
-			tileAttackDataDown = null;
-			attackDelay = 0;
-			warnTilesBeforeAttack = false;
-			disabledMovementTime = 0;
-			animationMap.clear();
 		}
 	}
 	

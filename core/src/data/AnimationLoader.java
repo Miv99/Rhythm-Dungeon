@@ -24,7 +24,7 @@ public class AnimationLoader {
 	
 	public void loadAnimations() {
 		// Load text file containing the animations' metadata
-		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.animationsMetadataFilePath);
+		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.animationsDataFilePath);
 		
 		String animationName = "";
 		float animationDurationInBeats = 1f;
@@ -37,30 +37,32 @@ public class AnimationLoader {
 				} else if(line.startsWith("duration=")) {
 					animationDurationInBeats = GeneralUtils.toFloat(line.replace("duration=", ""));
 				} else if(line.equals("")) {
-					Array<Sprite> rightSprites = new Array<Sprite>();
-					rightSprites.addAll(images.loadAnimationSprites(animationName));
-					
-					AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
-					animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
-					
-					Array<Sprite> leftSprites = new Array<Sprite>();
-					leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
-					
-					// Flip sprites to create left-facing animations
-					for(Sprite sprite : leftSprites) {
-						sprite.flip(true, false);
+					if(!animationName.equals("")) {
+						Array<Sprite> rightSprites = new Array<Sprite>();
+						rightSprites.addAll(images.loadAnimationSprites(animationName));
+						
+						AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
+						animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
+						
+						Array<Sprite> leftSprites = new Array<Sprite>();
+						leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
+						
+						// Flip sprites to create left-facing animations
+						for(Sprite sprite : leftSprites) {
+							sprite.flip(true, false);
+						}
+						
+						AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
+						animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
+						
+						animationName = "";
+						animationDurationInBeats = 1f;
 					}
-					
-					AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
-					animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
-					
-					animationName = "";
-					animationDurationInBeats = 1f;
 				} else {
-					System.out.println("Animation metadata invalid format at line " + lineCount);
+					System.out.println("Animation data invalid format at line " + lineCount);
 				}
 			} catch(NumberFormatException e) {
-				System.out.println("Animation metadata invalid value at line " + lineCount);
+				System.out.println("Animation data invalid value at line " + lineCount);
 				e.printStackTrace();
 			}
 			lineCount++;
@@ -70,7 +72,7 @@ public class AnimationLoader {
 			rightSprites.addAll(images.loadAnimationSprites(animationName));
 			
 			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
-			animationsData.put(animationName + "_" + Direction.Right.getStringRepresentation(), animationRightData);
+			animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
 			
 			Array<Sprite> leftSprites = new Array<Sprite>();
 			leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
@@ -81,7 +83,7 @@ public class AnimationLoader {
 			}
 			
 			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
-			animationsData.put(animationName + "_" + Direction.Left.getStringRepresentation(), animationLeftData);
+			animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
 		}
 	}
 	

@@ -2,12 +2,12 @@ package data;
 
 public class HitboxData {
 	public enum HitboxType {
-		Tangible(true, false, false),
-		TangibleAttackable(true, true, false),
+		TANGIBLE(true, false, false),
+		TANGIBLE_ATTACKABLE(true, true, false),
 		// Point of origin of attacks
-		TangibleAttackableAttackOrigin(true, true, true),
-		Intangible(false, false, false),
-		IntangibleAttackable(false, true, false);
+		TANGIBLE_ATTACKABLE_ATTACK_ORIGIN(true, true, true),
+		INTANGIBLE(false, false, false),
+		INTANGIBLE_ATTACKABLE(false, true, false);
 		
 		// Tangibility refers to collisions with the player and with walls
 		private boolean tangible;

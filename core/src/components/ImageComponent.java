@@ -23,8 +23,8 @@ public class ImageComponent implements Component {
 		this.directionalSprites = directionalSprites;
 		this.mapPosition = mapPosition;
 		
-		sprite = directionalSprites.get(Direction.Right);
-		facing = Direction.Right;
+		sprite = directionalSprites.get(Direction.RIGHT);
+		facing = Direction.RIGHT;
 	}
 	
 	/**
@@ -32,12 +32,12 @@ public class ImageComponent implements Component {
 	 */
 	public ImageComponent(Point mapPosition) {
 		this.mapPosition = mapPosition;
-		facing = Direction.Right;
+		facing = Direction.RIGHT;
 	}
 	
 	public void faceDirection(Direction direction) {
-		if(direction.equals(Direction.Left)
-				|| direction.equals(Direction.Right)) {
+		if(direction.equals(Direction.LEFT)
+				|| direction.equals(Direction.RIGHT)) {
 			facing = direction;
 			sprite = directionalSprites.get(direction);
 		}

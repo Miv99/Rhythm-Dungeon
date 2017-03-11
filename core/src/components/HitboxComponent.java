@@ -14,25 +14,29 @@ public class HitboxComponent implements Component {
 	private Point mapPosition;
 	// Each grid point on the 2D array represents one map tile that the entire hitbox takes up
 	private HitboxType[][] hitbox;
-	private HashMap<Direction, HitboxType[][]> directionalHitboxes;
+	private HashMap<String, HitboxData> hitboxesData = new HashMap<String, HitboxData>();
 	private Direction facing;
-	// The last horizontal direction that the entity has faced
+	// The last horizontal direction that the entity faced
 	private Direction horizontalFacing;
 	// Point on hitbox where attacks originate from; defaulted to (0, 0) if none specified from HitboxData
 	private Point attackOrigin;
+	private String hitboxName;
 	
 	private boolean movementDisabled;
 	private float movementDisabledTimeInBeats;
 	
-	public HitboxComponent(HitboxData hitboxDataFacingRight, Point mapPosition) {
-		hitbox = hitboxDataFacingRight.getHitbox();
-		this.mapPosition = mapPosition;
+	public HitboxComponent(String hitboxName, HashMap<String, HitboxData> hitboxesData, Point mapPosition) {
+		facing = Direction.RIGHT;
+		horizontalFacing = Direction.RIGHT;
 		
-		// Create directional hitboxes for facing left and right
-		directionalHitboxes = new HashMap<Direction, HitboxType[][]>();
-		directionalHitboxes.put(Direction.Right, hitbox);
-		HitboxType[][] hitboxFacingLeft = GeneralUtils.horizontallyFlipArray(hitbox);
-		directionalHitboxes.put(Direction.Left, hitboxFacingLeft);
+		this.hitboxName = hitboxName;
+		this.hitboxesData = hitboxesData;
+		this.mapPosition = mapPosition;
+		try {
+			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
+		} catch(NullPointerException e) {
+			System.out.println("Hitbox data for \"" + hitboxName + "\" does not exist.");
+		}
 		
 		// Find attack origin
 		attackOrigin = new Point(0, 0);
@@ -45,9 +49,6 @@ public class HitboxComponent implements Component {
 				}
 			}
 		}
-		
-		facing = Direction.Right;
-		horizontalFacing = Direction.Right;
 	}
 	
 	public void onNewBeat(float deltaBeat) {
@@ -61,13 +62,13 @@ public class HitboxComponent implements Component {
 	
 	public void faceDirection(Direction direction) {
 		facing = direction;
-		if(direction.equals(Direction.Left)
-				|| direction.equals(Direction.Right)) {
+		if(direction.equals(Direction.LEFT)
+				|| direction.equals(Direction.RIGHT)) {
 			horizontalFacing = direction;
-			hitbox = directionalHitboxes.get(direction);
+			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
 			
 			// Flip attack origin horizontally
-			attackOrigin.x = hitbox[0].length - attackOrigin.x - 1;
+			attackOrigin.x = hitbox.length - attackOrigin.x - 1;
 		}
 	}
 	
@@ -97,15 +98,19 @@ public class HitboxComponent implements Component {
 		return horizontalFacing;
 	}
 	
-	public HashMap<Direction, HitboxType[][]> getDirectionalHitboxes() {
-		return directionalHitboxes;
-	}
-	
 	public Point getAttackOrigin() {
 		return attackOrigin;
 	}
 	
 	public boolean getMovementDisabled() {
 		return movementDisabled;
+	}
+	
+	public HashMap<String, HitboxData> getHitboxesData() {
+		return hitboxesData;
+	}
+	
+	public String getHitboxName() {
+		return hitboxName;
 	}
 }

@@ -28,6 +28,6 @@ public class MapUtils {
 	
 	public static Direction getRelativeDirection(Point point, Point relativeTo) {
 		//TODO: random direction if on the border between two of them
-		return Direction.Right;
+		return Direction.RIGHT;
 	}
 }

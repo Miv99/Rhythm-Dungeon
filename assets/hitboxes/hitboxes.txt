@@ -1,0 +1,17 @@
+'o'=TANGIBLE
+'x'=TANGIBLE_ATTACKABLE
+'#'=TANGIBLE_ATTACKABLE_ATTACK_ORIGIN
+'-'=INTANGIBLE
+'~'=INTANGIBLE_ATTACKABLE
+
+name=player
+[
+#
+]
+
+name=dragon
+[
+---x
+xxx#
+-x-x
+]

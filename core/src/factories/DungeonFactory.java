@@ -38,7 +38,7 @@ public class DungeonFactory {
 			for(int y = 0; y < col.length; y++) {
 				col[y] = new Tile(new Point(x, y));
 				col[y].setSprite(dungeonParams.getImages().loadSprite("stone_tile"));
-				col[y].setHitboxType(HitboxType.Intangible);
+				col[y].setHitboxType(HitboxType.INTANGIBLE);
 			}
 			x++;
 		}

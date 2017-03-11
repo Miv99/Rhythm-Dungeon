@@ -20,6 +20,7 @@ import components.EnemyAIComponent;
 import components.ImageComponent;
 import data.AnimationLoader;
 import data.AttackLoader;
+import data.HitboxLoader;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
 import factories.DungeonFactory;
@@ -40,6 +41,7 @@ public class Main extends ApplicationAdapter {
 	private Images images;
 	private AttackLoader attackLoader;
 	private AnimationLoader animationLoader;
+	private HitboxLoader hitboxLoader;
 	private Engine engine;
 	private Dungeon dungeon;
 	
@@ -69,7 +71,10 @@ public class Main extends ApplicationAdapter {
 		attackLoader = new AttackLoader();
 		attackLoader.loadAttacks();
 		
-		entityFactory = new EntityFactory(images, animationLoader, attackLoader, engine);
+		hitboxLoader = new HitboxLoader();
+		hitboxLoader.loadHitboxes();
+		
+		entityFactory = new EntityFactory(images, animationLoader.getAnimationsData(), attackLoader.getAttacksData(), hitboxLoader.getHitboxesData(), engine);
 		
 		// Create systems
 		TileWarningSystem tileWarningSystem = new TileWarningSystem();
@@ -173,13 +178,13 @@ public class Main extends ApplicationAdapter {
 		public boolean keyDown(int keycode) {
 			if(dungeon != null) {
 				if(keycode == Input.Keys.LEFT) {
-					dungeon.getActionBar().fireMovementAction(Direction.Left);
+					dungeon.getActionBar().fireMovementAction(Direction.LEFT);
 				} else if(keycode == Input.Keys.RIGHT) {
-					dungeon.getActionBar().fireMovementAction(Direction.Right);
+					dungeon.getActionBar().fireMovementAction(Direction.RIGHT);
 				} else if(keycode == Input.Keys.UP) {
-					dungeon.getActionBar().fireMovementAction(Direction.Up);
+					dungeon.getActionBar().fireMovementAction(Direction.UP);
 				} else if(keycode == Input.Keys.DOWN) {
-					dungeon.getActionBar().fireMovementAction(Direction.Down);
+					dungeon.getActionBar().fireMovementAction(Direction.DOWN);
 				} else if(keycode == options.getAttackKey1()
 						|| keycode == options.getAttackKey2()) {
 					dungeon.getActionBar().fireAttackAction();

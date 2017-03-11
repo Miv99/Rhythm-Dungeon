@@ -20,10 +20,10 @@ import special_tiles.SpecialTile;
 
 public class Movement {
 	public enum Direction {
-		Up("up"),
-		Down("down"),
-		Left("left"),
-		Right("right");
+		UP("up"),
+		DOWN("down"),
+		LEFT("left"),
+		RIGHT("right");
 		
 		private String stringRepresentation;
 		
@@ -59,13 +59,13 @@ public class Movement {
 				}
 				
 				// Update hitbox and image positions
-				if(direction.equals(Direction.Up)) {
+				if(direction.equals(Direction.UP)) {
 					yNew++;
-				} else if(direction.equals(Direction.Down)) {
+				} else if(direction.equals(Direction.DOWN)) {
 					yNew--;
-				} else if(direction.equals(Direction.Left)) {
+				} else if(direction.equals(Direction.LEFT)) {
 					xNew--;
-				} else if(direction.equals(Direction.Right)) {
+				} else if(direction.equals(Direction.RIGHT)) {
 					xNew++;
 				}
 				hitboxPosition.setLocation(xNew, yNew);
@@ -122,7 +122,7 @@ public class Movement {
 						}
 					}
 				}
-			} else if((direction.equals(Direction.Right) || direction.equals(Direction.Left))
+			} else if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT))
 					&& isValidTurn(tiles, entity, direction)) {
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
@@ -137,7 +137,7 @@ public class Movement {
 	 */
 	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction horizontalDirection) {
 		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-		HitboxType[][] hitbox = hitboxComponent.getDirectionalHitboxes().get(horizontalDirection);
+		HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + horizontalDirection.stringRepresentation).getHitbox();
 		Point mapPosition = hitboxComponent.getMapPosition();
 		
 		return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
@@ -145,9 +145,10 @@ public class Movement {
 	
 	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
 		HitboxType[][] hitbox;
-		if(direction.equals(Direction.Left)
-				|| direction.equals(Direction.Right)) {
-			hitbox = ComponentMappers.hitboxMapper.get(entity).getDirectionalHitboxes().get(direction);
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		if(direction.equals(Direction.LEFT)
+				|| direction.equals(Direction.RIGHT)) {
+			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
 		} else {
 			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
 		}
@@ -156,13 +157,13 @@ public class Movement {
 		int xEntity = currentPosition.x;
 		int yEntity = currentPosition.y;
 		
-		if(direction.equals(Direction.Up)) {
+		if(direction.equals(Direction.UP)) {
 			yEntity++;
-		} else if(direction.equals(Direction.Down)) {
+		} else if(direction.equals(Direction.DOWN)) {
 			yEntity--;
-		} else if(direction.equals(Direction.Left)) {
+		} else if(direction.equals(Direction.LEFT)) {
 			xEntity--;
-		} else if(direction.equals(Direction.Right)) {
+		} else if(direction.equals(Direction.RIGHT)) {
 			xEntity++;
 		}
 		
