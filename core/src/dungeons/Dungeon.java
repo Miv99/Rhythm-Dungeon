@@ -30,6 +30,8 @@ import data.AnimationData;
 import data.AnimationLoader;
 import data.AttackData;
 import data.AttackData.TileAttackData;
+import factories.DungeonFactory;
+import factories.EntityFactory;
 import graphics.Images;
 import hud.BeatLine;
 import special_tiles.WarningTile;
@@ -47,8 +49,10 @@ public class Dungeon {
 		private Options options;
 		private Audio audio;
 		private Images images;
+		private EntityFactory entityFactory;
 		
-		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, Entity player, Options options, Audio audio, Images images) {
+		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, 
+				Entity player, Options options, Audio audio, Images images, EntityFactory entityFactory) {
 			this.engine = engine;
 			this.maxFloors = maxFloors;
 			this.animationLoader = animationLoader;
@@ -56,6 +60,7 @@ public class Dungeon {
 			this.options = options;
 			this.audio = audio;
 			this.images = images;
+			this.entityFactory = entityFactory;
 		}
 		
 		public int getMaxFloors() {
@@ -76,6 +81,10 @@ public class Dungeon {
 		
 		public Images getImages() {
 			return images;
+		}
+		
+		public EntityFactory getEntityFactory() {
+			return entityFactory;
 		}
 	}
 	
@@ -125,7 +134,18 @@ public class Dungeon {
 	
 	public void enterNewFloor(int newFloor) {
 		currentFloor = newFloor;
-
+		
+		// Generate floor if floor does not exist
+		if(floors[currentFloor] == null) {
+			floors[currentFloor] = DungeonFactory.generateFloor(dungeonParams, currentFloor);
+		}
+		
+		// Spawn in entities
+		for(Entity e : floors[currentFloor].getEntitiesToBeSpawned()) {
+			dungeonParams.engine.addEntity(e);
+		}
+		
+		// Choose song to play
 		Song song = selectNewSongByCurrentFloor();
 		if(song != null) {
 			dungeonParams.audio.playSong(song);
@@ -331,7 +351,7 @@ public class Dungeon {
 		
 		public void firePlayerActionsQueue() {
 			for(PlayerAttack attack : playerAttackQueue) {
-				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped);
+				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
 			}
 		}
 		
@@ -552,7 +572,8 @@ public class Dungeon {
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
-						if(!animationComponent.isInNonIdleAnimation()) {
+						if(!animationComponent.isInNonIdleAnimation()
+								&& !animationComponent.getRemoveEntityOnAnimationFinish()) {
 							animationComponent.setQueuedIdleAnimation(true);
 						}
 					}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.miv.Movement.Direction;
 
@@ -23,25 +24,54 @@ import data.HitboxData.HitboxType;
 import graphics.Images;
 
 public class EntityFactory {
+	public static class EntityData {
+		private String enemyName;
+		private Point mapPosition;
+		
+		public EntityData(String enemyName, Point mapPosition) {
+			this.enemyName = enemyName;
+			this.mapPosition = mapPosition;
+		}
+	}
+	
 	private Images images;
 	private HashMap<String, AnimationData> animationsData;
 	private HashMap<String, AttackData> attacksData;
+	private Engine engine;
 	
-	public EntityFactory(Images images, AnimationLoader animationLoader, AttackLoader attackLoader) {
+	public EntityFactory(Images images, AnimationLoader animationLoader, AttackLoader attackLoader, Engine engine) {
 		this.images = images;
 		animationsData = animationLoader.getAnimationsData();
 		attacksData = attackLoader.getAttacksData();
+		this.engine = engine;
+	}
+	
+	/**
+	 * Spawns an entity whose sole purpose is to show an animation on a map tile
+	 */
+	public void spawnAnimationEntity(String animationName, Point mapPosition) {
+		Entity e = new Entity();
+		
+		AnimationComponent animationComponent = new AnimationComponent(animationsData, "none");
+		e.add(animationComponent);
+		e.add(new ImageComponent(mapPosition));
+		
+		animationComponent.startAnimation(animationName, PlayMode.NORMAL);
+		animationComponent.setRemoveEntityOnAnimationFinish(true);
+		
+		engine.addEntity(e);
 	}
 	
 	/**
 	 * TODO
 	 */
-	public Entity createEnemy(String enemyName, float bpm) {
+	public Entity createEnemy(EntityData entityData, float bpm) {
 		Entity e = new Entity();
 		
 		e.add(new EnemyComponent());
 		
-		e.add(new AnimationComponent(animationsData, enemyName + "_idle"));
+		e.add(new AnimationComponent(animationsData, entityData.enemyName + "_idle"));
+		e.add(new ImageComponent(entityData.enemyName, createDirectionalSprites(entityData.enemyName), entityData.mapPosition));
 		
 		e.add(new AttackComponent(attacksData));
 		

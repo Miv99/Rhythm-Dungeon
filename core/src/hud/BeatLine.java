@@ -9,6 +9,7 @@ import com.miv.Options;
 
 import dungeons.Dungeon;
 import dungeons.Floor;
+import factories.EntityFactory;
 
 public class BeatLine {
 	private enum CircleState {
@@ -51,13 +52,13 @@ public class BeatLine {
 		circleWeakState = CircleState.Alive;
 	}
 	
-	public void onAttackHit(Options options, Dungeon dungeon, Entity player, Entity target, String attackName) {
+	public void onAttackHit(Options options, Dungeon dungeon, Entity player, Entity target, String attackName, EntityFactory entityFactory) {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
 			
 			//TODO: play sound effect
 			
-			Attack.entityStartAttack(options, dungeon, player, target, attackName);
+			Attack.entityStartAttack(options, dungeon, player, target, attackName, entityFactory);
 		}
 	}
 	

@@ -60,7 +60,7 @@ public class AttackData {
 	// Beats after the attack starts that the attacker cannot move for
 	private int disabledMovementTimeInBeats;
 	private boolean warnTilesBeforeAttack;
-	// Marks which tiles are to be targetted depending TileAttackDirectionType (see its comments)
+	// Marks which tiles are to be targeted depending TileAttackDirectionType (see its comments)
 	// Each 2d array can have only one AttackTileType of either isSelf or isTarget being true
 	private HashMap<Direction, TileAttackData[][]> directionalTilesAttackData;
 	// Determines how Direction in directionalTilesAttackData is determined
@@ -86,7 +86,7 @@ public class AttackData {
 	
 	/**
 	 * Rotates the tile attack data for each possible direction given the right-facing tile attack data
-	 * @param targetTilesFacingRight - which tiles are targetted if the target is facing right
+	 * @param targetTilesFacingRight - which tiles are targeted if the target is facing right
 	 */
 	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
 			AttackDirectionDeterminant attackDirectionDeterminant, int disabledMovementTimeInBeats, 

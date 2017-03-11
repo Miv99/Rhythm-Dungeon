@@ -6,16 +6,19 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
 
 import components.AnimationComponent;
 import components.ImageComponent;
 
 public class AnimationSystem extends EntitySystem {
+	private Engine engine;
 	private ImmutableArray<Entity> entities;
+	private Array<Entity> deletionQueue = new Array<Entity>();
 		
-	public AnimationSystem() {
-		
+	public AnimationSystem(Engine engine) {
+		this.engine = engine;
 	}
 
 	@Override
@@ -43,6 +46,15 @@ public class AnimationSystem extends EntitySystem {
 				animation.setPlayingIdleAnimation(true);
 				animation.setQueuedIdleAnimation(false);
 			}
+			if(animation.getCurrentAnimation() == null
+					&& animation.getRemoveEntityOnAnimationFinish()) {
+				deletionQueue.add(e);
+			}
 		}
+		
+		for(Entity e : deletionQueue) {
+			engine.removeEntity(e);
+		}
+		deletionQueue.clear();
 	}
 }

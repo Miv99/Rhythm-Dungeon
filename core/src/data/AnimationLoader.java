@@ -32,8 +32,8 @@ public class AnimationLoader {
 		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
 			try {
-				if(line.startsWith("animation_name=")) {
-					animationName = line.replace("animation_name=", "");
+				if(line.startsWith("name=")) {
+					animationName = line.replace("name=", "");
 				} else if(line.startsWith("duration=")) {
 					animationDurationInBeats = GeneralUtils.toFloat(line.replace("duration=", ""));
 				} else if(line.equals("")) {

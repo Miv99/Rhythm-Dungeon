@@ -67,12 +67,12 @@ public class Options {
 	
 	public static String soundEffectsFilePath = assetsFilePath + "audio\\sound effects\\";
 	public static String musicFilePath = assetsFilePath + "audio\\music\\";
-	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\metadata.txt";
+	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\songs.txt";
 	
 	public static String spritesPackFilePath = assetsFilePath + "sprites\\sprites.pack";
 	public static String spritesImageFileDir = assetsFilePath + "sprites\\";
 	
-	public static String animationsMetadataFilePath = assetsFilePath + "animations\\metadata.txt";
+	public static String animationsMetadataFilePath = assetsFilePath + "animations\\animations.txt";
 	
 	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
 	

@@ -31,23 +31,25 @@ public class Attack {
 		private Floor floor;
 		private Entity attacker;
 		private Entity target;
+		private EntityFactory entityFactory;
 		private AttackData attackData;
 		private Point focusAbsoluteMapPosition;
 		private Point focusPositionRelativeToTargetttedTiles;
-		private TileAttackData[][] targettedTiles;
+		private TileAttackData[][] targetedTiles;
 		private int beatDelay;
 		
-		public EntityAttackParams(Options options, Floor floor, Entity attacker, Entity target, 
+		public EntityAttackParams(Options options, Floor floor, Entity attacker, Entity target, EntityFactory entityFactory,
 			AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
-			TileAttackData[][] targettedTiles, int beatDelay) {
+			TileAttackData[][] targetedTiles, int beatDelay) {
 			this.options = options;
 			this.floor = floor;
 			this.attacker = attacker;
 			this.target = target;
+			this.entityFactory = entityFactory;
 			this.attackData = attackData;
 			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
 			this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
-			this.targettedTiles = targettedTiles;
+			this.targetedTiles = targetedTiles;
 			this.beatDelay = beatDelay;
 		}
 		
@@ -60,15 +62,15 @@ public class Attack {
 		}
 	}
 	
-	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, String attackName) {
+	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
-			entityStartAttack(options, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName));
+			entityStartAttack(options, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
 		} catch(NullPointerException e) {
 			System.out.println("No attack exists named \"" + attackName + "\"");
 		}
 	}
 	
-	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData) {
+	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
 		Floor floor = dungeon.getFloors()[dungeon.getCurrentFloor()];
 
 		if(!floor.getActionsDisabled()) {
@@ -96,11 +98,11 @@ public class Attack {
 				return;
 			}
 			
-			TileAttackData[][] targettedTiles = attackData.getDirectionalTilesAttackData().get(attackDirection);
+			TileAttackData[][] targetedTiles = attackData.getDirectionalTilesAttackData().get(attackDirection);
 			Point focusPositionRelativeToTargetttedTiles = null;
-			for(int x = 0; x < targettedTiles.length; x++) {
-				for(int y = 0; y < targettedTiles[x].length; y++) {
-					if(targettedTiles[x][y].getIsFocus()) {
+			for(int x = 0; x < targetedTiles.length; x++) {
+				for(int y = 0; y < targetedTiles[x].length; y++) {
+					if(targetedTiles[x][y].getIsFocus()) {
 						focusPositionRelativeToTargetttedTiles = new Point(x, y);
 						break;
 					}
@@ -111,10 +113,10 @@ public class Attack {
 			AttackComponent attackComponent = ComponentMappers.attackMapper.get(attacker);
 			Array<WarningTile> warningTiles = attackComponent.getWarningTiles();
 			if(attackData.getWarnTilesBeforeAttack()) {
-				for(int x = 0; x < targettedTiles.length; x++) {
-					for(int y = 0; y < targettedTiles[x].length; y++) {
+				for(int x = 0; x < targetedTiles.length; x++) {
+					for(int y = 0; y < targetedTiles[x].length; y++) {
 						// x and y iterations so far
-						if(targettedTiles[x + attackerAttackOrigin.x][y + attackerAttackOrigin.y].getIsAttack()) {
+						if(targetedTiles[x + attackerAttackOrigin.x][y + attackerAttackOrigin.y].getIsAttack()) {
 							warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), 
 									x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x, 
 									y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y));
@@ -125,13 +127,13 @@ public class Attack {
 			
 			// Queue entity attack after beat delay
 			if(attackData.getAttackDelayInBeats() > 0) {
-				dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, floor, attacker, target,
+				dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, floor, attacker, target, entityFactory,
 						attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
-						targettedTiles, attackData.getAttackDelayInBeats()));
+						targetedTiles, attackData.getAttackDelayInBeats()));
 			} else {
-				entityAttack(new EntityAttackParams(options, floor, attacker, target,
+				entityAttack(new EntityAttackParams(options, floor, attacker, target, entityFactory,
 						attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
-						targettedTiles, 0));
+						targetedTiles, 0));
 			}
 			
 			if(attackData.getDisabledMovementTimeInBeats() > 0) {
@@ -145,7 +147,7 @@ public class Attack {
 	 */
 	public static void entityAttack(EntityAttackParams params) {
 		Tile[][] mapTiles = params.floor.getTiles();
-		Point targettedTilesAbsoluteMapPosition = new Point(params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x,
+		Point targetedTilesAbsoluteMapPosition = new Point(params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x,
 				params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y);
 		
 		// Check if attacker or target is dead
@@ -157,24 +159,24 @@ public class Attack {
 		// Get entities that are attacked
 		Set<Entity> attackedEntities = new HashSet<Entity>();
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
-		for(int x = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x; x < params.targettedTiles.length; x++) {
-			try {
-				for(int y = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y; y < params.targettedTiles[x].length; y++) {
-					// Get x and y relative to targettedTiles
-					if(params.targettedTiles[targettedTilesAbsoluteMapPosition.x - (params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x)]
-							[targettedTilesAbsoluteMapPosition.y - (params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y)]
-							.getIsAttack()) {
-							// Get attackble entities that reside on the absolute tile
-							for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
-								// Check if occupant has the entityHittableRequirement component
-								if(occupant.getComponent(entityHittableRequirement) != null) {
-									attackedEntities.add(occupant);
-								}
-							}
+		int absX = Math.max(0, params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x);
+		int absY = Math.max(0, params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y);
+		for(int x = absX; x < Math.min(mapTiles.length, absX + params.targetedTiles.length); x++) {
+			for(int y = absY; y < Math.min(mapTiles[x].length, absY + params.targetedTiles[x - absX].length); y++) {
+				// Get x and y relative to targetedTiles
+				TileAttackData tile = params.targetedTiles[x - targetedTilesAbsoluteMapPosition.x][y - targetedTilesAbsoluteMapPosition.y];
+				if(tile.getIsAttack()) {
+					// Get attackble entities that reside on the absolute tile
+					for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
+						// Check if occupant has the entityHittableRequirement component
+						if(occupant.getComponent(entityHittableRequirement) != null) {
+							attackedEntities.add(occupant);
+						}
 					}
+					
+					// Do animation on tile
+					params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
 				}
-			} catch(ArrayIndexOutOfBoundsException e) {
-				
 			}
 		}
 				

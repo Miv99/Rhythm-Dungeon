@@ -19,6 +19,10 @@ public class AnimationComponent implements Component {
 	private String idleAnimationName;
 	private boolean playingIdleAnimation;
 	
+	// If true, after the animation finishes, the entity the component belongs to is removed from the engine
+	// Used for animation entities (entities used to show animations)
+	private boolean removeEntityOnAnimationFinish;
+	
 	public AnimationComponent(HashMap<String, AnimationData> animations, String idleAnimationName) {
 		this.animations = animations;
 		this.idleAnimationName = idleAnimationName;
@@ -68,6 +72,11 @@ public class AnimationComponent implements Component {
 		}
 	}
 	
+	
+	public void setRemoveEntityOnAnimationFinish(boolean removeEntityOnAnimationFinish) {
+		this.removeEntityOnAnimationFinish = removeEntityOnAnimationFinish;
+	}
+	
 	public void setPlayingIdleAnimation(boolean playingIdleAnimation) {
 		this.playingIdleAnimation = playingIdleAnimation;
 	}
@@ -103,5 +112,9 @@ public class AnimationComponent implements Component {
 	
 	public boolean getQueuedIdleAnimation() {
 		return queuedIdleAnimation;
+	}
+	
+	public boolean getRemoveEntityOnAnimationFinish() {
+		return removeEntityOnAnimationFinish;
 	}
 }

@@ -27,6 +27,14 @@ public class ImageComponent implements Component {
 		facing = Direction.Right;
 	}
 	
+	/**
+	 * Used for animation entities (entities whose sole purpose is to show an animation)
+	 */
+	public ImageComponent(Point mapPosition) {
+		this.mapPosition = mapPosition;
+		facing = Direction.Right;
+	}
+	
 	public void faceDirection(Direction direction) {
 		if(direction.equals(Direction.Left)
 				|| direction.equals(Direction.Right)) {

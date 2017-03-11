@@ -69,13 +69,13 @@ public class Main extends ApplicationAdapter {
 		attackLoader = new AttackLoader();
 		attackLoader.loadAttacks();
 		
-		entityFactory = new EntityFactory(images, animationLoader, attackLoader);
+		entityFactory = new EntityFactory(images, animationLoader, attackLoader, engine);
 		
 		// Create systems
 		TileWarningSystem tileWarningSystem = new TileWarningSystem();
 		engine.addSystem(tileWarningSystem);
 		engine.addSystem(new DeathSystem(engine));
-		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new AnimationSystem(engine));
 		RenderSystem renderSystem = new RenderSystem();
 		engine.addSystem(renderSystem);
 		
@@ -147,7 +147,7 @@ public class Main extends ApplicationAdapter {
 	}
 	
 	public void startNewGame() {
-		final int startingFloor = 1;
+		final int startingFloor = 0;
 				
 		//TODO: show cutscene of story intro
 		
@@ -155,7 +155,7 @@ public class Main extends ApplicationAdapter {
 		camera.setFocus(player);
 		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, player, options, audio, images);
+		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, player, options, audio, images, entityFactory);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		camera.setDungeon(dungeon);
 		

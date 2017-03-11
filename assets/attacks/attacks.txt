@@ -4,9 +4,9 @@ can_hit=all
 direction=SELF_FACING
 auto_rotate=true
 warn_tiles=true
-attack_delay=3
-disable_movement=3
-'0'=none
+attack_delay=0
+disable_movement=0
+'0'=slash
 right=[
 #0
 ]
@@ -19,7 +19,7 @@ auto_rotate=true
 warn_tiles=false
 attack_delay=0
 disable_movement=0
-'0'=none
+'0'=slash
 right=[
 #-0
 ]

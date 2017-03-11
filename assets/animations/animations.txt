@@ -1,0 +1,8 @@
+name=player_sword
+duration=1/4
+
+name=player_idle
+duration=2
+
+name=slash
+duration=1/8
