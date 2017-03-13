@@ -8,14 +8,23 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.miv.ComponentMappers;
 import com.miv.Death;
 
+import audio.Audio;
 import components.HealthComponent;
+import dungeons.Floor;
 
 public class DeathSystem extends EntitySystem {
 	private Engine engine;
+	private Floor floor;
+	private Audio audio;
 	private ImmutableArray<Entity> entities;
 	
-	public DeathSystem(Engine engine) {
+	public DeathSystem(Engine engine, Audio audio) {
 		this.engine = engine;
+		this.audio = audio;
+	}
+	
+	public void setFloor(Floor floor) {
+		this.floor = floor;
 	}
 
 	@Override
@@ -34,7 +43,7 @@ public class DeathSystem extends EntitySystem {
 			HealthComponent healthComponent = ComponentMappers.healthMapper.get(e);
 			
 			if(healthComponent.getHealth() <= 0) {
-				Death.killEntity(engine, e);
+				Death.killEntity(audio, engine, floor, e);
 			}
 		}
 	}

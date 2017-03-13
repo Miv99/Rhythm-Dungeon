@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Movement.Direction;
 
+import audio.Audio;
 import components.AnimationComponent;
 import components.AttackComponent;
 import components.HealthComponent;
@@ -28,9 +29,9 @@ import utils.MapUtils;
 public class Attack {	
 	public static class EntityAttackParams {
 		private Options options;
+		private Audio audio;
 		private Floor floor;
 		private Entity attacker;
-		private Entity target;
 		private EntityFactory entityFactory;
 		private AttackData attackData;
 		private Point focusAbsoluteMapPosition;
@@ -38,13 +39,13 @@ public class Attack {
 		private TileAttackData[][] targetedTiles;
 		private int beatDelay;
 		
-		public EntityAttackParams(Options options, Floor floor, Entity attacker, Entity target, EntityFactory entityFactory,
+		public EntityAttackParams(Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
 			AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
 			TileAttackData[][] targetedTiles, int beatDelay) {
 			this.options = options;
+			this.audio = audio;
 			this.floor = floor;
 			this.attacker = attacker;
-			this.target = target;
 			this.entityFactory = entityFactory;
 			this.attackData = attackData;
 			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
@@ -62,15 +63,15 @@ public class Attack {
 		}
 	}
 	
-	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
+	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
-			entityStartAttack(options, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
+			entityStartAttack(options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
 		} catch(NullPointerException e) {
 			System.out.println("No attack exists named \"" + attackName + "\"");
 		}
 	}
 	
-	public static void entityStartAttack(Options options, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
+	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
 		Floor floor = dungeon.getFloors()[dungeon.getCurrentFloor()];
 
 		if(!floor.getActionsDisabled()) {
@@ -127,11 +128,11 @@ public class Attack {
 			
 			// Queue entity attack after beat delay
 			if(attackData.getAttackDelayInBeats() > 0) {
-				dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, floor, attacker, target, entityFactory,
+				dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
 						attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 						targetedTiles, attackData.getAttackDelayInBeats()));
 			} else {
-				entityAttack(new EntityAttackParams(options, floor, attacker, target, entityFactory,
+				entityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
 						attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 						targetedTiles, 0));
 			}
@@ -147,8 +148,6 @@ public class Attack {
 	 */
 	public static void entityAttack(EntityAttackParams params) {
 		Tile[][] mapTiles = params.floor.getTiles();
-		Point targetedTilesAbsoluteMapPosition = new Point(params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x,
-				params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y);
 		
 		// Check if attacker or target is dead
 		if(params.attacker == null 
@@ -187,8 +186,7 @@ public class Attack {
 		damage *= params.options.getDifficulty().getPlayerDamageMultiplier();
 		for(Entity attacked : attackedEntities) {
 			if(!attacked.equals(params.attacker) && ComponentMappers.healthMapper.has(attacked)) {
-				HealthComponent healthComponent = ComponentMappers.healthMapper.get(attacked);
-				healthComponent.setHealth(healthComponent.getHealth() - damage);
+				hitEntity(params.audio, attacked, damage);
 			}
 		}
 		
@@ -196,6 +194,17 @@ public class Attack {
 		if(ComponentMappers.animationMapper.has(params.attacker)) {
 			AnimationComponent animationComponent = ComponentMappers.animationMapper.get(params.attacker);
 			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+		}
+	}
+	
+	public static void hitEntity(Audio audio, Entity attacked, int damage) {
+		HealthComponent healthComponent = ComponentMappers.healthMapper.get(attacked);
+		healthComponent.setHealth(healthComponent.getHealth() - damage);
+		
+		// Play hurt sound effect
+		if(healthComponent.getHealth() > 0
+				&& !healthComponent.getHurtSoundName().equals("none")) {
+			audio.playSoundEffect(healthComponent.getHurtSoundName());
 		}
 	}
 }

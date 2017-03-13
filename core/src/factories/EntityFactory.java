@@ -96,7 +96,7 @@ public class EntityFactory {
 		
 		e.add(new HitboxComponent(entityData.getHitboxName(), hitboxesData, mapPosition));
 		e.add(new AttackComponent(attacksData));
-		e.add(new HealthComponent(healthPoints * 4));
+		e.add(new HealthComponent(healthPoints * 4, entityData.getHurtSoundName(), entityData.getDeathSoundName()));
 		
 		e.add(new ImageComponent(entityData.getSpriteName(), createDirectionalSprites(entityData.getSpriteName()), mapPosition));
 		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {

@@ -18,6 +18,7 @@ public class EntityLoader {
 		String entityName = "";
 		String hitboxName = "";
 		String spriteName = "";
+		String hurtSoundName = "";
 		String deathSoundName = "";
 		String playerAttackName = "";
 		boolean isPlayer = false;
@@ -36,6 +37,8 @@ public class EntityLoader {
 					hitboxName = line.replace("hitbox=", "");
 				} else if(line.startsWith("sprite=")) {
 					spriteName = line.replace("sprite=", "");
+				} else if(line.startsWith("hurt_sound=")) {
+					hurtSoundName = line.replace("hurt_sound=", "");
 				} else if(line.startsWith("death_sound=")) {
 					deathSoundName = line.replace("death_sound=", "");
 				} else if(line.startsWith("player_attack=")) {
@@ -43,14 +46,15 @@ public class EntityLoader {
 				} else if(line.equals("")) {
 					if(!entityName.equals("")) {
 						if(isPlayer) {
-							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, deathSoundName, playerAttackName));
+							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName));
 						} else {
-							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, deathSoundName, isEnemy));
+							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy));
 						}
 						
 						entityName = "";
 						hitboxName = "";
 						spriteName = "";
+						hurtSoundName = "";
 						deathSoundName = "";
 						playerAttackName = "";
 						isPlayer = false;
@@ -67,9 +71,9 @@ public class EntityLoader {
 		}
 		if(!entityName.equals("")) {
 			if(isPlayer) {
-				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, deathSoundName, playerAttackName));
+				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName));
 			} else {
-				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, deathSoundName, isEnemy));
+				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy));
 			}
 		}
 	}

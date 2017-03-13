@@ -7,6 +7,7 @@ import com.miv.Movement;
 import com.miv.Movement.Direction;
 import com.miv.Options;
 
+import audio.Audio;
 import dungeons.Dungeon;
 import dungeons.Floor;
 import factories.EntityFactory;
@@ -52,13 +53,13 @@ public class BeatLine {
 		circleWeakState = CircleState.Alive;
 	}
 	
-	public void onAttackHit(Options options, Dungeon dungeon, Entity player, Entity target, String attackName, EntityFactory entityFactory) {
+	public void onAttackHit(Options options, Audio audio, Dungeon dungeon, Entity player, Entity target, String attackName, EntityFactory entityFactory) {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
 			
 			//TODO: play sound effect
 			
-			Attack.entityStartAttack(options, dungeon, player, target, attackName, entityFactory);
+			Attack.entityStartAttack(options, audio, dungeon, player, target, attackName, entityFactory);
 		}
 	}
 	

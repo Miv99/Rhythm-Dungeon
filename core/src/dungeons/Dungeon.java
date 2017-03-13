@@ -38,6 +38,7 @@ import factories.EntityFactory;
 import graphics.Images;
 import hud.BeatLine;
 import special_tiles.WarningTile;
+import systems.DeathSystem;
 import utils.GeneralUtils;
 
 /**
@@ -54,9 +55,10 @@ public class Dungeon {
 		private Audio audio;
 		private Images images;
 		private EntityFactory entityFactory;
+		private DeathSystem deathSystem;
 		
 		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, EntityLoader entityLoader,
-				Entity player, Options options, Audio audio, Images images, EntityFactory entityFactory) {
+				Entity player, Options options, Audio audio, Images images, EntityFactory entityFactory, DeathSystem deathSystem) {
 			this.engine = engine;
 			this.maxFloors = maxFloors;
 			this.entityLoader = entityLoader;
@@ -66,6 +68,7 @@ public class Dungeon {
 			this.audio = audio;
 			this.images = images;
 			this.entityFactory = entityFactory;
+			this.deathSystem = deathSystem;
 		}
 		
 		public int getMaxFloors() {
@@ -143,6 +146,8 @@ public class Dungeon {
 	
 	public void enterNewFloor(int newFloor) {
 		currentFloor = newFloor;
+		
+		dungeonParams.deathSystem.setFloor(floors[currentFloor]);
 		
 		// Generate floor if floor does not exist
 		if(floors[currentFloor] == null) {
@@ -361,7 +366,7 @@ public class Dungeon {
 		
 		public void firePlayerActionsQueue() {
 			for(PlayerAttack attack : playerAttackQueue) {
-				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
+				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, dungeonParams.audio, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
 			}
 		}
 		

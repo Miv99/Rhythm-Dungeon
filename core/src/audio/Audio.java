@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 import com.miv.Options;
 
 import data.SongData;
@@ -22,6 +23,8 @@ public class Audio {
 	private HashMap<String, Sound> soundEffects = new HashMap<String, Sound>();
 	// Hashmap with key:value pairing of fileName:Song
 	private HashMap<String, Song> songs = new HashMap<String, Song>();
+	// Hashmap with key:value pairing of folderName:(array of Sound)
+	private HashMap<String, Array<Sound>> soundEffectsSubfolders = new HashMap<String, Array<Sound>>();
 	
 	public Audio(Options options) {
 		this.options = options;
@@ -84,6 +87,22 @@ public class Audio {
 			if(soundEffectsFiles[i].isFile() && isSupportedAudioFormat(FileUtils.getExtension(soundEffectsFiles[i]))) {
 				soundEffects.put(soundEffectsFiles[i].getName(), Gdx.audio.newSound(new FileHandle(soundEffectsFiles[i])));
 			}
+			// Get subfolders
+			else if(soundEffectsFiles[i].isDirectory()) {				
+				File soundEffectsSubfolder = soundEffectsFiles[i];
+				File[] soundEffectsSubfolderFiles = soundEffectsSubfolder.listFiles();
+				
+				Array<Sound> subfolderSounds = new Array<Sound>();
+				soundEffectsSubfolders.put(soundEffectsSubfolder.getName(), subfolderSounds);
+
+				for(int a = 0; a < soundEffectsSubfolderFiles.length; a++) {
+					if(soundEffectsSubfolderFiles[a].isFile() && isSupportedAudioFormat(FileUtils.getExtension(soundEffectsSubfolderFiles[a]))) {
+						Sound sound = Gdx.audio.newSound(new FileHandle(soundEffectsSubfolderFiles[a]));
+						soundEffects.put(soundEffectsSubfolderFiles[a].getName(), sound);
+						subfolderSounds.add(sound);
+					}
+				}
+			}
 		}
 	}
 	
@@ -99,9 +118,18 @@ public class Audio {
 	}
 	
 	public void playSoundEffect(String fileName) {
-		Sound s = soundEffects.get(fileName);
+		Sound s;
+		// If the fileName is of a folder, play a random sound file from that folder
+		if(soundEffectsSubfolders.containsKey(fileName)) {
+			s = soundEffectsSubfolders.get(fileName).random();
+		} else {
+			s = soundEffects.get(fileName);
+		}
+		
 		if(s != null) {
 			s.play(options.getMasterVolume() * options.getSoundEffectsVolume());
+		} else {
+			System.out.println("\"" + fileName + "\" does not exist in sound effects folder.");
 		}
 	}
 	

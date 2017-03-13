@@ -3,9 +3,11 @@ player=true
 player_attack=player_sword
 hitbox=1x1
 sprite=player
-death_sound=default
+hurt_sound=human_hurt
+death_sound=human_hurt
 
 name=dragon
 hitbox=dragon
 sprite=dragon
-death_sound=default
+hurt_sound=monster_hurt
+death_sound=monster_hurt

@@ -47,6 +47,7 @@ public class Main extends ApplicationAdapter {
 	private EntityLoader entityLoader;
 	private Engine engine;
 	private Dungeon dungeon;
+	private DeathSystem deathSystem;
 	
 	private Options options;
 	private Audio audio;
@@ -85,7 +86,8 @@ public class Main extends ApplicationAdapter {
 		// Create systems
 		TileWarningSystem tileWarningSystem = new TileWarningSystem();
 		engine.addSystem(tileWarningSystem);
-		engine.addSystem(new DeathSystem(engine));
+		deathSystem = new DeathSystem(engine, audio);
+		engine.addSystem(deathSystem);
 		engine.addSystem(new AnimationSystem(engine));
 		RenderSystem renderSystem = new RenderSystem();
 		engine.addSystem(renderSystem);
@@ -170,7 +172,7 @@ public class Main extends ApplicationAdapter {
 		camera.setFocus(player);
 		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, entityLoader, player, options, audio, images, entityFactory);
+		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, entityLoader, player, options, audio, images, entityFactory, deathSystem);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		camera.setDungeon(dungeon);
 		
