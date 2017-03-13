@@ -12,6 +12,7 @@ name=player
 name=dragon
 [
 ---x
+xxxx
 xxx#
 -x-x
 ]

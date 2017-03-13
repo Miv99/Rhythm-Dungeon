@@ -51,9 +51,8 @@ public class Tile {
 		if(hitboxType.getTangible()
 				|| tangibleOccupants.size() > 1) {
 			return true;
-		} else if(tangibleOccupants.size() == 1
-				&& tangibleOccupants.contains(entityToIgnore)) {
-			return false;
+		} else if(tangibleOccupants.size() == 1) {
+			return !tangibleOccupants.contains(entityToIgnore);
 		} else {
 			return false;
 		}

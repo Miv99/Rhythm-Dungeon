@@ -82,8 +82,13 @@ public class HitboxLoader {
 			lineCount++;
 		}
 		if(!hitboxName.equals("")) {
-			HitboxData hitboxData = new HitboxData(parseHitboxStrings(hitboxTypeMap, recordingBuffer));
-			hitboxesData.put(hitboxName, hitboxData);
+			HitboxType[][] rightFacingHitbox = parseHitboxStrings(hitboxTypeMap, recordingBuffer);
+			HitboxData rightFacingHitboxData = new HitboxData(rightFacingHitbox);
+			hitboxesData.put(hitboxName + "_" + Direction.RIGHT.getStringRepresentation(), rightFacingHitboxData);
+			
+			HitboxType[][] leftFacingHitbox = GeneralUtils.horizontallyFlipArray(rightFacingHitbox);
+			HitboxData leftFacingHitboxData = new HitboxData(leftFacingHitbox);
+			hitboxesData.put(hitboxName + "_" + Direction.LEFT.getStringRepresentation(), leftFacingHitboxData);
 		}
 	}
 	
@@ -99,7 +104,7 @@ public class HitboxLoader {
 				}
 			}
 		}
-		return hitbox;
+		return GeneralUtils.verticallyFlipArray(hitbox);
 	}
 	
 	public HashMap<String, HitboxData> getHitboxesData() {

@@ -28,6 +28,7 @@ import factories.EntityFactory;
 import graphics.Images;
 import systems.AnimationSystem;
 import systems.DeathSystem;
+import systems.DebugRenderSystem;
 import systems.RenderSystem;
 import systems.TileWarningSystem;
 
@@ -83,9 +84,12 @@ public class Main extends ApplicationAdapter {
 		engine.addSystem(new AnimationSystem(engine));
 		RenderSystem renderSystem = new RenderSystem();
 		engine.addSystem(renderSystem);
+		DebugRenderSystem debugRenderSystem = new DebugRenderSystem(options);
+		engine.addSystem(debugRenderSystem);
 		
 		camera.setRenderSystem(renderSystem);
 		camera.setTileWarningSystem(tileWarningSystem);
+		camera.setDebugRenderSystem(debugRenderSystem);
 		
 		// Create and set input handler
 		im = new InputMultiplexer();
@@ -122,6 +126,7 @@ public class Main extends ApplicationAdapter {
 			
 			// Continue rendering
 			engine.getSystem(RenderSystem.class).update(deltaTime);
+			engine.getSystem(DebugRenderSystem.class).update(deltaTime);
 		}
 	}
 	
@@ -196,6 +201,8 @@ public class Main extends ApplicationAdapter {
 					} else {
 						pause();
 					}
+				} else if(keycode == Input.Keys.F1) {
+					options.setDebug(!options.getDebug());
 				}
 			}
 			return false;

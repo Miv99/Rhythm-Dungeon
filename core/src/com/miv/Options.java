@@ -54,6 +54,7 @@ public class Options {
 	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
 	
 	
+	private boolean debug;
 	
 	private boolean fullscreen;
 	private int windowWidth = 1600;
@@ -144,6 +145,14 @@ public class Options {
 		this.difficulty = difficulty;
 	}
 	
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+	
+	
+	public boolean getDebug() {
+		return debug;
+	}
 	
 	public boolean getFullscreen() {
 		return fullscreen;

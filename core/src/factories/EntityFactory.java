@@ -59,8 +59,8 @@ public class EntityFactory {
 			HitboxType[][] hitbox = hitboxComponent.getHitbox();
 			Point position = hitboxComponent.getMapPosition();
 			
-			for(int x = position.x; x < hitbox.length; x++) {
-				for(int y = position.y; y < hitbox[x].length; y++) {
+			for(int x = position.x; x < position.x + hitbox.length; x++) {
+				for(int y = position.y; y < position.y + hitbox[x - position.x].length; y++) {
 					if(hitbox[x - position.x][y - position.y].getTangible()) {
 						mapTiles[x][y].getTangibleOccupants().add(e);
 					}
@@ -97,7 +97,7 @@ public class EntityFactory {
 		Entity e = new Entity();
 		
 		e.add(new EnemyComponent());		
-		e.add(new HitboxComponent("player", hitboxesData, entityData.mapPosition));
+		e.add(new HitboxComponent(entityData.enemyName, hitboxesData, entityData.mapPosition));
 		e.add(new AnimationComponent(animationsData, entityData.enemyName + "_idle"));
 		e.add(new ImageComponent(entityData.enemyName, createDirectionalSprites(entityData.enemyName), entityData.mapPosition));
 		

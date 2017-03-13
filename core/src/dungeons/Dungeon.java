@@ -5,8 +5,10 @@ import java.awt.Point;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Attack;
 import com.miv.Attack.EntityAttackParams;
@@ -255,6 +257,7 @@ public class Dungeon {
 				for(Tile tile : col) {
 					Point mapPosition = tile.getMapPosition();
 					batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					
 					
 					// Draw special tile, if any
 					if(tile.getSpecialTile() != null

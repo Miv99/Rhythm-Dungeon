@@ -24,6 +24,18 @@ public class GeneralUtils {
 		return fileName.substring(0, fileName.lastIndexOf("."));
 	}
 	
+	public static HitboxType[][] verticallyFlipArray(HitboxType[][] array) {
+		HitboxType[][] newArray = new HitboxType[array.length][array[0].length];
+
+		for(int x = 0; x < array.length; x++) {
+			for(int y = 0; y < newArray[x].length; y++) {
+				newArray[x][y] = array[x][newArray[x].length - y - 1];
+			}
+		}
+		
+		return newArray;
+	}
+	
 	public static TileAttackData[][] verticallyFlipArray(TileAttackData[][] array) {
 		TileAttackData[][] newArray = new TileAttackData[array.length][array[0].length];
 

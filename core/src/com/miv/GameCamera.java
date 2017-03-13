@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 
 import dungeons.Dungeon;
+import systems.DebugRenderSystem;
 import systems.RenderSystem;
 import systems.TileWarningSystem;
 
@@ -16,6 +17,7 @@ public class GameCamera extends OrthographicCamera {
 	private Dungeon dungeon;
 	private RenderSystem renderSystem;
 	private TileWarningSystem tileWarningSystem;
+	private DebugRenderSystem debugRenderSystem;
 	private Entity focus;
 	
 	public GameCamera(float viewportWidth, float viewportHeight) {
@@ -32,6 +34,10 @@ public class GameCamera extends OrthographicCamera {
 	
 	public void setTileWarningSystem(TileWarningSystem tileWarningSystem) {
 		this.tileWarningSystem = tileWarningSystem;
+	}
+	
+	public void setDebugRenderSystem(DebugRenderSystem debugRenderSystem) {
+		this.debugRenderSystem = debugRenderSystem;
 	}
 	
 	public void setPosition(float x, float y) {
@@ -74,6 +80,10 @@ public class GameCamera extends OrthographicCamera {
 		}
 		if(tileWarningSystem != null) {
 			tileWarningSystem.getShapeRenderer().setProjectionMatrix(combined);
+		}
+		if(debugRenderSystem != null) {
+			debugRenderSystem.getBatch().setProjectionMatrix(combined);
+			debugRenderSystem.getDebugRenderer().setProjectionMatrix(combined);
 		}
 		update(true);
 	}
