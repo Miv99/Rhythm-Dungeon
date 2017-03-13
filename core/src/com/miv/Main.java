@@ -20,6 +20,7 @@ import components.EnemyAIComponent;
 import components.ImageComponent;
 import data.AnimationLoader;
 import data.AttackLoader;
+import data.EntityLoader;
 import data.HitboxLoader;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
@@ -43,6 +44,7 @@ public class Main extends ApplicationAdapter {
 	private AttackLoader attackLoader;
 	private AnimationLoader animationLoader;
 	private HitboxLoader hitboxLoader;
+	private EntityLoader entityLoader;
 	private Engine engine;
 	private Dungeon dungeon;
 	
@@ -74,6 +76,9 @@ public class Main extends ApplicationAdapter {
 		
 		hitboxLoader = new HitboxLoader();
 		hitboxLoader.loadHitboxes();
+		
+		entityLoader = new EntityLoader();
+		entityLoader.loadEntities();
 		
 		entityFactory = new EntityFactory(images, animationLoader.getAnimationsData(), attackLoader.getAttacksData(), hitboxLoader.getHitboxesData(), engine);
 		
@@ -161,11 +166,11 @@ public class Main extends ApplicationAdapter {
 				
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createPlayer(new Point(2, 2), Dungeon.calculateBpmFromFloor(options, startingFloor));
+		Entity player = entityFactory.createEntity(entityLoader.getEntitiesData().get("player"), new Point(2, 2), 4);
 		camera.setFocus(player);
 		engine.addEntity(player);
 		
-		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, player, options, audio, images, entityFactory);
+		DungeonParams dungeonParams = new DungeonParams(engine, 10, animationLoader, entityLoader, player, options, audio, images, entityFactory);
 		dungeon = DungeonFactory.generateDungeon(dungeonParams);
 		camera.setDungeon(dungeon);
 		

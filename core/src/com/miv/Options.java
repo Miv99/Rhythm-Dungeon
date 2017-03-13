@@ -50,9 +50,8 @@ public class Options {
 	public static String animationsDataFilePath = assetsFilePath + "animations\\animations.txt";
 	public static String songsMetadataFilePath = assetsFilePath + "audio\\music\\songs.txt";
 	public static String hitboxesDataFilePath = assetsFilePath + "hitboxes\\hitboxes.txt";
-	
-	public static String attacksFilePath = assetsFilePath + "attacks\\attacks.txt";
-	
+	public static String attacksDataFilePath = assetsFilePath + "attacks\\attacks.txt";
+	public static String entitiesDataFilePath = assetsFilePath + "entities\\entities.txt";
 	
 	private boolean debug;
 	

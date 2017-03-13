@@ -27,7 +27,7 @@ public class AttackLoader {
 	
 	public void loadAttacks() {
 		// Load text file containing the attacks
-		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.attacksFilePath);
+		ArrayList<String> metadata = FileUtils.getTextFileContent(Options.attacksDataFilePath);
 		
 		String attackName = "";
 		String animationName = "";

@@ -32,6 +32,7 @@ import data.AnimationData;
 import data.AnimationLoader;
 import data.AttackData;
 import data.AttackData.TileAttackData;
+import data.EntityLoader;
 import factories.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
@@ -46,6 +47,7 @@ public class Dungeon {
 	public static class DungeonParams {
 		private Engine engine;
 		private int maxFloors;
+		private EntityLoader entityLoader;
 		private AnimationLoader animationLoader;
 		private Entity player;
 		private Options options;
@@ -53,10 +55,11 @@ public class Dungeon {
 		private Images images;
 		private EntityFactory entityFactory;
 		
-		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, 
+		public DungeonParams(Engine engine, int maxFloors, AnimationLoader animationLoader, EntityLoader entityLoader,
 				Entity player, Options options, Audio audio, Images images, EntityFactory entityFactory) {
 			this.engine = engine;
 			this.maxFloors = maxFloors;
+			this.entityLoader = entityLoader;
 			this.animationLoader = animationLoader;
 			this.player = player;
 			this.options = options;
@@ -87,6 +90,10 @@ public class Dungeon {
 		
 		public EntityFactory getEntityFactory() {
 			return entityFactory;
+		}
+		
+		public EntityLoader getEntityLoader() {
+			return entityLoader;
 		}
 	}
 	

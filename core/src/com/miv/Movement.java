@@ -122,8 +122,7 @@ public class Movement {
 						}
 					}
 				}
-			} else if((direction.equals(Direction.RIGHT) || direction.equals(Direction.LEFT))
-					&& isValidTurn(tiles, entity, direction)) {
+			} else if(isValidTurn(tiles, entity, direction)) {
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);

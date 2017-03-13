@@ -159,23 +159,25 @@ public class Attack {
 		// Get entities that are attacked
 		Set<Entity> attackedEntities = new HashSet<Entity>();
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
-		int absX = Math.max(0, params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x);
-		int absY = Math.max(0, params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y);
-		for(int x = absX; x < Math.min(mapTiles.length, absX + params.targetedTiles.length); x++) {
-			for(int y = absY; y < Math.min(mapTiles[x].length, absY + params.targetedTiles[x - absX].length); y++) {
-				// Get x and y relative to targetedTiles
-				TileAttackData tile = params.targetedTiles[x - targetedTilesAbsoluteMapPosition.x][y - targetedTilesAbsoluteMapPosition.y];
-				if(tile.getIsAttack()) {
-					// Get attackble entities that reside on the absolute tile
-					for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
-						// Check if occupant has the entityHittableRequirement component
-						if(occupant.getComponent(entityHittableRequirement) != null) {
-							attackedEntities.add(occupant);
+		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x;
+		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y;
+		for(int x = absX; x < absX + params.targetedTiles.length; x++) {
+			for(int y = absY; y < absY + params.targetedTiles[x - absX].length; y++) {
+				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
+					// Get x and y relative to targetedTiles
+					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
+					if(tile.getIsAttack()) {
+						// Get attackble entities that reside on the absolute tile
+						for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
+							// Check if occupant has the entityHittableRequirement component
+							if(occupant.getComponent(entityHittableRequirement) != null) {
+								attackedEntities.add(occupant);
+							}
 						}
+						
+						// Do animation on tile
+						params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
 					}
-					
-					// Do animation on tile
-					params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
 				}
 			}
 		}

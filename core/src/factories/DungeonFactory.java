@@ -10,7 +10,6 @@ import dungeons.Dungeon;
 import dungeons.Floor;
 import dungeons.Tile;
 import dungeons.Dungeon.DungeonParams;
-import factories.EntityFactory.EntityData;
 
 public class DungeonFactory {
 	//TODO: generate rooms, populate tiles with enemies
@@ -20,11 +19,11 @@ public class DungeonFactory {
 		
 		Floor[] floors = new Floor[dungeonParams.getMaxFloors()];
 		
-		float bpm = Dungeon.calculateBpmFromFloor(dungeonParams.getOptions(), 1);
 		floors[0] = generateFloor(dungeonParams, 0);
 			
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
-		spawns.add(dungeonParams.getEntityFactory().createEnemy(new EntityData("dragon", new Point(8, 8)), bpm));
+		spawns.add(dungeonParams.getEntityFactory()
+				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(5, 5), 5));
 		
 		dungeon.setFloors(floors);
 		

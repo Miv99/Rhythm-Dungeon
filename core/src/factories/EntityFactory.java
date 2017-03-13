@@ -13,6 +13,7 @@ import com.miv.Movement.Direction;
 import components.AnimationComponent;
 import components.AttackComponent;
 import components.EnemyComponent;
+import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
 import components.PlayerComponent;
@@ -20,6 +21,7 @@ import data.AnimationData;
 import data.AnimationLoader;
 import data.AttackData;
 import data.AttackLoader;
+import data.EntityData;
 import data.HitboxData;
 import data.HitboxData.HitboxType;
 import data.HitboxLoader;
@@ -27,16 +29,6 @@ import dungeons.Tile;
 import graphics.Images;
 
 public class EntityFactory {
-	public static class EntityData {
-		private String enemyName;
-		private Point mapPosition;
-		
-		public EntityData(String enemyName, Point mapPosition) {
-			this.enemyName = enemyName;
-			this.mapPosition = mapPosition;
-		}
-	}
-	
 	private Images images;
 	private HashMap<String, AnimationData> animationsData;
 	private HashMap<String, AttackData> attacksData;
@@ -90,36 +82,27 @@ public class EntityFactory {
 		engine.addEntity(e);
 	}
 	
-	/**
-	 * TODO
-	 */
-	public Entity createEnemy(EntityData entityData, float bpm) {
+	public Entity createEntity(EntityData entityData, Point mapPosition, int healthPoints) {
 		Entity e = new Entity();
 		
-		e.add(new EnemyComponent());		
-		e.add(new HitboxComponent(entityData.enemyName, hitboxesData, entityData.mapPosition));
-		e.add(new AnimationComponent(animationsData, entityData.enemyName + "_idle"));
-		e.add(new ImageComponent(entityData.enemyName, createDirectionalSprites(entityData.enemyName), entityData.mapPosition));
+		if(entityData.getIsPlayer()) {
+			PlayerComponent playerComponent = new PlayerComponent();
+			playerComponent.setWeaponEquipped(entityData.getPlayerAttackName());
+			e.add(playerComponent);
+		}
+		if(entityData.getIsEnemy()) {
+			e.add(new EnemyComponent());
+		}
 		
+		e.add(new HitboxComponent(entityData.getHitboxName(), hitboxesData, mapPosition));
 		e.add(new AttackComponent(attacksData));
+		e.add(new HealthComponent(healthPoints * 4));
 		
-		return e;
-	}
-	
-	public Entity createPlayer(Point startingMapPosition, float bpm) {
-		Entity e = new Entity();
-		
-		e.add(new HitboxComponent("player", hitboxesData, startingMapPosition));
-		
-		e.add(new ImageComponent("player", createDirectionalSprites("player"), startingMapPosition));
-		
-		e.add(new AnimationComponent(animationsData, "player_idle"));
-		e.add(new AttackComponent(attacksData));
-		
-		PlayerComponent playerComponent = new PlayerComponent();
-		playerComponent.setWeaponEquipped("player_sword");
-		e.add(playerComponent);
-		
+		e.add(new ImageComponent(entityData.getSpriteName(), createDirectionalSprites(entityData.getSpriteName()), mapPosition));
+		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {
+			e.add(new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle"));
+		}
+				
 		return e;
 	}
 	
