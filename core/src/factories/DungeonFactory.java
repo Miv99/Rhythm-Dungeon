@@ -8,9 +8,9 @@ import com.badlogic.gdx.utils.Array;
 
 import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
+import dungeons.Dungeon.DungeonParams;
 import dungeons.Floor;
 import dungeons.Tile;
-import dungeons.Dungeon.DungeonParams;
 import utils.GeneralUtils;
 
 public class DungeonFactory {

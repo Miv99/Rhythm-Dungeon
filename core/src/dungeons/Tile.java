@@ -35,7 +35,7 @@ public class Tile {
 	}
 	
 	public boolean isTangibleTile() {
-		if(hitboxType.getTangible()
+		if(hitboxType.isTangible()
 				|| tangibleOccupants.size() > 0) {
 			return true;
 		} else {
@@ -48,7 +48,7 @@ public class Tile {
 	 * that do not include the entityToIgnore
 	 */
 	public boolean isTangibleTile(Entity entityToIgnore) {
-		if(hitboxType.getTangible()
+		if(hitboxType.isTangible()
 				|| tangibleOccupants.size() > 1) {
 			return true;
 		} else if(tangibleOccupants.size() == 1) {
@@ -78,7 +78,7 @@ public class Tile {
 		this.spriteAfterBreaking = spriteAfterBreaking;
 	}
 	
-	public boolean getBreakable() {
+	public boolean isBreakable() {
 		return breakable;
 	}
 

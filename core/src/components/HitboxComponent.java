@@ -4,21 +4,19 @@ import java.awt.Point;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
-import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 
 import data.HitboxData;
 import data.HitboxData.HitboxType;
-import utils.GeneralUtils;
 
 public class HitboxComponent implements Component {
 	private Point mapPosition;
 	// Each grid point on the 2D array represents one map tile that the entire hitbox takes up
 	private HitboxType[][] hitbox;
 	private HashMap<String, HitboxData> hitboxesData = new HashMap<String, HitboxData>();
-	private EntityActions.Direction facing;
+	private Direction facing;
 	// The last horizontal direction that the entity faced
-	private EntityActions.Direction horizontalFacing;
+	private Direction horizontalFacing;
 	// Point on hitbox where attacks originate from; defaulted to (0, 0) if none specified from HitboxData
 	private Point attackOrigin;
 	private String hitboxName;
@@ -27,8 +25,8 @@ public class HitboxComponent implements Component {
 	private float movementDisabledTimeInBeats;
 	
 	public HitboxComponent(String hitboxName, HashMap<String, HitboxData> hitboxesData, Point mapPosition) {
-		facing = EntityActions.Direction.RIGHT;
-		horizontalFacing = EntityActions.Direction.RIGHT;
+		facing = Direction.RIGHT;
+		horizontalFacing = Direction.RIGHT;
 		
 		this.hitboxName = hitboxName;
 		this.hitboxesData = hitboxesData;
@@ -43,7 +41,7 @@ public class HitboxComponent implements Component {
 		attackOrigin = new Point(0, 0);
 		for(int x = 0; x < hitbox.length; x++) {
 			for(int y = 0; y < hitbox[x].length; y++) {
-				if(hitbox[x][y].getAttackOrigin()) {
+				if(hitbox[x][y].isAttackOrigin()) {
 					attackOrigin.x = x;
 					attackOrigin.y = y;
 					break;
@@ -61,10 +59,9 @@ public class HitboxComponent implements Component {
 		}
 	}
 	
-	public void faceDirection(EntityActions.Direction direction) {
+	public void faceDirection(Direction direction) {
 		facing = direction;
-		if(direction.equals(EntityActions.Direction.LEFT)
-				|| direction.equals(EntityActions.Direction.RIGHT)) {
+		if(direction.isHorizontal()) {
 			horizontalFacing = direction;
 			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
 			
@@ -91,11 +88,11 @@ public class HitboxComponent implements Component {
 		return mapPosition;
 	}
 	
-	public EntityActions.Direction getFacing() {
+	public Direction getFacing() {
 		return facing;
 	}
 	
-	public EntityActions.Direction getHorizontalFacing() {
+	public Direction getHorizontalFacing() {
 		return horizontalFacing;
 	}
 	
@@ -103,7 +100,7 @@ public class HitboxComponent implements Component {
 		return attackOrigin;
 	}
 	
-	public boolean getMovementDisabled() {
+	public boolean isMovementDisabled() {
 		return movementDisabled;
 	}
 	

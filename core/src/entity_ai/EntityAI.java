@@ -74,7 +74,7 @@ public abstract class EntityAI {
 		return activationRadiusInTiles;
 	}
 	
-	public boolean getActivated() {
+	public boolean isActivated() {
 		return activated;
 	}
 }

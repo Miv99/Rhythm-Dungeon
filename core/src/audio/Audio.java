@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
@@ -155,7 +154,7 @@ public class Audio {
 	
 	public void resumeMusic() {
 		for(Song song : songs.values()) {
-			if(song.getPaused()) {
+			if(song.isPaused()) {
 				song.getMusic().play();
 				song.setPaused(false);
 			}

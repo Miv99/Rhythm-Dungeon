@@ -16,7 +16,6 @@ import com.miv.EntityActions.EntityAttackParams;
 import com.miv.ComponentMappers;
 import com.miv.GameCamera;
 import com.miv.Main;
-import com.miv.Movement;
 import com.miv.Options;
 
 import audio.Audio;
@@ -205,7 +204,7 @@ public class Dungeon {
 		tileRenderSystem.update(deltaTime);
 		actionBar.actionBarSystem.update(deltaTime);
 		
-		if(floors[currentFloor].getActionsDisabled()) {
+		if(floors[currentFloor].isActionsDisabled()) {
 			actionsDisabledTimeLeftInSeconds -= deltaTime;
 			if(actionsDisabledTimeLeftInSeconds <= 0) {
 				floors[currentFloor].setActionsDisabled(false);
@@ -327,7 +326,7 @@ public class Dungeon {
 		}
 		
 		public void fireAttackAction() {
-			if(!floors[currentFloor].getActionsDisabled()) {
+			if(!floors[currentFloor].isActionsDisabled()) {
 				BeatLine nearestLeft = getNearestCircleFromLeft(false);
 				BeatLine nearestRight = getNearestCircleFromRight(false);
 				
@@ -346,18 +345,18 @@ public class Dungeon {
 			}
 		}
 		
-		public void fireMovementAction(EntityActions.Direction movementDirection) {
-			if(!floors[currentFloor].getActionsDisabled() && !ComponentMappers.hitboxMapper.get(dungeonParams.player).getMovementDisabled()) {
+		public void fireMovementAction(Direction movementDirection) {
+			if(!floors[currentFloor].isActionsDisabled() && !ComponentMappers.hitboxMapper.get(dungeonParams.player).isMovementDisabled()) {
 				BeatLine nearestLeft = getNearestCircleFromLeft(true);
 				BeatLine nearestRight = getNearestCircleFromRight(true);
 				
 				if(nearestLeft != null
 						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
-						&& nearestLeft.getStrongBeat()) {
+						&& nearestLeft.isStrongBeat()) {
 					nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 				} else if(nearestRight != null
 						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
-						&& nearestRight.getStrongBeat()) {
+						&& nearestRight.isStrongBeat()) {
 					nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 				} else if(nearestRight != null
 						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
@@ -367,7 +366,7 @@ public class Dungeon {
 		}
 		
 		public void fireTileBreakAction() {
-			if(!floors[currentFloor].getActionsDisabled()) {
+			if(!floors[currentFloor].isActionsDisabled()) {
 				BeatLine nearestLeft = getNearestCircleFromLeft(false);
 				BeatLine nearestRight = getNearestCircleFromRight(false);
 				
@@ -400,7 +399,7 @@ public class Dungeon {
 			float smallest = -999f;
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
-					if(b.getStrongBeat()
+					if(b.isStrongBeat()
 							&& b.getTimeUntilCursorLineInSeconds() <= 0) {
 						if(b.getTimeUntilCursorLineInSeconds() > smallest) {
 							nearestLeft = b;
@@ -429,7 +428,7 @@ public class Dungeon {
 			float largest = 999f;
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
-					if(b.getStrongBeat()
+					if(b.isStrongBeat()
 							&& b.getTimeUntilCursorLineInSeconds() >= 0) {
 						if(b.getTimeUntilCursorLineInSeconds() < largest) {
 							nearestRight = b;
@@ -540,10 +539,10 @@ public class Dungeon {
 					for(BeatLine b : actionBar.getBeatLines()) {
 						// Update BeatLine fields
 						b.setTimeUntilCursorLineInSeconds(b.getTimeUntilCursorLineInSeconds() - deltaTime);
-						if(b.getCircleStrongIncreasingYPos()) {
+						if(b.isCircleStrongIncreasingYPos()) {
 							b.setCircleStrongYPositionRelativeToAxis(b.getCircleStrongYPositionRelativeToAxis() + (deltaTime * 500f));
 						}
-						if(b.getCircleWeakIncreasingYPos()) {
+						if(b.isCircleWeakIncreasingYPos()) {
 							b.setCircleWeakYPositionRelativeToAxis(b.getCircleWeakYPositionRelativeToAxis() + (deltaTime * 500f));
 						}
 						
@@ -552,25 +551,25 @@ public class Dungeon {
 						if(b.getTimeUntilCursorLineInSeconds() < dungeonParams.options.getActionBarScrollInterval()) {
 	
 							batch.draw(circleWeakBeat, x - circleWeakBeatWidth/2f, circleWeakBeatYPos + b.getCircleWeakYPositionRelativeToAxis());
-							if(b.getStrongBeat()) {
+							if(b.isStrongBeat()) {
 								batch.draw(circleStrongBeat, x - circleStrongBeatWidth/2f, circleStrongBeatYPos + b.getCircleStrongYPositionRelativeToAxis());
 							}
 						}
 						
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimeUntilCursorLineInSeconds() <= 0
-								&& !b.getReaddedToActionBar()) {
-							onNewBeat(b.getStrongBeat());
-							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.getStrongBeat()));
+								&& !b.isReaddedToActionBar()) {
+							onNewBeat(b.isStrongBeat());
+							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.isStrongBeat()));
 							b.setReaddedToActionBar(true);
 						}
-						if(!b.getFiredPlayerActionQueue()
+						if(!b.isFiredPlayerActionQueue()
 								&& b.getTimeUntilCursorLineInSeconds() < -beatHitErrorMarginInSeconds) {
 							firePlayerActionsQueue();
 							b.setFiredPlayerActionQueue(true);
 						}
 						if(x + circleStrongBeatWidth < 0
-								&& !b.getDeletionQueued()) {
+								&& !b.isDeletionQueued()) {
 							queueBeatLineDeletion(b);
 						}
 					}
@@ -610,7 +609,7 @@ public class Dungeon {
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
 						if(!animationComponent.isInNonIdleAnimation()
-								&& !animationComponent.getRemoveEntityOnAnimationFinish()) {
+								&& !animationComponent.isRemoveEntityOnAnimationFinish()) {
 							animationComponent.setQueuedIdleAnimation(true);
 						}
 					}

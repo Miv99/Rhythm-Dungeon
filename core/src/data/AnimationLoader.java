@@ -6,7 +6,6 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
-import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 import com.miv.Options;
 
@@ -43,7 +42,7 @@ public class AnimationLoader {
 						rightSprites.addAll(images.loadAnimationSprites(animationName));
 						
 						AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
-						animationsData.put(animationName + "_" + EntityActions.Direction.RIGHT.getStringRepresentation(), animationRightData);
+						animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
 						
 						Array<Sprite> leftSprites = new Array<Sprite>();
 						leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
@@ -54,7 +53,7 @@ public class AnimationLoader {
 						}
 						
 						AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
-						animationsData.put(animationName + "_" + EntityActions.Direction.LEFT.getStringRepresentation(), animationLeftData);
+						animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
 						
 						animationName = "";
 						animationDurationInBeats = 1f;
@@ -73,7 +72,7 @@ public class AnimationLoader {
 			rightSprites.addAll(images.loadAnimationSprites(animationName));
 			
 			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
-			animationsData.put(animationName + "_" + EntityActions.Direction.RIGHT.getStringRepresentation(), animationRightData);
+			animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
 			
 			Array<Sprite> leftSprites = new Array<Sprite>();
 			leftSprites.addAll(images.forceLoadNewAnimationSprites(animationName));
@@ -84,7 +83,7 @@ public class AnimationLoader {
 			}
 			
 			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
-			animationsData.put(animationName + "_" + EntityActions.Direction.LEFT.getStringRepresentation(), animationLeftData);
+			animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
 		}
 	}
 	

@@ -33,7 +33,7 @@ public class SongData {
 		return loopStartMarkerInSeconds;
 	}
 	
-	public boolean getLoops() {
+	public boolean isLoops() {
 		return loops;
 	}
 }

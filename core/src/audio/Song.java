@@ -23,7 +23,7 @@ public class Song {
 		this.bpm = songData.getBpm();
 		this.offsetInSeconds = songData.getOffsetInSeconds();
 		this.loopStartMarkerInSeconds = songData.getLoopStartMarkerInSeconds();
-		this.loops = songData.getLoops();
+		this.loops = songData.isLoops();
 	}
 	
 	public void setPaused(boolean paused) {
@@ -50,11 +50,11 @@ public class Song {
 		return loopStartMarkerInSeconds;
 	}
 	
-	public boolean getLoops() {
+	public boolean isLoops() {
 		return loops;
 	}
 	
-	public boolean getPaused() {
+	public boolean isPaused() {
 		return paused;
 	}
 }

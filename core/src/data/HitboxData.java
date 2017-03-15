@@ -20,15 +20,15 @@ public class HitboxData {
 			this.attackOrigin = attackOrigin;
 		}
 		
-		public boolean getTangible() {
+		public boolean isTangible() {
 			return tangible;
 		}
 		
-		public boolean getAttackable() {
+		public boolean isAttackable() {
 			return attackable;
 		}
 		
-		public boolean getAttackOrigin() {
+		public boolean isAttackOrigin() {
 			return attackOrigin;
 		}
 	}

@@ -149,11 +149,11 @@ public class Options {
 	}
 	
 	
-	public boolean getDebug() {
+	public boolean isDebug() {
 		return debug;
 	}
 	
-	public boolean getFullscreen() {
+	public boolean isFullscreen() {
 		return fullscreen;
 	}
 	

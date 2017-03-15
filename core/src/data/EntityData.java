@@ -1,7 +1,5 @@
 package data;
 
-import java.awt.Point;
-
 public class EntityData {
 	private String entityName;
 	private String hitboxName;
@@ -46,11 +44,11 @@ public class EntityData {
 		return deathSoundName;
 	}
 	
-	public boolean getIsEnemy() {
+	public boolean isEnemy() {
 		return isEnemy;
 	}
 	
-	public boolean getIsPlayer() {
+	public boolean isPlayer() {
 		return isPlayer;
 	}
 

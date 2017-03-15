@@ -26,7 +26,7 @@ public class Floor {
 		return tiles;
 	}
 	
-	public boolean getActionsDisabled() {
+	public boolean isActionsDisabled() {
 		return actionsDisabled;
 	}
 }

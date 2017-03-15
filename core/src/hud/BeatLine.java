@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
-import com.miv.Movement;
 import com.miv.Options;
 
 import audio.Audio;
@@ -127,7 +126,7 @@ public class BeatLine {
 		this.firedPlayerActionQueue = firedPlayerActionQueue;
 	}
 	
-	public boolean getDeletionQueued() {
+	public boolean isDeletionQueued() {
 		return deletionQueued;
 	}
 	
@@ -135,11 +134,11 @@ public class BeatLine {
 		return timeUntilCursorLineInSeconds;
 	}
 	
-	public boolean getFiredPlayerActionQueue() {
+	public boolean isFiredPlayerActionQueue() {
 		return firedPlayerActionQueue;
 	}
 	
-	public boolean getStrongBeat() {
+	public boolean isStrongBeat() {
 		return strongBeat;
 	}
 	
@@ -151,7 +150,7 @@ public class BeatLine {
 		return circleStrongState;
 	}
 	
-	public boolean getAttackTriggered() {
+	public boolean isAttackTriggered() {
 		return attackTriggered;
 	}
 	
@@ -163,15 +162,15 @@ public class BeatLine {
 		return circleWeakYPositionRelativeToAxis;
 	}
 	
-	public boolean getReaddedToActionBar() {
+	public boolean isReaddedToActionBar() {
 		return readdedToActionBar;
 	}
 	
-	public boolean getCircleWeakIncreasingYPos() {
+	public boolean isCircleWeakIncreasingYPos() {
 		return circleWeakIncreasingYPos;
 	}
 	
-	public boolean getCircleStrongIncreasingYPos() {
+	public boolean isCircleStrongIncreasingYPos() {
 		return circleStrongIncreasingYPos;
 	}
 }

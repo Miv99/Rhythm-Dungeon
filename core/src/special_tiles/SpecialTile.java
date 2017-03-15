@@ -31,7 +31,7 @@ public abstract class SpecialTile {
 		return tileOverlay;
 	}
 	
-	public boolean getDeactivated() {
+	public boolean isDeactivated() {
 		return deactivated;
 	}
 }

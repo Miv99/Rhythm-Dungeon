@@ -5,27 +5,26 @@ import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 
 public class ImageComponent implements Component {
 	// Name of the sprite without any animations and without "_[direction]"
 	private String spriteName;
 	// The original sprites facing each direction (left/right), without any animations
-	private HashMap<EntityActions.Direction, Sprite> directionalSprites;
-	private EntityActions.Direction facing;
+	private HashMap<Direction, Sprite> directionalSprites;
+	private Direction facing;
 	
 	// Sprite currently being used
 	private Sprite sprite;
 	private Point mapPosition;
 	
-	public ImageComponent(String spriteName, HashMap<EntityActions.Direction, Sprite> directionalSprites, Point mapPosition) {
+	public ImageComponent(String spriteName, HashMap<Direction, Sprite> directionalSprites, Point mapPosition) {
 		this.spriteName = spriteName;
 		this.directionalSprites = directionalSprites;
 		this.mapPosition = mapPosition;
 		
-		sprite = directionalSprites.get(EntityActions.Direction.RIGHT);
-		facing = EntityActions.Direction.RIGHT;
+		sprite = directionalSprites.get(Direction.RIGHT);
+		facing = Direction.RIGHT;
 	}
 	
 	/**
@@ -33,18 +32,17 @@ public class ImageComponent implements Component {
 	 */
 	public ImageComponent(Point mapPosition) {
 		this.mapPosition = mapPosition;
-		facing = EntityActions.Direction.RIGHT;
+		facing = Direction.RIGHT;
 	}
 	
-	public void faceDirection(EntityActions.Direction direction) {
-		if(direction.equals(EntityActions.Direction.LEFT)
-				|| direction.equals(EntityActions.Direction.RIGHT)) {
+	public void faceDirection(Direction direction) {
+		if(direction.isHorizontal()) {
 			facing = direction;
 			sprite = directionalSprites.get(direction);
 		}
 	}
 	
-	public EntityActions.Direction getFacing() {
+	public Direction getFacing() {
 		return facing;
 	}
 	
@@ -67,7 +65,7 @@ public class ImageComponent implements Component {
 		return spriteName;
 	}
 	
-	public HashMap<EntityActions.Direction, Sprite> getDirectionalSprites() {
+	public HashMap<Direction, Sprite> getDirectionalSprites() {
 		return directionalSprites;
 	}
 	

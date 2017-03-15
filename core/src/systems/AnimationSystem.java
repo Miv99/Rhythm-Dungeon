@@ -41,13 +41,13 @@ public class AnimationSystem extends EntitySystem {
 			if(animation.getCurrentAnimation() != null) {
 				image.setSprite(animation.getKeyFrame());
 			}
-			if(animation.getQueuedIdleAnimation()) {
+			if(animation.isQueuedIdleAnimation()) {
 				animation.startAnimation(animation.getIdleAnimationName() + "_" + image.getFacing().getStringRepresentation(), PlayMode.NORMAL);
 				animation.setPlayingIdleAnimation(true);
 				animation.setQueuedIdleAnimation(false);
 			}
 			if(animation.getCurrentAnimation() == null
-					&& animation.getRemoveEntityOnAnimationFinish()) {
+					&& animation.isRemoveEntityOnAnimationFinish()) {
 				deletionQueue.add(e);
 			}
 		}

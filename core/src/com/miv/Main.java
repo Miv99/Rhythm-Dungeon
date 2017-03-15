@@ -4,20 +4,15 @@ import java.awt.Point;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.miv.EntityActions.Direction;
 
 import audio.Audio;
-import components.EnemyAIComponent;
-import components.ImageComponent;
 import data.AnimationLoader;
 import data.AttackLoader;
 import data.EntityLoader;
@@ -190,13 +185,13 @@ public class Main extends ApplicationAdapter {
 		public boolean keyDown(int keycode) {
 			if(dungeon != null) {
 				if(keycode == Input.Keys.LEFT) {
-					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.LEFT);
+					dungeon.getActionBar().fireMovementAction(Direction.LEFT);
 				} else if(keycode == Input.Keys.RIGHT) {
-					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.RIGHT);
+					dungeon.getActionBar().fireMovementAction(Direction.RIGHT);
 				} else if(keycode == Input.Keys.UP) {
-					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.UP);
+					dungeon.getActionBar().fireMovementAction(Direction.UP);
 				} else if(keycode == Input.Keys.DOWN) {
-					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.DOWN);
+					dungeon.getActionBar().fireMovementAction(Direction.DOWN);
 				} else if(keycode == options.getAttackKey1()
 						|| keycode == options.getAttackKey2()) {
 					dungeon.getActionBar().fireAttackAction();
@@ -209,7 +204,7 @@ public class Main extends ApplicationAdapter {
 						pause();
 					}
 				} else if(keycode == Input.Keys.F1) {
-					options.setDebug(!options.getDebug());
+					options.setDebug(!options.isDebug());
 				}
 			}
 			return false;

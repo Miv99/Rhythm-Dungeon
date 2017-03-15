@@ -3,7 +3,6 @@ package data;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
-import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 
 import utils.GeneralUtils;
@@ -32,11 +31,11 @@ public class AttackData {
 			this.animationOnTileName = animationOnTileName;
 		}
 		
-		public boolean getIsFocus() {
+		public boolean isFocus() {
 			return isFocus;
 		}
 		
-		public boolean getIsAttack() {
+		public boolean isAttack() {
 			return isAttack;
 		}
 		
@@ -63,7 +62,7 @@ public class AttackData {
 	private boolean warnTilesBeforeAttack;
 	// Marks which tiles are to be targeted depending TileAttackDirectionType (see its comments)
 	// Each 2d array can have only one AttackTileType of either isSelf or isTarget being true
-	private HashMap<EntityActions.Direction, TileAttackData[][]> directionalTilesAttackData;
+	private HashMap<Direction, TileAttackData[][]> directionalTilesAttackData;
 	// Determines how Direction in directionalTilesAttackData is determined
 	private AttackDirectionDeterminant attackDirectionDeterminant;
 	private String attackerAnimationName;
@@ -75,7 +74,7 @@ public class AttackData {
 	 */
 	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
 			AttackDirectionDeterminant attackDirectionDeterminant, int disabledMovementTimeInBeats,
-			String attackerAnimationName, HashMap<EntityActions.Direction, TileAttackData[][]> directionalTilesAttackData) {
+			String attackerAnimationName, HashMap<Direction, TileAttackData[][]> directionalTilesAttackData) {
 		this.entityHittableRequirement = entityHittableRequirement;
 		this.attackDelayInBeats = attackDelayInBeats;
 		this.warnTilesBeforeAttack = warnTilesBeforeAttack;
@@ -100,14 +99,14 @@ public class AttackData {
 		this.attackerAnimationName = attackerAnimationName;
 		
 		// Rotate target tiles
-		directionalTilesAttackData = new HashMap<EntityActions.Direction, TileAttackData[][]>();
-		directionalTilesAttackData.put(EntityActions.Direction.RIGHT, targetTilesFacingRight);
+		directionalTilesAttackData = new HashMap<Direction, TileAttackData[][]>();
+		directionalTilesAttackData.put(Direction.RIGHT, targetTilesFacingRight);
 		TileAttackData[][] targetTilesFacingLeft = GeneralUtils.horizontallyFlipArray(targetTilesFacingRight);
-		directionalTilesAttackData.put(EntityActions.Direction.LEFT, targetTilesFacingLeft);
+		directionalTilesAttackData.put(Direction.LEFT, targetTilesFacingLeft);
 		TileAttackData[][] targetTilesFacingUp = GeneralUtils.rotateClockwise(targetTilesFacingLeft);
-		directionalTilesAttackData.put(EntityActions.Direction.UP, targetTilesFacingUp);
+		directionalTilesAttackData.put(Direction.UP, targetTilesFacingUp);
 		TileAttackData[][] targetTilesFacingDown = GeneralUtils.verticallyFlipArray(targetTilesFacingUp);
-		directionalTilesAttackData.put(EntityActions.Direction.DOWN, targetTilesFacingDown);
+		directionalTilesAttackData.put(Direction.DOWN, targetTilesFacingDown);
 	}
 	
 	public String getAttackerAnimationName() {
@@ -130,11 +129,11 @@ public class AttackData {
 		return attackDelayInBeats;
 	}
 	
-	public boolean getWarnTilesBeforeAttack() {
+	public boolean isWarnTilesBeforeAttack() {
 		return warnTilesBeforeAttack;
 	}
 	
-	public HashMap<EntityActions.Direction, TileAttackData[][]> getDirectionalTilesAttackData() {
+	public HashMap<Direction, TileAttackData[][]> getDirectionalTilesAttackData() {
 		return directionalTilesAttackData;
 	}
 }

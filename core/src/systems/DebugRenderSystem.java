@@ -14,9 +14,7 @@ import com.miv.ComponentMappers;
 import com.miv.Options;
 
 import components.HitboxComponent;
-import components.ImageComponent;
 import data.HitboxData.HitboxType;
-import dungeons.Tile;
 
 public class DebugRenderSystem extends EntitySystem {
 	private SpriteBatch batch;
@@ -51,7 +49,7 @@ public class DebugRenderSystem extends EntitySystem {
 
 	@Override
 	public void update(float deltaTime) {
-		if(options.getDebug()) {
+		if(options.isDebug()) {
 			debugRenderer.begin();
 			
 			// Draw tangible hitboxes
@@ -62,10 +60,10 @@ public class DebugRenderSystem extends EntitySystem {
 				HitboxType[][] hitbox = hitboxComponent.getHitbox();
 				for(int x = 0; x < hitbox.length; x++) {
 					for(int y = 0; y < hitbox[x].length; y++) {
-						if(hitbox[x][y].getTangible()) {
+						if(hitbox[x][y].isTangible()) {
 							debugRenderer.rect((mapPosition.x + x) * Options.TILE_SIZE, (mapPosition.y + y) * Options.TILE_SIZE, Options.TILE_SIZE, Options.TILE_SIZE);
 						}
-						if(hitbox[x][y].getAttackOrigin()) {
+						if(hitbox[x][y].isAttackOrigin()) {
 							debugRenderer.circle((mapPosition.x + x)*Options.TILE_SIZE + (Options.TILE_SIZE/2), (mapPosition.y + y)*Options.TILE_SIZE + (Options.TILE_SIZE/2), Options.TILE_SIZE/2);
 						}
 					}

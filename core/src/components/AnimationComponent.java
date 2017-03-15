@@ -110,11 +110,11 @@ public class AnimationComponent implements Component {
 		return animationStateTime;
 	}
 	
-	public boolean getQueuedIdleAnimation() {
+	public boolean isQueuedIdleAnimation() {
 		return queuedIdleAnimation;
 	}
 	
-	public boolean getRemoveEntityOnAnimationFinish() {
+	public boolean isRemoveEntityOnAnimationFinish() {
 		return removeEntityOnAnimationFinish;
 	}
 }

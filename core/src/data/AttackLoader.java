@@ -4,23 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
+import com.miv.EntityActions.Direction;
+import com.miv.Options;
 
 import components.EnemyComponent;
 import components.HealthComponent;
 import components.PlayerComponent;
-
-import com.miv.EntityActions;
-import com.miv.EntityActions.Direction;
-import com.miv.Options;
-
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
-import graphics.Images;
 import utils.FileUtils;
-import utils.GeneralUtils;
 
 public class AttackLoader {
 	// HashMap of attackName:attackData
@@ -104,11 +97,11 @@ public class AttackLoader {
 									disabledMovementTime, animationName, tileAttackDataRight);
 							attacksData.put(attackName, attackData);
 						} else {
-							HashMap<EntityActions.Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<EntityActions.Direction, TileAttackData[][]>();
-							directionalTileAttackData.put(EntityActions.Direction.RIGHT, tileAttackDataRight);
-							directionalTileAttackData.put(EntityActions.Direction.LEFT, tileAttackDataLeft);
-							directionalTileAttackData.put(EntityActions.Direction.UP, tileAttackDataUp);
-							directionalTileAttackData.put(EntityActions.Direction.DOWN, tileAttackDataDown);
+							HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
+							directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
+							directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
+							directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
+							directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
 							
 							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
 									disabledMovementTime, animationName, directionalTileAttackData);
@@ -151,11 +144,11 @@ public class AttackLoader {
 						disabledMovementTime, animationName, tileAttackDataRight);
 				attacksData.put(attackName, attackData);
 			} else {
-				HashMap<EntityActions.Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<EntityActions.Direction, TileAttackData[][]>();
-				directionalTileAttackData.put(EntityActions.Direction.RIGHT, tileAttackDataRight);
-				directionalTileAttackData.put(EntityActions.Direction.LEFT, tileAttackDataLeft);
-				directionalTileAttackData.put(EntityActions.Direction.UP, tileAttackDataUp);
-				directionalTileAttackData.put(EntityActions.Direction.DOWN, tileAttackDataDown);
+				HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
+				directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
+				directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
+				directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
+				directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
 				
 				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
 						disabledMovementTime, animationName, directionalTileAttackData);
