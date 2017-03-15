@@ -4,7 +4,8 @@ import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
 import com.miv.ComponentMappers;
-import com.miv.Movement.Direction;
+import com.miv.EntityActions;
+import com.miv.EntityActions.Direction;
 
 import components.HitboxComponent;
 import data.HitboxData.HitboxType;
@@ -26,8 +27,8 @@ public class MapUtils {
 		return entityHitbox.getHitbox()[relativeX][relativeY];
 	}
 	
-	public static Direction getRelativeDirection(Point point, Point relativeTo) {
+	public static EntityActions.Direction getRelativeDirection(Point point, Point relativeTo) {
 		//TODO: random direction if on the border between two of them
-		return Direction.RIGHT;
+		return EntityActions.Direction.RIGHT;
 	}
 }

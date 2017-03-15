@@ -69,7 +69,7 @@ public class Options {
 	
 	private int attackKey1 = Input.Keys.A;
 	private int attackKey2 = Input.Keys.S;
-	private int attackBurstKey = Input.Keys.SPACE;
+	private int tileBreakKey = Input.Keys.SPACE;
 	
 	// Temporary values that become permanent once changes are applied
 	private boolean fullscreenTemp;
@@ -136,8 +136,8 @@ public class Options {
 		this.attackKey2= attackKey2;
 	}
 	
-	public void setAttackBurstKey(int attackBurstKey) {
-		this.attackBurstKey = attackBurstKey;
+	public void setTileBreakKey(int tileBreakKey) {
+		this.tileBreakKey = tileBreakKey;
 	}
 	
 	public void setDifficulty(Difficulty difficulty) {
@@ -189,8 +189,8 @@ public class Options {
 		return attackKey2;
 	}
 	
-	public int getAttackBurstKey() {
-		return attackBurstKey;
+	public int getTileBreakKey() {
+		return tileBreakKey;
 	}
 	
 	public Difficulty getDifficulty() {

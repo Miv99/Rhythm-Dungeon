@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Array;
+import com.miv.EntityActions;
+import com.miv.EntityActions.Direction;
 import com.miv.Options;
-import com.miv.Movement.Direction;
 
 import data.HitboxData.HitboxType;
 
@@ -59,11 +60,11 @@ public class HitboxLoader {
 					if(!hitboxName.equals("")) {
 						HitboxType[][] rightFacingHitbox = parseHitboxStrings(hitboxTypeMap, recordingBuffer);
 						HitboxData rightFacingHitboxData = new HitboxData(rightFacingHitbox);
-						hitboxesData.put(hitboxName + "_" + Direction.RIGHT.getStringRepresentation(), rightFacingHitboxData);
+						hitboxesData.put(hitboxName + "_" + EntityActions.Direction.RIGHT.getStringRepresentation(), rightFacingHitboxData);
 						
 						HitboxType[][] leftFacingHitbox = GeneralUtils.horizontallyFlipArray(rightFacingHitbox);
 						HitboxData leftFacingHitboxData = new HitboxData(leftFacingHitbox);
-						hitboxesData.put(hitboxName + "_" + Direction.LEFT.getStringRepresentation(), leftFacingHitboxData);
+						hitboxesData.put(hitboxName + "_" + EntityActions.Direction.LEFT.getStringRepresentation(), leftFacingHitboxData);
 						
 						hitboxName = "";
 						recording = false;
@@ -84,11 +85,11 @@ public class HitboxLoader {
 		if(!hitboxName.equals("")) {
 			HitboxType[][] rightFacingHitbox = parseHitboxStrings(hitboxTypeMap, recordingBuffer);
 			HitboxData rightFacingHitboxData = new HitboxData(rightFacingHitbox);
-			hitboxesData.put(hitboxName + "_" + Direction.RIGHT.getStringRepresentation(), rightFacingHitboxData);
+			hitboxesData.put(hitboxName + "_" + EntityActions.Direction.RIGHT.getStringRepresentation(), rightFacingHitboxData);
 			
 			HitboxType[][] leftFacingHitbox = GeneralUtils.horizontallyFlipArray(rightFacingHitbox);
 			HitboxData leftFacingHitboxData = new HitboxData(leftFacingHitbox);
-			hitboxesData.put(hitboxName + "_" + Direction.LEFT.getStringRepresentation(), leftFacingHitboxData);
+			hitboxesData.put(hitboxName + "_" + EntityActions.Direction.LEFT.getStringRepresentation(), leftFacingHitboxData);
 		}
 	}
 	

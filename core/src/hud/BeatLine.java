@@ -2,9 +2,9 @@ package hud;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.miv.Attack;
+import com.miv.EntityActions;
+import com.miv.EntityActions.Direction;
 import com.miv.Movement;
-import com.miv.Movement.Direction;
 import com.miv.Options;
 
 import audio.Audio;
@@ -59,7 +59,7 @@ public class BeatLine {
 			
 			//TODO: play sound effect
 			
-			Attack.entityStartAttack(options, audio, dungeon, player, target, attackName, entityFactory);
+			EntityActions.entityStartAttack(options, audio, dungeon, player, target, attackName, entityFactory);
 		}
 	}
 	
@@ -74,11 +74,27 @@ public class BeatLine {
 			
 			//TODO: play sound effect
 			
-			Movement.moveEntity(engine, floor, player, movementDirection);
+			EntityActions.moveEntity(engine, floor, player, movementDirection);
 		}
 	}
 	
 	public void onMovementMiss() {
+		circleStrongState = CircleState.Locked;
+		//TODO: play sound effect
+	}
+	
+	public void onTileBreakHit(Floor floor, Entity player) {
+		if(circleStrongState.equals(CircleState.Alive)) {
+			circleStrongState = CircleState.Dying;
+			circleStrongIncreasingYPos = true;
+			
+			//TODO: play sound effect
+			
+			EntityActions.entityBreakTile(floor, player);
+		}
+	}
+	
+	public void onTileBreakMiss() {
 		circleStrongState = CircleState.Locked;
 		//TODO: play sound effect
 	}

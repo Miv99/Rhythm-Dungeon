@@ -8,7 +8,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.miv.ComponentMappers;
-import com.miv.Movement.Direction;
+import com.miv.EntityActions;
+import com.miv.EntityActions.Direction;
 
 import components.AnimationComponent;
 import components.AttackComponent;
@@ -99,20 +100,20 @@ public class EntityFactory {
 		e.add(new HealthComponent(healthPoints * 4, entityData.getHurtSoundName(), entityData.getDeathSoundName()));
 		
 		e.add(new ImageComponent(entityData.getSpriteName(), createDirectionalSprites(entityData.getSpriteName()), mapPosition));
-		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {
+		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + EntityActions.Direction.RIGHT.getStringRepresentation())) {
 			e.add(new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle"));
 		}
 				
 		return e;
 	}
 	
-	private HashMap<Direction, Sprite> createDirectionalSprites(String spriteName) {
-		HashMap<Direction, Sprite> directionalSprites = new HashMap<Direction, Sprite>();
-		directionalSprites.put(Direction.RIGHT, images.loadSprite(spriteName));
+	private HashMap<EntityActions.Direction, Sprite> createDirectionalSprites(String spriteName) {
+		HashMap<EntityActions.Direction, Sprite> directionalSprites = new HashMap<EntityActions.Direction, Sprite>();
+		directionalSprites.put(EntityActions.Direction.RIGHT, images.loadSprite(spriteName));
 		
 		Sprite leftSprite = new Sprite(images.loadSprite(spriteName));
 		leftSprite.flip(true, false);
-		directionalSprites.put(Direction.LEFT, leftSprite);
+		directionalSprites.put(EntityActions.Direction.LEFT, leftSprite);
 		return directionalSprites;
 	}
 }

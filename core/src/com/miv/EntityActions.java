@@ -5,28 +5,51 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
-import com.miv.Movement.Direction;
+import com.miv.EntityActions.Direction;
 
 import audio.Audio;
 import components.AnimationComponent;
 import components.AttackComponent;
+import components.EnemyAIComponent;
+import components.FriendlyAIComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
+import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
 import dungeons.Floor;
 import dungeons.Tile;
+import entity_ai.EntityAI;
 import factories.EntityFactory;
+import special_tiles.SpecialTile;
 import special_tiles.WarningTile;
 import utils.MapUtils;
 
-public class Attack {	
+public class EntityActions {
+	public enum Direction {
+		UP("up"),
+		DOWN("down"),
+		LEFT("left"),
+		RIGHT("right");
+		
+		private String stringRepresentation;
+		
+		Direction(String stringRepresentation) {
+			this.stringRepresentation = stringRepresentation;
+		}
+		
+		public String getStringRepresentation() {
+			return stringRepresentation;
+		}
+	}
 	public static class EntityAttackParams {
 		private Options options;
 		private Audio audio;
@@ -63,6 +86,169 @@ public class Attack {
 		}
 	}
 	
+	public static void moveEntity(Engine engine, Floor floor, Entity entity, EntityActions.Direction direction) {
+		Tile[][] tiles = floor.getTiles();
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		ImageComponent imageComponent = ComponentMappers.imageMapper.get(entity);
+		AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
+
+		if(!floor.getActionsDisabled() && !hitboxComponent.getMovementDisabled()) {
+			if(isValidMovement(tiles, entity, direction)) {
+				HitboxType[][] hitbox = hitboxComponent.getHitbox();
+				Point hitboxPosition = hitboxComponent.getMapPosition();
+				Point imagePosition = imageComponent.getMapPosition();
+				int xNew = hitboxPosition.x;
+				int yNew = hitboxPosition.y;
+				
+				// Remove the entity from the set of occupants on all tiles the entity is currently on
+				for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
+					for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
+						tiles[x][y].getAttackableOccupants().remove(entity);
+						tiles[x][y].getTangibleOccupants().remove(entity);
+					}
+				}
+				
+				// Update hitbox and image positions
+				if(direction.equals(EntityActions.Direction.UP)) {
+					yNew++;
+				} else if(direction.equals(EntityActions.Direction.DOWN)) {
+					yNew--;
+				} else if(direction.equals(EntityActions.Direction.LEFT)) {
+					xNew--;
+				} else if(direction.equals(EntityActions.Direction.RIGHT)) {
+					xNew++;
+				}
+				hitboxPosition.setLocation(xNew, yNew);
+				imagePosition.setLocation(xNew, yNew);
+			
+				// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
+				for(int x = xNew; x < xNew + hitbox.length; x++) {
+					for(int y = yNew; y < yNew + hitbox[x - xNew].length; y++) {
+						if(hitbox[x - xNew][y - yNew].getTangible()) {
+							tiles[x][y].getTangibleOccupants().add(entity);
+						}
+						if(hitbox[x - xNew][y - yNew].getAttackable()) {
+							tiles[x][y].getAttackableOccupants().add(entity);
+						}
+					}
+				}
+				
+				hitboxComponent.faceDirection(direction);
+				imageComponent.faceDirection(direction);
+				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
+				
+				// Trigger special tile events, if any
+				SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
+				if(specialTile != null 
+						&& !specialTile.getDeactivated()) {
+					if(ComponentMappers.playerMapper.has(entity)) {
+						specialTile.onPlayerTrigger();
+					}
+					if(ComponentMappers.enemyMapper.has(entity)) {
+						specialTile.onEnemyTrigger();
+					}
+				}
+				
+				// If the entity moving is a player, check if it goes in range of any enemy AI
+				if(ComponentMappers.playerMapper.has(entity)) {
+					for(Entity enemy : engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+								>= ai.getActivationRadiusInTiles()) {
+							ai.setActivated(true);
+						}
+					}
+				}
+				
+				// If the entity moving is an enemy, check if it goes in range of any friendly AI
+				if(ComponentMappers.enemyMapper.has(entity)) {
+					for(Entity enemy : engine.getEntitiesFor(Family.all(FriendlyAIComponent.class).get())) {
+						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
+						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+								>= ai.getActivationRadiusInTiles()) {
+							ai.setActivated(true);
+						}
+					}
+				}
+			} else if(isValidTurn(tiles, entity, direction)) {
+				// Entity turns but does not move
+				hitboxComponent.faceDirection(direction);
+				imageComponent.faceDirection(direction);
+				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
+			}
+		}
+	}
+	
+	public static void entityBreakTile(Floor floor, Entity entity) {
+		//TODO
+	}
+	
+	/**
+	 * Checks if the entity can turn
+	 */
+	private static boolean isValidTurn(Tile[][] tiles, Entity entity, EntityActions.Direction direction) {
+		if(direction.equals(EntityActions.Direction.LEFT) || direction.equals(EntityActions.Direction.RIGHT)) {
+			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+			HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+			Point mapPosition = hitboxComponent.getMapPosition();
+			
+			return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
+		} else {
+			return true;
+		}
+	}
+	
+	private static boolean isValidMovement(Tile[][] tiles, Entity entity, EntityActions.Direction direction) {
+		HitboxType[][] hitbox;
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		if(direction.equals(EntityActions.Direction.LEFT)
+				|| direction.equals(EntityActions.Direction.RIGHT)) {
+			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+		} else {
+			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
+		}
+		
+		Point currentPosition = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
+		int xEntity = currentPosition.x;
+		int yEntity = currentPosition.y;
+		
+		if(direction.equals(EntityActions.Direction.UP)) {
+			yEntity++;
+		} else if(direction.equals(EntityActions.Direction.DOWN)) {
+			yEntity--;
+		} else if(direction.equals(EntityActions.Direction.LEFT)) {
+			xEntity--;
+		} else if(direction.equals(EntityActions.Direction.RIGHT)) {
+			xEntity++;
+		}
+		
+		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
+	}
+	
+	private static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
+		// Check if the entity out of bounds
+		if(xEntity + hitbox.length > tiles.length
+				|| yEntity + hitbox[0].length > tiles[0].length
+				|| xEntity < 0
+				|| yEntity < 0) {
+			return false;
+		}
+		
+		// Check if any of the entity's hitboxes collide with a tangible tile
+		for(int x = 0; x < hitbox.length; x++) {
+			for(int y = 0; y < hitbox[x].length; y++) {
+				if(hitbox[x][y].getTangible()
+						&& tiles[xEntity + x][yEntity + y].isTangibleTile(entity)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+
 	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
 			entityStartAttack(options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
@@ -79,7 +265,7 @@ public class Attack {
 			Point attackerPosition = attackerHitboxComponent.getMapPosition();
 					
 			AttackDirectionDeterminant directionDeterminant = attackData.getAttackDirectionDeterminant();
-			Direction attackDirection = null;
+			EntityActions.Direction attackDirection = null;
 			Point focusAbsoluteMapPosition = null;
 			Point attackerAttackOrigin = null;
 			if(directionDeterminant.equals(AttackDirectionDeterminant.SELF_FACING)) {

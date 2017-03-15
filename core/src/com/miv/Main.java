@@ -13,7 +13,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.miv.Movement.Direction;
+import com.miv.EntityActions.Direction;
 
 import audio.Audio;
 import components.EnemyAIComponent;
@@ -190,18 +190,18 @@ public class Main extends ApplicationAdapter {
 		public boolean keyDown(int keycode) {
 			if(dungeon != null) {
 				if(keycode == Input.Keys.LEFT) {
-					dungeon.getActionBar().fireMovementAction(Direction.LEFT);
+					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.LEFT);
 				} else if(keycode == Input.Keys.RIGHT) {
-					dungeon.getActionBar().fireMovementAction(Direction.RIGHT);
+					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.RIGHT);
 				} else if(keycode == Input.Keys.UP) {
-					dungeon.getActionBar().fireMovementAction(Direction.UP);
+					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.UP);
 				} else if(keycode == Input.Keys.DOWN) {
-					dungeon.getActionBar().fireMovementAction(Direction.DOWN);
+					dungeon.getActionBar().fireMovementAction(EntityActions.Direction.DOWN);
 				} else if(keycode == options.getAttackKey1()
 						|| keycode == options.getAttackKey2()) {
 					dungeon.getActionBar().fireAttackAction();
-				} else if(keycode == options.getAttackBurstKey()) {
-					
+				} else if(keycode == options.getTileBreakKey()) {
+					dungeon.getActionBar().fireTileBreakAction();
 				} else if(keycode == Input.Keys.ESCAPE) {
 					if(paused) {
 						resume();

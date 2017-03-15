@@ -4,7 +4,8 @@ import java.awt.Point;
 import java.util.HashMap;
 
 import com.badlogic.ashley.core.Component;
-import com.miv.Movement.Direction;
+import com.miv.EntityActions;
+import com.miv.EntityActions.Direction;
 
 import data.HitboxData;
 import data.HitboxData.HitboxType;
@@ -15,9 +16,9 @@ public class HitboxComponent implements Component {
 	// Each grid point on the 2D array represents one map tile that the entire hitbox takes up
 	private HitboxType[][] hitbox;
 	private HashMap<String, HitboxData> hitboxesData = new HashMap<String, HitboxData>();
-	private Direction facing;
+	private EntityActions.Direction facing;
 	// The last horizontal direction that the entity faced
-	private Direction horizontalFacing;
+	private EntityActions.Direction horizontalFacing;
 	// Point on hitbox where attacks originate from; defaulted to (0, 0) if none specified from HitboxData
 	private Point attackOrigin;
 	private String hitboxName;
@@ -26,8 +27,8 @@ public class HitboxComponent implements Component {
 	private float movementDisabledTimeInBeats;
 	
 	public HitboxComponent(String hitboxName, HashMap<String, HitboxData> hitboxesData, Point mapPosition) {
-		facing = Direction.RIGHT;
-		horizontalFacing = Direction.RIGHT;
+		facing = EntityActions.Direction.RIGHT;
+		horizontalFacing = EntityActions.Direction.RIGHT;
 		
 		this.hitboxName = hitboxName;
 		this.hitboxesData = hitboxesData;
@@ -60,10 +61,10 @@ public class HitboxComponent implements Component {
 		}
 	}
 	
-	public void faceDirection(Direction direction) {
+	public void faceDirection(EntityActions.Direction direction) {
 		facing = direction;
-		if(direction.equals(Direction.LEFT)
-				|| direction.equals(Direction.RIGHT)) {
+		if(direction.equals(EntityActions.Direction.LEFT)
+				|| direction.equals(EntityActions.Direction.RIGHT)) {
 			horizontalFacing = direction;
 			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
 			
@@ -90,11 +91,11 @@ public class HitboxComponent implements Component {
 		return mapPosition;
 	}
 	
-	public Direction getFacing() {
+	public EntityActions.Direction getFacing() {
 		return facing;
 	}
 	
-	public Direction getHorizontalFacing() {
+	public EntityActions.Direction getHorizontalFacing() {
 		return horizontalFacing;
 	}
 	

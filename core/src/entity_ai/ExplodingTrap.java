@@ -1,7 +1,7 @@
 package entity_ai;
 
 import com.badlogic.ashley.core.Component;
-import com.miv.Attack;
+import com.miv.EntityActions;
 
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
@@ -33,7 +33,7 @@ public class ExplodingTrap extends Stationary {
 
 	@Override
 	public void onActivation() {
-		Attack.entityStartAttack(options, audio, dungeon, self, target, attackData, entityFactory);
+		EntityActions.entityStartAttack(options, audio, dungeon, self, target, attackData, entityFactory);
 	}
 
 }
