@@ -132,14 +132,18 @@ public class Movement {
 	}
 	
 	/**
-	 * Checks if the entity can turn horizontally
+	 * Checks if the entity can turn
 	 */
-	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction horizontalDirection) {
-		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-		HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + horizontalDirection.stringRepresentation).getHitbox();
-		Point mapPosition = hitboxComponent.getMapPosition();
-		
-		return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
+	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction direction) {
+		if(direction.equals(Direction.LEFT) || direction.equals(Direction.RIGHT)) {
+			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+			HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+			Point mapPosition = hitboxComponent.getMapPosition();
+			
+			return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
+		} else {
+			return true;
+		}
 	}
 	
 	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {

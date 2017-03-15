@@ -17,12 +17,12 @@ public class Tile {
 	
 	// Sprite of the tile
 	private Sprite sprite;
-	
 	private HitboxType hitboxType;
-	
 	private Point mapPosition;
-	
 	private SpecialTile specialTile;
+	
+	private boolean breakable;
+	private Sprite spriteAfterBreaking;
 	
 	public Tile(Point mapPosition) {
 		this.mapPosition = mapPosition;
@@ -70,6 +70,22 @@ public class Tile {
 		this.specialTile = specialTile;
 	}
 	
+	public void setBreakable(boolean breakable) {
+		this.breakable = breakable;
+	}
+	
+	public void setSpriteAfterBreaking(Sprite spriteAfterBreaking) {
+		this.spriteAfterBreaking = spriteAfterBreaking;
+	}
+	
+	public boolean getBreakable() {
+		return breakable;
+	}
+
+	public Sprite getSpriteAfterBreaking() {
+		return spriteAfterBreaking;
+	}
+
 	public Set<Entity> getAttackableOccupants() {
 		return attackableOccupants;
 	}

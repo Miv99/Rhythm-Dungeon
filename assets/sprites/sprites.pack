@@ -52,6 +52,13 @@ action_bar_circle_weak_beat
   orig: 54, 54
   offset: 0, 0
   index: -1
+stone_wall
+  rotate: false
+  xy: 296, 173
+  size: 32, 64
+  orig: 32, 64
+  offset: 0, 0
+  index: -1
 fire_guy
   rotate: false
   xy: 1, 1
@@ -61,33 +68,19 @@ fire_guy
   index: -1
 player
   rotate: false
-  xy: 296, 205
+  xy: 131, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 player_idle
   rotate: false
-  xy: 131, 75
+  xy: 296, 139
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 player_idle
-  rotate: false
-  xy: 35, 1
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-slash
-  rotate: false
-  xy: 296, 171
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-slash
   rotate: false
   xy: 330, 205
   size: 32, 32
@@ -96,28 +89,42 @@ slash
   index: 2
 slash
   rotate: false
+  xy: 35, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+slash
+  rotate: false
   xy: 165, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
-slash
-  rotate: false
-  xy: 296, 137
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
+  index: 2
 slash
   rotate: false
   xy: 330, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
+  index: 3
+slash
+  rotate: false
+  xy: 364, 205
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+slash
+  rotate: false
+  xy: 199, 75
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 5
 stone_tile
   rotate: false
-  xy: 364, 205
+  xy: 364, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

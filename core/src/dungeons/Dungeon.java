@@ -264,12 +264,14 @@ public class Dungeon {
 		
 		public void update(float deltaTime) {
 			batch.begin();
-			// Draw tiles
-			for(Tile[] col : floors[currentFloor].getTiles()) {
-				for(Tile tile : col) {
+			// Draw tiles from top-->bottom, right-->left of map
+			Tile[][] tiles = floors[currentFloor].getTiles();
+			for(int x = tiles.length - 1; x >= 0; x--) {
+				for(int y = tiles[x].length - 1; y >= 0; y--) {
+					Tile tile = tiles[x][y];
+					
 					Point mapPosition = tile.getMapPosition();
 					batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
-					
 					
 					// Draw special tile, if any
 					if(tile.getSpecialTile() != null
