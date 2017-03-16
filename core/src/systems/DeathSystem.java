@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.miv.ComponentMappers;
-import com.miv.Death;
+import com.miv.EntityActions;
 
 import audio.Audio;
 import components.HealthComponent;
@@ -43,7 +43,7 @@ public class DeathSystem extends EntitySystem {
 			HealthComponent healthComponent = ComponentMappers.healthMapper.get(e);
 			
 			if(healthComponent.getHealth() <= 0) {
-				Death.killEntity(audio, engine, floor, e);
+				EntityActions.killEntity(audio, engine, floor, e);
 			}
 		}
 	}

@@ -87,7 +87,7 @@ player_idle
   orig: 32, 32
   offset: 0, 0
   index: 2
-slash
+player_shovel
   rotate: false
   xy: 35, 1
   size: 32, 32
@@ -100,31 +100,38 @@ slash
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
+  index: 1
 slash
   rotate: false
   xy: 330, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
+  index: 2
 slash
   rotate: false
   xy: 364, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
+  index: 3
 slash
   rotate: false
   xy: 199, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
+  index: 4
+slash
+  rotate: false
+  xy: 364, 171
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 5
 stone_tile
   rotate: false
-  xy: 364, 171
+  xy: 398, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

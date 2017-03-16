@@ -1,13 +1,19 @@
+name=stone_wall_breakable
+hitbox=1x1
+sprite=stone_wall
+hurt_sound=monster_hurt
+death_sound=monster_death
+
 name=player
 player=true
-player_attack=player_sword
+player_default_attack=player_sword
 hitbox=1x1
 sprite=player
 hurt_sound=human_hurt
-death_sound=human_hurt
+death_sound=human_death
 
 name=dragon
 hitbox=dragon
 sprite=dragon
 hurt_sound=monster_hurt
-death_sound=monster_hurt
+death_sound=monster_death

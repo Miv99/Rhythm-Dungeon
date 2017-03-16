@@ -195,8 +195,6 @@ public class Main extends ApplicationAdapter {
 				} else if(keycode == options.getAttackKey1()
 						|| keycode == options.getAttackKey2()) {
 					dungeon.getActionBar().fireAttackAction();
-				} else if(keycode == options.getTileBreakKey()) {
-					dungeon.getActionBar().fireTileBreakAction();
 				} else if(keycode == Input.Keys.ESCAPE) {
 					if(paused) {
 						resume();

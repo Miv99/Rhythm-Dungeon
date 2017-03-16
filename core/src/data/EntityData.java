@@ -6,18 +6,20 @@ public class EntityData {
 	private String spriteName;
 	private String hurtSoundName;
 	private String deathSoundName;
+	private String tileBreakAnimationName;
 	
 	private boolean isEnemy;
 	
 	private boolean isPlayer;
 	private String playerAttackName;
 	
-	public EntityData(String entityName, String hitboxName, String spriteName, String hurtSoundName, String deathSoundName, String playerAttackName) {
+	public EntityData(String entityName, String hitboxName, String spriteName, String hurtSoundName, String deathSoundName, String playerAttackName, String tileBreakAnimationName) {
 		this.entityName = entityName;
 		this.hitboxName = hitboxName;
 		this.spriteName = spriteName;
 		this.hurtSoundName = hurtSoundName;
 		this.deathSoundName = deathSoundName;
+		this.tileBreakAnimationName = tileBreakAnimationName;
 		
 		isPlayer = true;
 		this.playerAttackName = playerAttackName;
@@ -25,15 +27,20 @@ public class EntityData {
 		isEnemy = false;
 	}
 	
-	public EntityData(String entityName, String hitboxName, String spriteName, String hurtSoundName, String deathSoundName, boolean isEnemy) {
+	public EntityData(String entityName, String hitboxName, String spriteName, String hurtSoundName, String deathSoundName, boolean isEnemy, String tileBreakAnimationName) {
 		this.entityName = entityName;
 		this.hitboxName = hitboxName;
 		this.spriteName = spriteName;
 		this.hurtSoundName = hurtSoundName;
 		this.deathSoundName = deathSoundName;
 		this.isEnemy = isEnemy;
+		this.tileBreakAnimationName = tileBreakAnimationName;
 		
 		isPlayer = false;
+	}
+	
+	public String getTileBreakAnimationName() {
+		return tileBreakAnimationName;
 	}
 	
 	public String getHurtSoundName() {

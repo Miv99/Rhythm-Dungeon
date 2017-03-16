@@ -82,22 +82,6 @@ public class BeatLine {
 		//TODO: play sound effect
 	}
 	
-	public void onTileBreakHit(Floor floor, Entity player) {
-		if(circleStrongState.equals(CircleState.Alive)) {
-			circleStrongState = CircleState.Dying;
-			circleStrongIncreasingYPos = true;
-			
-			//TODO: play sound effect
-			
-			EntityActions.entityBreakTile(floor, player);
-		}
-	}
-	
-	public void onTileBreakMiss() {
-		circleStrongState = CircleState.Locked;
-		//TODO: play sound effect
-	}
-	
 	public void setCircleWeakIncreasingYPos(boolean circleWeakIncreasingYPos) {
 		this.circleWeakIncreasingYPos = circleWeakIncreasingYPos;
 	}

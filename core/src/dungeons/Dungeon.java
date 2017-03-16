@@ -5,17 +5,13 @@ import java.awt.Point;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
+import com.miv.ComponentMappers;
 import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 import com.miv.EntityActions.EntityAttackParams;
-import com.miv.ComponentMappers;
-import com.miv.GameCamera;
-import com.miv.Main;
 import com.miv.Options;
 
 import audio.Audio;
@@ -26,11 +22,7 @@ import components.AnimationComponent;
 import components.AttackComponent;
 import components.EnemyAIComponent;
 import components.HitboxComponent;
-import components.ImageComponent;
-import data.AnimationData;
 import data.AnimationLoader;
-import data.AttackData;
-import data.AttackData.TileAttackData;
 import data.EntityLoader;
 import factories.DungeonFactory;
 import factories.EntityFactory;
@@ -38,7 +30,6 @@ import graphics.Images;
 import hud.BeatLine;
 import special_tiles.WarningTile;
 import systems.DeathSystem;
-import utils.GeneralUtils;
 
 /**
  * Note: all calculations are optimized so that there is a maximum of 50 floors per dungeon.
@@ -361,26 +352,6 @@ public class Dungeon {
 				} else if(nearestRight != null
 						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
 					nearestRight.onMovementMiss();
-				}
-			}
-		}
-		
-		public void fireTileBreakAction() {
-			if(!floors[currentFloor].isActionsDisabled()) {
-				BeatLine nearestLeft = getNearestCircleFromLeft(false);
-				BeatLine nearestRight = getNearestCircleFromRight(false);
-				
-				if(nearestLeft != null
-						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					nearestLeft.onTileBreakHit(floors[currentFloor], dungeonParams.player);
-
-				} else if(nearestRight != null
-						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					nearestRight.onTileBreakHit(floors[currentFloor], dungeonParams.player);
-
-				} else if(nearestRight != null
-						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatMissErrorMarginInSeconds()) {
-					nearestRight.onTileBreakMiss();
 				}
 			}
 		}

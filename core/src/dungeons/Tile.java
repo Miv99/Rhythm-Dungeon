@@ -11,6 +11,10 @@ import data.HitboxData.HitboxType;
 import special_tiles.SpecialTile;
 import utils.MapUtils;
 
+/**
+ * Breakable tiles have an invisible entity with a HealthComponent, HitboxComponent, TileComponent, ImageComponent, and AnimationComponent on it that blocks movement
+ * Breaking tiles simply kills the entity to allow movement
+ */
 public class Tile {
 	private Set<Entity> attackableOccupants;
 	private Set<Entity> tangibleOccupants;
@@ -20,9 +24,6 @@ public class Tile {
 	private HitboxType hitboxType;
 	private Point mapPosition;
 	private SpecialTile specialTile;
-	
-	private boolean breakable;
-	private Sprite spriteAfterBreaking;
 	
 	public Tile(Point mapPosition) {
 		this.mapPosition = mapPosition;
@@ -68,22 +69,6 @@ public class Tile {
 	
 	public void setSpecialTile(SpecialTile specialTile) {
 		this.specialTile = specialTile;
-	}
-	
-	public void setBreakable(boolean breakable) {
-		this.breakable = breakable;
-	}
-	
-	public void setSpriteAfterBreaking(Sprite spriteAfterBreaking) {
-		this.spriteAfterBreaking = spriteAfterBreaking;
-	}
-	
-	public boolean isBreakable() {
-		return breakable;
-	}
-
-	public Sprite getSpriteAfterBreaking() {
-		return spriteAfterBreaking;
 	}
 
 	public Set<Entity> getAttackableOccupants() {

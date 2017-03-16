@@ -9,13 +9,20 @@ import data.AttackData;
 import special_tiles.WarningTile;
 
 public class AttackComponent implements Component {
-	// Entities used to display a warning sign on tiles of incoming attacks
+	// Objects used to display a warning sign on tiles of incoming attacks
 	private Array<WarningTile> warningTiles;
 	private HashMap<String, AttackData> attacksData;
+	private String tileBreakAttackName;
 	
 	public AttackComponent(HashMap<String, AttackData> attacksData) {
 		this.attacksData = attacksData;
 		warningTiles = new Array<WarningTile>();
+	}
+	
+	public AttackComponent(HashMap<String, AttackData> attacksData, String tileBreakAttackName) {
+		this.attacksData = attacksData;
+		warningTiles = new Array<WarningTile>();
+		this.tileBreakAttackName = tileBreakAttackName;
 	}
 	
 	public void setAttacksData(HashMap<String, AttackData> attacksData) {
@@ -28,5 +35,9 @@ public class AttackComponent implements Component {
 	
 	public Array<WarningTile> getWarningTiles() {
 		return warningTiles;
+	}
+	
+	public String getTileBreakAttackName() {
+		return tileBreakAttackName;
 	}
 }

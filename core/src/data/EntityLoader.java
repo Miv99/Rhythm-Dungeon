@@ -21,6 +21,7 @@ public class EntityLoader {
 		String hurtSoundName = "";
 		String deathSoundName = "";
 		String playerAttackName = "";
+		String tileBreakAnimationName = "";
 		boolean isPlayer = false;
 		boolean isEnemy = false;
 		int lineCount = 1;
@@ -41,14 +42,16 @@ public class EntityLoader {
 					hurtSoundName = line.replace("hurt_sound=", "");
 				} else if(line.startsWith("death_sound=")) {
 					deathSoundName = line.replace("death_sound=", "");
-				} else if(line.startsWith("player_attack=")) {
-					playerAttackName = line.replace("player_attack=", "");
+				} else if(line.startsWith("player_default_attack=")) {
+					playerAttackName = line.replace("player_default_attack=", "");
+				} else if(line.startsWith("tile_break_animation=")) {
+					tileBreakAnimationName = line.replace("tile_break_animation=", "");
 				} else if(line.equals("")) {
 					if(!entityName.equals("")) {
 						if(isPlayer) {
-							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName));
+							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName, tileBreakAnimationName));
 						} else {
-							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy));
+							entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy, tileBreakAnimationName));
 						}
 						
 						entityName = "";
@@ -57,6 +60,7 @@ public class EntityLoader {
 						hurtSoundName = "";
 						deathSoundName = "";
 						playerAttackName = "";
+						tileBreakAnimationName = "";
 						isPlayer = false;
 						isEnemy = false;
 					}
@@ -71,9 +75,9 @@ public class EntityLoader {
 		}
 		if(!entityName.equals("")) {
 			if(isPlayer) {
-				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName));
+				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, playerAttackName, tileBreakAnimationName));
 			} else {
-				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy));
+				entitiesData.put(entityName, new EntityData(entityName, hitboxName, spriteName, hurtSoundName, deathSoundName, isEnemy, tileBreakAnimationName));
 			}
 		}
 	}

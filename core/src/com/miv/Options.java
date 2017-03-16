@@ -8,10 +8,10 @@ import com.badlogic.gdx.Input;
  */
 public class Options {
 	public static enum Difficulty {
-		Easy(140, 1), // 140bpm cap, full beats only
-		Normal(160, 2), // 160bpm cap, half beats
-		Hard(180, 2), // 180bpm cap, half beats
-		Lunatic(200, 4); // 200bpm cap, all player attacks do 25% damage, quarter beats
+		EASY(140, 1), // 140bpm cap, full beats only
+		NORMAL(160, 2), // 160bpm cap, half beats
+		HARD(180, 2), // 180bpm cap, half beats
+		LUNATIC(200, 4); // 200bpm cap, all player attacks do 25% damage, quarter beats
 		
 		private int bpmCap;
 		private int beatLinesPerBeat;
@@ -65,11 +65,10 @@ public class Options {
 	
 	private float actionBarScrollInterval = 16f;
 	
-	private Difficulty difficulty = Difficulty.Normal;
+	private Difficulty difficulty = Difficulty.NORMAL;
 	
 	private int attackKey1 = Input.Keys.A;
 	private int attackKey2 = Input.Keys.S;
-	private int tileBreakKey = Input.Keys.SPACE;
 	
 	// Temporary values that become permanent once changes are applied
 	private boolean fullscreenTemp;
@@ -136,10 +135,6 @@ public class Options {
 		this.attackKey2= attackKey2;
 	}
 	
-	public void setTileBreakKey(int tileBreakKey) {
-		this.tileBreakKey = tileBreakKey;
-	}
-	
 	public void setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
 	}
@@ -187,10 +182,6 @@ public class Options {
 	
 	public int getAttackKey2() {
 		return attackKey2;
-	}
-	
-	public int getTileBreakKey() {
-		return tileBreakKey;
 	}
 	
 	public Difficulty getDifficulty() {

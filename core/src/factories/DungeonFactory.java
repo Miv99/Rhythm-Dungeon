@@ -88,10 +88,7 @@ public class DungeonFactory {
 			}
 			x++;
 		}
-		floor.getTiles()[4][4].setSprite(dungeonParams.getImages().loadSprite("stone_wall"));
-		floor.getTiles()[4][4].setHitboxType(HitboxType.TANGIBLE);
-		floor.getTiles()[4][4].setBreakable(true);
-		floor.getTiles()[4][4].setSpriteAfterBreaking(dungeonParams.getImages().loadSprite("stone_tile"));
+		floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("stone_wall_breakable"), new Point(4, 4), 1);
 		
 		return floor;
 	}

@@ -19,6 +19,7 @@ import components.FriendlyAIComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
+import components.PlayerComponent;
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
@@ -191,63 +192,6 @@ public class EntityActions {
 			}
 		}
 	}
-	
-	public static void entityBreakTile(Floor floor, Entity entity) {
-		//TODO
-	}
-	
-	/**
-	 * Checks if the entity can turn
-	 */
-	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction direction) {
-		if(direction.isHorizontal()) {
-			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-			HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
-			Point mapPosition = hitboxComponent.getMapPosition();
-			
-			return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
-		} else {
-			return true;
-		}
-	}
-	
-	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
-		HitboxType[][] hitbox;
-		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-		if(direction.isHorizontal()) {
-			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
-		} else {
-			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
-		}
-		
-		Point currentPosition = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
-		int xEntity = currentPosition.x + direction.getDeltaX();
-		int yEntity = currentPosition.y + direction.getDeltaY();
-		
-		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
-	}
-	
-	private static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
-		// Check if the entity out of bounds
-		if(xEntity + hitbox.length > tiles.length
-				|| yEntity + hitbox[0].length > tiles[0].length
-				|| xEntity < 0
-				|| yEntity < 0) {
-			return false;
-		}
-		
-		// Check if any of the entity's hitboxes collide with a tangible tile
-		for(int x = 0; x < hitbox.length; x++) {
-			for(int y = 0; y < hitbox[x].length; y++) {
-				if(hitbox[x][y].isTangible()
-						&& tiles[xEntity + x][yEntity + y].isTangibleTile(entity)) {
-					return false;
-				}
-			}
-		}
-		
-		return true;
-	}
 
 	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
@@ -392,5 +336,93 @@ public class EntityActions {
 				&& !healthComponent.getHurtSoundName().equals("none")) {
 			audio.playSoundEffect(healthComponent.getHurtSoundName());
 		}
+	}
+	
+	public static void killEntity(Audio audio, Engine engine, Floor floor, Entity entity) {
+		// Remove warning tiles
+		if(ComponentMappers.attackMapper.has(entity)) {
+			AttackComponent attackComponent = ComponentMappers.attackMapper.get(entity);
+			attackComponent.getWarningTiles().clear();
+		}
+		
+		// Remove entity from occupants sets in previously residing tiles
+		if(ComponentMappers.hitboxMapper.has(entity)) {
+			Tile[][] mapTiles = floor.getTiles();
+			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+			HitboxType[][] hitbox = hitboxComponent.getHitbox();
+			Point mapPosition = hitboxComponent.getMapPosition();
+			for(int x = mapPosition.x; x < mapPosition.x + hitbox.length; x++) {
+				for(int y = mapPosition.y; y < mapPosition.y + hitbox[x - mapPosition.x].length; y++) {
+					mapTiles[x][y].getTangibleOccupants().remove(entity);
+					mapTiles[x][y].getAttackableOccupants().remove(entity);
+				}
+			}
+		}
+		
+		// Play death sound
+		if(ComponentMappers.healthMapper.has(entity)) {
+			HealthComponent healthComponent = ComponentMappers.healthMapper.get(entity);
+			if(!healthComponent.getDeathSoundName().equals("none")) {
+				audio.playSoundEffect(healthComponent.getDeathSoundName());
+			}
+		}
+		
+		//TODO: do some death animation thing (use same animation for every entity death) and remove entity from engine after animation finishes
+		
+		//TODO: remove this
+		engine.removeEntity(entity);
+	}
+	
+	/**
+	 * Checks if the entity can turn
+	 */
+	private static boolean isValidTurn(Tile[][] tiles, Entity entity, Direction direction) {
+		if(direction.isHorizontal()) {
+			HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+			HitboxType[][] hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+			Point mapPosition = hitboxComponent.getMapPosition();
+			
+			return isValidPosition(tiles, entity, hitbox, mapPosition.x, mapPosition.y);
+		} else {
+			return true;
+		}
+	}
+	
+	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
+		HitboxType[][] hitbox;
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		if(direction.isHorizontal()) {
+			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+		} else {
+			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
+		}
+		
+		Point currentPosition = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
+		int xEntity = currentPosition.x + direction.getDeltaX();
+		int yEntity = currentPosition.y + direction.getDeltaY();
+		
+		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
+	}
+	
+	private static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
+		// Check if the entity out of bounds
+		if(xEntity + hitbox.length > tiles.length
+				|| yEntity + hitbox[0].length > tiles[0].length
+				|| xEntity < 0
+				|| yEntity < 0) {
+			return false;
+		}
+		
+		// Check if any of the entity's hitboxes collide with a tangible tile
+		for(int x = 0; x < hitbox.length; x++) {
+			for(int y = 0; y < hitbox[x].length; y++) {
+				if(hitbox[x][y].isTangible()
+						&& tiles[xEntity + x][yEntity + y].isTangibleTile(entity)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 }

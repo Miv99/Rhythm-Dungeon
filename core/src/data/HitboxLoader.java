@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Array;
-import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 import com.miv.Options;
 

@@ -11,6 +11,7 @@ import com.miv.Options;
 import components.EnemyComponent;
 import components.HealthComponent;
 import components.PlayerComponent;
+import components.TileComponent;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
 import utils.FileUtils;
@@ -164,6 +165,8 @@ public class AttackLoader {
 			return PlayerComponent.class;
 		} else if(string.toLowerCase().equals("enemy")) {
 			return EnemyComponent.class;
+		} else if(string.toLowerCase().equals("tile")) {
+			return TileComponent.class;
 		} else {
 			throw new IllegalArgumentException();
 		}
