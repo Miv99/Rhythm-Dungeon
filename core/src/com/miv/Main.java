@@ -163,7 +163,7 @@ public class Main extends ApplicationAdapter {
 				
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createEntity(entityLoader.getEntitiesData().get("player"), new Point(2, 2), 4);
+		Entity player = entityFactory.createEntity(entityLoader.getEntitiesData().get("player"), new Point(30, 30), 4);
 		camera.setFocus(player);
 		engine.addEntity(player);
 		

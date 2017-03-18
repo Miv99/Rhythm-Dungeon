@@ -3,6 +3,7 @@ package utils;
 import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.MathUtils;
 import com.miv.ComponentMappers;
 import com.miv.EntityActions.Direction;
 
@@ -27,7 +28,56 @@ public class MapUtils {
 	}
 	
 	public static Direction getRelativeDirection(Point point, Point relativeTo) {
-		//TODO: random direction if on the border between two of them
-		return Direction.RIGHT;
+		if(point.x - relativeTo.x == 0) {
+			if(point.y - relativeTo.y > 0) {
+				return Direction.UP;
+			} else {
+				return Direction.DOWN;
+			}
+		}
+		
+		float slope = (float)(point.y - relativeTo.y)/(point.x - relativeTo.x);
+		if(point.x - relativeTo.x > 0) {
+			if(slope > -1 && slope < 1) {
+				return Direction.RIGHT;
+			} else if(slope > 1) {
+				return Direction.UP;
+			} else if(slope < -1) {
+				return Direction.DOWN;
+			} else if(slope == 1) {
+				if(MathUtils.randomBoolean()) {
+					return Direction.RIGHT;
+				} else {
+					return Direction.UP;
+				}
+			} else if(slope == -1) {
+				if(MathUtils.randomBoolean()) {
+					return Direction.RIGHT;
+				} else {
+					return Direction.DOWN;
+				}
+			}
+		} else {
+			if(slope > -1 && slope < 1) {
+				return Direction.LEFT;
+			} else if(slope > 1) {
+				return Direction.DOWN;
+			} else if(slope < -1) {
+				return Direction.UP;
+			} else if(slope == 1) {
+				if(MathUtils.randomBoolean()) {
+					return Direction.LEFT;
+				} else {
+					return Direction.DOWN;
+				}
+			} else if(slope == -1) {
+				if(MathUtils.randomBoolean()) {
+					return Direction.LEFT;
+				} else {
+					return Direction.UP;
+				}
+			}
+		}
+		return null;
 	}
 }

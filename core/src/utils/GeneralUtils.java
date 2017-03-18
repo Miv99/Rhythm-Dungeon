@@ -12,15 +12,6 @@ import data.HitboxData.HitboxType;
  * WARNING: All my 2D arrays are (cols x rows)
  */
 public class GeneralUtils {
-	private static Random rand = new Random();
-	
-	/**
-	 * Min and max values are inclusive
-	 */
-	public static int randomInt(int min, int max) {
-		return rand.nextInt((max - min) + 1) + min;
-	}
-	
 	/**
 	 * Checks if the rectangle intersects with any of the rectangles in the array
 	 */

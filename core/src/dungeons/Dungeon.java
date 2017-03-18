@@ -261,7 +261,9 @@ public class Dungeon {
 					Tile tile = tiles[x][y];
 					
 					Point mapPosition = tile.getMapPosition();
-					batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					if(tile.getSprite() != null) {
+						batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					}
 					
 					// Draw special tile, if any
 					if(tile.getSpecialTile() != null
@@ -340,7 +342,8 @@ public class Dungeon {
 			if(!floors[currentFloor].isActionsDisabled() && !ComponentMappers.hitboxMapper.get(dungeonParams.player).isMovementDisabled()) {
 				BeatLine nearestLeft = getNearestCircleFromLeft(true);
 				BeatLine nearestRight = getNearestCircleFromRight(true);
-				
+				EntityActions.moveEntity(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
+
 				if(nearestLeft != null
 						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds()) <= Dungeon.this.getBeatHitErrorMarginInSeconds()
 						&& nearestLeft.isStrongBeat()) {
