@@ -4,6 +4,12 @@ sprite=stone_wall
 hurt_sound=monster_hurt
 death_sound=monster_death
 
+name=rock_breakable
+hitbox=1x1
+sprite=rock
+hurt_sound=monster_hurt
+death_sound=monster_death
+
 name=player
 player=true
 player_default_attack=player_sword

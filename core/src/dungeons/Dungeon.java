@@ -5,6 +5,8 @@ import java.awt.Point;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
@@ -254,6 +256,7 @@ public class Dungeon {
 		
 		public void update(float deltaTime) {
 			batch.begin();
+			
 			// Draw tiles from top-->bottom, right-->left of map
 			Tile[][] tiles = floors[currentFloor].getTiles();
 			for(int x = tiles.length - 1; x >= 0; x--) {
@@ -263,6 +266,14 @@ public class Dungeon {
 					Point mapPosition = tile.getMapPosition();
 					if(tile.getSprite() != null) {
 						batch.draw(tile.getSprite(), mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+					}
+					
+					// Draw sprite overlays, if any
+					Array<Sprite> overlays = tile.getSpriteOverlays();
+					if(overlays != null) {
+						for(Sprite sprite : overlays) {
+							batch.draw(sprite, mapPosition.x * Options.TILE_SIZE, mapPosition.y * Options.TILE_SIZE);
+						}
 					}
 					
 					// Draw special tile, if any
@@ -342,6 +353,8 @@ public class Dungeon {
 			if(!floors[currentFloor].isActionsDisabled() && !ComponentMappers.hitboxMapper.get(dungeonParams.player).isMovementDisabled()) {
 				BeatLine nearestLeft = getNearestCircleFromLeft(true);
 				BeatLine nearestRight = getNearestCircleFromRight(true);
+				
+				//TODO: remove this
 				EntityActions.moveEntity(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 
 				if(nearestLeft != null

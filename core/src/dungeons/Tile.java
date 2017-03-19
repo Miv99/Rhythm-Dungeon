@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.utils.Array;
 
 import data.HitboxData.HitboxType;
 import special_tiles.SpecialTile;
@@ -21,6 +22,8 @@ public class Tile {
 	
 	// Sprite of the tile
 	private Sprite sprite;
+	// Sprites overlayed on the tile (not including specialTile)
+	private Array<Sprite> spriteOverlays;
 	private HitboxType hitboxType;
 	private Point mapPosition;
 	private SpecialTile specialTile;
@@ -59,6 +62,13 @@ public class Tile {
 		}
 	}
 	
+	public void addSpriteOverlay(Sprite overlay) {
+		if(spriteOverlays == null) {
+			spriteOverlays = new Array<Sprite>();
+		}
+		spriteOverlays.add(overlay);
+	}
+	
 	public void setSprite(Sprite sprite) {
 		this.sprite = sprite;
 	}
@@ -69,6 +79,10 @@ public class Tile {
 	
 	public void setSpecialTile(SpecialTile specialTile) {
 		this.specialTile = specialTile;
+	}
+	
+	public Array<Sprite> getSpriteOverlays() {
+		return spriteOverlays;
 	}
 
 	public Set<Entity> getAttackableOccupants() {

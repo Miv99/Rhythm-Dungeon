@@ -76,43 +76,43 @@ public class DungeonFactory {
 		Array<Room> corridors = toRoomsArray(corridorsRectangles);
 		
 		// Set tile images
+		Array<Tile> allRoomTiles = new Array<Tile>();
 		Array<Room> allRooms = new Array<Room>();
 		allRooms.addAll(rooms);
 		allRooms.addAll(corridors);
-		
 		Tile[][] floorTiles = floor.getTiles();
-		for(int x = 0; x < 150; x++) {
-			for(int y = 0; y < 150; y++) {
-				floorTiles[x][y] = new Tile(new Point(x, y));
-				floorTiles[x][y].setHitboxType(HitboxType.TANGIBLE);
-			}
-		}
 		for(Room room : allRooms) {
 			for(int x = room.rect.x; x < room.rect.x + room.tiles.length; x++) {
 				for(int y = room.rect.y; y < room.rect.y + room.tiles[x - room.rect.x].length; y++) {
 					floorTiles[x][y] = new Tile(new Point(x, y));
 					floorTiles[x][y].setSprite(dungeonParams.getImages().loadSprite("stone_tile"));
 					floorTiles[x][y].setHitboxType(HitboxType.INTANGIBLE);
+					allRoomTiles.add(floorTiles[x][y]);
+				}
+			}
+		}
+		for(int x = 0; x < floorSideLength; x++) {
+			for(int y = 0; y < floorSideLength; y++) {
+				if(floorTiles[x][y] == null) {
+					floorTiles[x][y] = new Tile(new Point(x, y));
+					floorTiles[x][y].setHitboxType(HitboxType.TANGIBLE);
 				}
 			}
 		}
 				
-		// Randomly place visual overlays on tiles
-		
-		// Randomly place rocks
-		
-		/**
-		int x = 0;
-		for(Tile[] col : floor.getTiles()) {
-			for(int y = 0; y < col.length; y++) {
-				col[y] = new Tile(new Point(x, y));
-				col[y].setSprite(dungeonParams.getImages().loadSprite("stone_tile"));
-				col[y].setHitboxType(HitboxType.INTANGIBLE);
+		for(Tile tile : allRoomTiles) {
+			// Randomly place visual overlays on tiles
+			if(Math.random() < 0.005) {
+				tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("small_rocks").random());
+			} else if(Math.random() < 0.005) {
+				tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("crack").random());
 			}
-			x++;
+			
+			// Randomly place rocks
+			if(Math.random() < 0.005) {
+				floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("rock_breakable"), tile.getMapPosition(), 1);
+			}
 		}
-		*/
-		//floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("stone_wall_breakable"), new Point(4, 4), 1);
 		
 		return floor;
 	}

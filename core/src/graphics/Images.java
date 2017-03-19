@@ -37,22 +37,23 @@ public class Images {
 	}
 	
 	/**
-	 * Used for sprites that are part of animations. Attempts to get the sprite from the hashmap of all already-created sprites. 
+	 * Used for sprites that are part of a group. A group is created when sprites of the same name end in "_[number]"
+	 * Attempts to get the sprite from the hashmap of all already-created sprites. 
 	 * If it does not exist, a new sprite is created.
 	 */
-	public Array<Sprite> loadAnimationSprites(String animationName) {
+	public Array<Sprite> loadGroupedSprites(String groupName) {
 		Array<Sprite> sprites = null;
-		if(loadedAnimationSprites.containsKey(animationName)) {
-			sprites = loadedAnimationSprites.get(animationName);
+		if(loadedAnimationSprites.containsKey(groupName)) {
+			sprites = loadedAnimationSprites.get(groupName);
 		} else {
 			sprites = new Array<Sprite>();
-			for(AtlasRegion region : spritesAtlas.findRegions(animationName)) {
+			for(AtlasRegion region : spritesAtlas.findRegions(groupName)) {
 				sprites.add(new Sprite(region));
 			}
-			loadedAnimationSprites.put(animationName, sprites);
+			loadedAnimationSprites.put(groupName, sprites);
 		}
 		if(sprites == null) {
-			System.out.println(Options.spritesImageFileDir + " does not contain animation \"" + animationName + "\"");
+			System.out.println(Options.spritesImageFileDir + " does not contain group \"" + groupName + "\"");
 		}
 		return sprites;
 	}
@@ -61,12 +62,12 @@ public class Images {
 	 * Used for sprites that are part of animations. DOES NOT attempt to get the sprite from the hashmap of all already-created sprites. 
 	 * A new sprite object is created each time.
 	 */
-	public Array<Sprite> forceLoadNewAnimationSprites(String animationName) {
+	public Array<Sprite> forceLoadNewGroupedSprites(String groupName) {
 		Array<Sprite> sprites = new Array<Sprite>();
-		for(AtlasRegion region : spritesAtlas.findRegions(animationName)) {
+		for(AtlasRegion region : spritesAtlas.findRegions(groupName)) {
 			sprites.add(new Sprite(region));
 		}
-		loadedAnimationSprites.put(animationName, sprites);
+		loadedAnimationSprites.put(groupName, sprites);
 		return sprites;
 	}
 }
