@@ -29,7 +29,7 @@ public class AnimationComponent implements Component {
 	}
 	
 	public void startAnimation(String animationName, PlayMode animationPlayMode) {
-		if(!animationName.equals("none")) {
+		if(!animationName.startsWith("none")) {
 			if(animations.get(animationName) == null) {
 				System.out.println("Missing animation: " + animationName);
 			} else {
@@ -45,7 +45,7 @@ public class AnimationComponent implements Component {
 	 * Used to ensure animations are timed correctly to the beat.
 	 */
 	public void transitionAnimation(String newAnimationName, PlayMode animationPlayMode) {
-		if(!newAnimationName.equals("none")) {
+		if(!newAnimationName.startsWith("none")) {
 			if(animations.get(newAnimationName) == null) {
 				System.out.println("Missing animation: " + newAnimationName);
 			} else {

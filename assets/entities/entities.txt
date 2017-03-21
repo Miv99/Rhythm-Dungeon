@@ -1,3 +1,9 @@
+name=invisible_breakable
+hitbox=1x1
+sprite=none
+hurt_sound=monster_hurt
+death_sound=monster_death
+
 name=stone_wall_breakable
 hitbox=1x1
 sprite=stone_wall
@@ -10,9 +16,15 @@ sprite=rock
 hurt_sound=monster_hurt
 death_sound=monster_death
 
+name=default_trap
+hitbox=1x1_intangible
+sprite=default_trap
+hurt_sound=monster_hurt
+death_sound=monster_death
+
 name=player
 player=true
-player_default_attack=player_sword
+player_default_attack=dragon_breath
 hitbox=1x1
 sprite=player
 hurt_sound=human_hurt

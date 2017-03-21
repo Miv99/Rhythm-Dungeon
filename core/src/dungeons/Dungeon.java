@@ -22,7 +22,7 @@ import audio.SongSelector;
 import audio.SongSelector.NoSelectableMusicException;
 import components.AnimationComponent;
 import components.AttackComponent;
-import components.EnemyAIComponent;
+import components.EntityAIComponent;
 import components.HitboxComponent;
 import data.AnimationLoader;
 import data.EntityLoader;
@@ -563,7 +563,6 @@ public class Dungeon {
 					
 					fireBeatLineAdditionQueue();
 					fireBeatLineDeletionQueue();
-					fireEntityAttackQueue();
 				}
 				batch.end();
 			}
@@ -582,15 +581,19 @@ public class Dungeon {
 				}
 				
 				if(strongBeat) {					
-					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
-						ComponentMappers.enemyAIMapper.get(entity).getEnemyAI().onNewBeat();
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
+						ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
 					}
 					
 					// Lower beat delay on all entity attack queues
 					for(EntityAttackParams params : entityAttackQueue) {
 						params.setBeatDelay(params.getBeatDelay() - 1);
-						EntityActions.entityAttack(params);
+						if(params.getBeatDelay() < 0) {
+							EntityActions.entityAttack(params);
+							entityAttackDeletionQueue.add(params);
+						}
 					}
+					fireEntityAttackDeletionQueue();
 					
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
@@ -637,20 +640,6 @@ public class Dungeon {
 				if(beatLineDeletionQueue.size > 0) {
 					actionBar.getBeatLines().removeAll(beatLineDeletionQueue, false);
 					beatLineDeletionQueue.clear();
-				}
-			}
-			
-			private void fireEntityAttackQueue() {
-				if(entityAttackQueue.size > 0) {
-					for(EntityAttackParams params : entityAttackQueue) {
-						params.setBeatDelay(params.getBeatDelay() - 1);
-						//TODO: test this with <= instead
-						if(params.getBeatDelay() < 0) {
-							EntityActions.entityAttack(params);
-							entityAttackDeletionQueue.add(params);
-						}
-					}
-					fireEntityAttackDeletionQueue();
 				}
 			}
 			

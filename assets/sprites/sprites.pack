@@ -73,100 +73,107 @@ crack
   orig: 32, 32
   offset: 0, 0
   index: 2
-fire_guy
+default_trap
   rotate: false
   xy: 296, 139
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-player
+fire_guy
   rotate: false
   xy: 330, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-player_idle
+player
   rotate: false
   xy: 35, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
+  index: -1
 player_idle
   rotate: false
   xy: 165, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
+  index: 1
+player_idle
+  rotate: false
+  xy: 330, 171
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 2
 player_shovel
   rotate: false
-  xy: 330, 171
+  xy: 364, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 rock
   rotate: false
-  xy: 364, 205
+  xy: 199, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 slash
   rotate: false
-  xy: 199, 75
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-slash
-  rotate: false
   xy: 364, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 2
+  index: 1
 slash
   rotate: false
   xy: 398, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 3
+  index: 2
 slash
   rotate: false
   xy: 398, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
+  index: 3
 slash
   rotate: false
   xy: 432, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 5
-small_rocks
+  index: 4
+slash
   rotate: false
   xy: 432, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 1
+  index: 5
 small_rocks
   rotate: false
   xy: 466, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
+  index: 1
+small_rocks
+  rotate: false
+  xy: 466, 171
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 2
 stone_tile
   rotate: false
-  xy: 466, 171
+  xy: 330, 137
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

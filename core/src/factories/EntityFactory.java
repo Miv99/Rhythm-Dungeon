@@ -12,6 +12,7 @@ import com.miv.EntityActions.Direction;
 
 import components.AnimationComponent;
 import components.AttackComponent;
+import components.EntityAIComponent;
 import components.EnemyComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
@@ -23,6 +24,7 @@ import data.EntityData;
 import data.HitboxData;
 import data.HitboxData.HitboxType;
 import dungeons.Tile;
+import entity_ai.EntityAI;
 import graphics.Images;
 
 public class EntityFactory {
@@ -99,6 +101,14 @@ public class EntityFactory {
 		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {
 			e.add(new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle"));
 		}
+				
+		return e;
+	}
+	
+	public Entity createEntity(EntityData entityData, EntityAI entityAI, Point mapPosition, int healthPoints) {
+		Entity e = createEntity(entityData, mapPosition, healthPoints);
+		
+		e.add(new EntityAIComponent(entityAI));
 				
 		return e;
 	}

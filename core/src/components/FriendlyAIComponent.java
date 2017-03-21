@@ -7,11 +7,11 @@ import entity_ai.EntityAI;
 public class FriendlyAIComponent implements Component {
 	private EntityAI entityAI;
 	
-	public void setEnemyAI(EntityAI entityAI) {
+	public void getEnemyAI(EntityAI entityAI) {
 		this.entityAI = entityAI;
 	}
 	
-	public EntityAI getEnemyAI() {
+	public EntityAI getEntityAI() {
 		return entityAI;
 	}
 }

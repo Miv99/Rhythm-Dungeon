@@ -3,14 +3,21 @@ package factories;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.miv.Options;
 import com.miv.EntityActions.Direction;
 
+import audio.Audio;
+import components.EntityAIComponent;
+import components.PlayerComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
+import entity_ai.EntityAI.EntityAIParams;
+import entity_ai.PulsatingExpandingRingTrap;
 import dungeons.Floor;
 import dungeons.Tile;
 import utils.GeneralUtils;
@@ -47,6 +54,17 @@ public class DungeonFactory {
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
 		spawns.add(dungeonParams.getEntityFactory()
 				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(5, 5), 5));
+		/**
+		 * EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles
+		 * 
+		 * EnemyAIParams params, Class<? extends Component> entityHittableRequirement, boolean warnTilesBeforeAttack,
+			int ringMaxRadiusInTiles, int pulseExpansionFrequencyInBeats, String animationOnTile
+		 */
+		Entity trap1 = dungeonParams.getEntityFactory().createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("default_trap"), new Point(30, 30), 1);
+		int trap1Radius = 5;
+		EntityAIParams trap1Params = new EntityAIParams(dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, trap1, null, trap1Radius);
+		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(trap1Params, PlayerComponent.class, true, trap1Radius, "none")));
+		spawns.add(trap1);
 		
 		dungeon.setFloors(floors);
 		
@@ -70,27 +88,46 @@ public class DungeonFactory {
 		}
 		
 		// Randomize rooms' layout based on room types
+		
 
 		// Carve corridors
 		Array<Rectangle> corridorsRectangles = generateCorridors(roomRectangles);
 		Array<Room> corridors = toRoomsArray(corridorsRectangles);
 		
-		// Set tile images
+		// Create tiles from rooms
+		String defaultTileSpriteName = getDefaultTileSpriteNameFromFloor(floorNumber);
 		Array<Tile> allRoomTiles = new Array<Tile>();
-		Array<Room> allRooms = new Array<Room>();
-		allRooms.addAll(rooms);
-		allRooms.addAll(corridors);
 		Tile[][] floorTiles = floor.getTiles();
-		for(Room room : allRooms) {
+		// Set sprites for all tiles in rooms
+		for(Room room : rooms) {
 			for(int x = room.rect.x; x < room.rect.x + room.tiles.length; x++) {
 				for(int y = room.rect.y; y < room.rect.y + room.tiles[x - room.rect.x].length; y++) {
-					floorTiles[x][y] = new Tile(new Point(x, y));
-					floorTiles[x][y].setSprite(dungeonParams.getImages().loadSprite("stone_tile"));
+					if(floorTiles[x][y] == null) {
+						floorTiles[x][y] = new Tile(new Point(x, y));
+					}
+					floorTiles[x][y].setSprite(dungeonParams.getImages().loadSprite(defaultTileSpriteName));
 					floorTiles[x][y].setHitboxType(HitboxType.INTANGIBLE);
 					allRoomTiles.add(floorTiles[x][y]);
 				}
 			}
 		}
+		// Convert any tangible tiles that the corridors cut through to breakable tiles
+		for(Room room : corridors) {
+			for(int x = room.rect.x; x < room.rect.x + room.tiles.length; x++) {
+				for(int y = room.rect.y; y < room.rect.y + room.tiles[x - room.rect.x].length; y++) {
+					if(floorTiles[x][y] == null) {
+						floorTiles[x][y] = new Tile(new Point(x, y));
+						floorTiles[x][y].setSprite(dungeonParams.getImages().loadSprite(defaultTileSpriteName));
+						floorTiles[x][y].setHitboxType(HitboxType.INTANGIBLE);
+					} else if(floorTiles[x][y].getHitboxType().isTangible()) {
+						floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("invisible_breakable"), new Point(x, y), 1);
+						floorTiles[x][y].addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("crack").random());
+					}
+					allRoomTiles.add(floorTiles[x][y]);
+				}
+			}
+		}
+		// Initialize all null tiles
 		for(int x = 0; x < floorSideLength; x++) {
 			for(int y = 0; y < floorSideLength; y++) {
 				if(floorTiles[x][y] == null) {
@@ -99,22 +136,34 @@ public class DungeonFactory {
 				}
 			}
 		}
-				
+		
 		for(Tile tile : allRoomTiles) {
-			// Randomly place visual overlays on tiles
-			if(Math.random() < 0.005) {
-				tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("small_rocks").random());
-			} else if(Math.random() < 0.005) {
-				tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("crack").random());
-			}
-			
-			// Randomly place rocks
-			if(Math.random() < 0.005) {
-				floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("rock_breakable"), tile.getMapPosition(), 1);
+			if(!tile.isTangibleTile()) {
+				// Randomly place visual overlays on tiles
+				if(Math.random() < 0.005) {
+					tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("small_rocks").random());
+				} else if(Math.random() < 0.005) {
+					tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("crack").random());
+				}
+				
+				// Randomly place rocks
+				if(Math.random() < 0.005) {
+					floor.createBreakableTile(dungeonParams.getEntityFactory(), dungeonParams.getEntityLoader().getEntitiesData().get("rock_breakable"), tile.getMapPosition(), 1);
+				}
 			}
 		}
 		
 		return floor;
+	}
+	
+	/**
+	 * TODO: add to this
+	 */
+	private static String getDefaultTileSpriteNameFromFloor(int floorNumber) {
+		if(floorNumber < 10) {
+			return "stone_tile";
+		}
+		return "stone_tile";
 	}
 	
 	/**

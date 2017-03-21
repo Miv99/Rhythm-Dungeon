@@ -1,7 +1,7 @@
 package entity_ai;
 
 public abstract class Stationary extends EntityAI {
-	public Stationary(EnemyAIParams params) {
+	public Stationary(EntityAIParams params) {
 		super(params);
 	}
 

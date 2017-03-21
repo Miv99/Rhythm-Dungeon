@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import audio.Audio;
 import components.AnimationComponent;
 import components.AttackComponent;
-import components.EnemyAIComponent;
+import components.EntityAIComponent;
 import components.FriendlyAIComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
@@ -161,11 +161,11 @@ public class EntityActions {
 					}
 				}
 				
-				// If the entity moving is a player, check if it goes in range of any enemy AI
+				// If the entity moving is a player, check if it goes in range of any entity AI
 				if(ComponentMappers.playerMapper.has(entity)) {
-					for(Entity enemy : engine.getEntitiesFor(Family.all(EnemyAIComponent.class).get())) {
+					for(Entity enemy : engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
 						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
-						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						EntityAI ai = ComponentMappers.entityAIMapper.get(enemy).getEntityAI();
 						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
 								>= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);
@@ -177,7 +177,7 @@ public class EntityActions {
 				if(ComponentMappers.enemyMapper.has(entity)) {
 					for(Entity enemy : engine.getEntitiesFor(Family.all(FriendlyAIComponent.class).get())) {
 						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
-						EntityAI ai = ComponentMappers.enemyAIMapper.get(enemy).getEnemyAI();
+						EntityAI ai = ComponentMappers.friendlyAIMapper.get(enemy).getEntityAI();
 						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
 								>= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);

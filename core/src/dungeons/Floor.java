@@ -21,8 +21,10 @@ public class Floor {
 	}
 	
 	public void createBreakableTile(EntityFactory entityFactory, EntityData entityData, Point mapPosition, int healthPoints) {
-		entitiesToBeSpawned.add(entityFactory.createEntity(entityData, mapPosition, healthPoints));
+		Entity entity = entityFactory.createEntity(entityData, mapPosition, healthPoints);
+		entitiesToBeSpawned.add(entity);
 		tiles[mapPosition.x][mapPosition.y].setHitboxType(HitboxType.INTANGIBLE);
+		tiles[mapPosition.x][mapPosition.y].getTangibleOccupants().add(entity);
 	}
 	
 	public void setActionsDisabled(boolean actionsDisabled) {

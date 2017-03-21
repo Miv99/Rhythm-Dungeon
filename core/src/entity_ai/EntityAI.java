@@ -8,7 +8,7 @@ import dungeons.Dungeon;
 import factories.EntityFactory;
 
 public abstract class EntityAI {
-	public static class EnemyAIParams {
+	public static class EntityAIParams {
 		protected EntityFactory entityFactory;
 		protected Entity self;
 		protected Entity target;
@@ -17,7 +17,7 @@ public abstract class EntityAI {
 		protected Dungeon dungeon;
 		protected Audio audio;
 		
-		public EnemyAIParams(EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
+		public EntityAIParams(EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
 			this.entityFactory = entityFactory;
 			this.options = options;
 			this.audio = audio;
@@ -43,7 +43,7 @@ public abstract class EntityAI {
 	protected Entity target;
 	protected Entity self;
 		
-	public EntityAI(EnemyAIParams params) {
+	public EntityAI(EntityAIParams params) {
 		this.entityFactory = params.entityFactory;
 		this.options = params.options;
 		this.audio = params.audio;
