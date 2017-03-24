@@ -113,11 +113,12 @@ public class Main extends ApplicationAdapter {
 		if(!paused) {
 			if(dungeon != null) {
 				dungeon.update(deltaTime);
+				dungeon.getActionBar().setCursorPosition(audio.getCurrentSong().getMusic().getPosition());
 			}
-			
+						
 			// Update systems
 			engine.update(deltaTime);
-			
+						
 			if(camera != null) {
 				camera.frameUpdate(deltaTime);
 			}

@@ -12,7 +12,7 @@ import dungeons.Floor;
 import factories.EntityFactory;
 
 public class BeatLine {
-	private enum CircleState {
+	public enum CircleState {
 		Alive,
 		Dying,
 		Dead, // Circle has been hit
@@ -96,10 +96,6 @@ public class BeatLine {
 	
 	public void setDeletionQueued(boolean deletionQueued) {
 		this.deletionQueued = deletionQueued;
-	}
-	
-	public void setTimeUntilCursorLineInSeconds(float newTime) {
-		timeUntilCursorLineInSeconds = newTime;
 	}
 	
 	public void setReaddedToActionBar(boolean readdedToActionBar) {

@@ -37,7 +37,7 @@ public class Options {
 	}
 	
 	public static final int TILE_SIZE = 32;
-	
+		
 	//TODO: change this to Gdx.files.local
 	public static String assetsFilePath = "C:\\Rhythm Dungeon\\assets\\";
 	
@@ -65,7 +65,7 @@ public class Options {
 	
 	private float actionBarScrollInterval = 16f;
 	
-	private Difficulty difficulty = Difficulty.NORMAL;
+	private Difficulty difficulty = Difficulty.LUNATIC;
 	
 	private int attackKey1 = Input.Keys.A;
 	private int attackKey2 = Input.Keys.S;

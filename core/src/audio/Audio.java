@@ -25,6 +25,11 @@ public class Audio {
 	// Hashmap with key:value pairing of folderName:(array of Sound)
 	private HashMap<String, Array<Sound>> soundEffectsSubfolders = new HashMap<String, Array<Sound>>();
 	
+	private boolean paused;
+	
+	private Song currentSong;
+	private float currentSongPosition;
+	
 	public Audio(Options options) {
 		this.options = options;
 	}
@@ -136,14 +141,21 @@ public class Audio {
 		playSong(songs.get(fileName));
 	}
 	
+	/**
+	 * Only one song can be playing at a time
+	 */
 	public void playSong(Song song) {
 		if(song != null) {
+			currentSong = song;
+			currentSongPosition = 0f;
+			
 			song.getMusic().setVolume(options.getMasterVolume() * options.getMusicVolume());
 			song.getMusic().play();
 		}
 	}
 	
 	public void pauseMusic() {
+		paused = true;
 		for(Song song : songs.values()) {
 			if(song.getMusic().isPlaying()) {
 				song.getMusic().pause();
@@ -153,12 +165,17 @@ public class Audio {
 	}
 	
 	public void resumeMusic() {
+		paused = false;
 		for(Song song : songs.values()) {
 			if(song.isPaused()) {
 				song.getMusic().play();
 				song.setPaused(false);
 			}
 		}
+	}
+	
+	public Song getCurrentSong() {
+		return currentSong;
 	}
 	
 	public Song getSong(String fileName) {
