@@ -57,7 +57,7 @@ public class Main extends ApplicationAdapter {
 		options = Options.loadOptions();
 		
 		Gdx.graphics.setWindowedMode(options.getWindowWidth(), options.getWindowHeight());
-		camera = new GameCamera(options.getWindowWidth(), options.getWindowHeight());
+		camera = new GameCamera(options.getWindowWidth()/1.33f, options.getWindowHeight()/1.33f);
 						
 		audio = new Audio(options);
 		audio.loadAudio();
@@ -111,9 +111,11 @@ public class Main extends ApplicationAdapter {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 				
 		if(!paused) {
+			audio.update();
+			
 			if(dungeon != null) {
 				dungeon.update(deltaTime);
-				dungeon.getActionBar().setCursorPosition(audio.getCurrentSong().getMusic().getPosition());
+				dungeon.getActionBar().setCursorPosition(audio.getCurrentSongPosition());
 			}
 						
 			// Update systems

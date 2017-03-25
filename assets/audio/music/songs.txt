@@ -1,5 +1,17 @@
 name=Porter Robinson & Madeon - Shelter
 bpm=100
+offset=0
+loop_start=0
+song_end=233
 
 name=Kicco - Amazing sky
 bpm=150
+offset=1.645
+loop_start=1.645
+song_end=94.3325
+
+name=Blue Zenith
+bpm=200
+offset=2.262
+loop_start=2.262
+song_end=252.904

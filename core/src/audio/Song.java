@@ -12,6 +12,7 @@ public class Song {
 	private float offsetInSeconds;
 	// Marks where the music begins to loop, if it does
 	private float loopStartMarkerInSeconds;
+	private float songEndMarkerInSeconds;
 	private boolean loops;
 	
 	// If song was paused while being played
@@ -23,6 +24,7 @@ public class Song {
 		this.bpm = songData.getBpm();
 		this.offsetInSeconds = songData.getOffsetInSeconds();
 		this.loopStartMarkerInSeconds = songData.getLoopStartMarkerInSeconds();
+		this.songEndMarkerInSeconds = songData.getSongEndMarkerInSeconds();
 		this.loops = songData.isLoops();
 	}
 	
@@ -48,6 +50,10 @@ public class Song {
 	
 	public float getLoopStartMarkerInSeconds() {
 		return loopStartMarkerInSeconds;
+	}
+	
+	public float getSongEndMarkerInSeconds() {
+		return songEndMarkerInSeconds;
 	}
 	
 	public boolean isLoops() {

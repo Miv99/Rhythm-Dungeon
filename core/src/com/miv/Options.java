@@ -59,7 +59,7 @@ public class Options {
 	private int windowWidth = 1600;
 	private int windowHeight = 900;
 	
-	private float masterVolume = 0.1f;
+	private float masterVolume = 0.5f;
 	private float soundEffectsVolume = 1f;
 	private float musicVolume = 1f;
 	

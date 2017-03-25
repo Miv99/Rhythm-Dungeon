@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.miv.Options;
 
 import data.SongData;
+import dungeons.Dungeon;
 import utils.FileUtils;
 import utils.GeneralUtils;
 
@@ -24,10 +27,9 @@ public class Audio {
 	private HashMap<String, Song> songs = new HashMap<String, Song>();
 	// Hashmap with key:value pairing of folderName:(array of Sound)
 	private HashMap<String, Array<Sound>> soundEffectsSubfolders = new HashMap<String, Array<Sound>>();
-	
-	private boolean paused;
-	
+		
 	private Song currentSong;
+	private int currentSongLoopCount;
 	private float currentSongPosition;
 	
 	public Audio(Options options) {
@@ -48,7 +50,7 @@ public class Audio {
 		float bpm = 0;
 		float offset = 0f;
 		float loopStartMarker = 0f;
-		boolean loops = false;
+		float songEndMarker = 0f;
 		int lineCount = 1;
 		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
@@ -61,15 +63,15 @@ public class Audio {
 					offset = GeneralUtils.toFloat(line.replace("offset=", ""));
 				} else if(line.startsWith("loop_start=")) {
 					loopStartMarker = GeneralUtils.toFloat(line.replace("loop_start=", ""));
-				} else if(line.startsWith("loops=")) {
-					loops = Boolean.valueOf(line.replace("loops=", ""));
+				} else if(line.startsWith("song_end=")) {
+					songEndMarker = GeneralUtils.toFloat(line.replace("song_end=", ""));
 				} else if(line.equals("")) {
-					songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, loops));
+					songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, songEndMarker));
 					songName = "";
 					bpm = 0;
 					offset = 0f;
 					loopStartMarker = 0f;
-					loops = false;
+					songEndMarker = 0f;
 				} else {
 					System.out.println("Music metadata invalid format at line " + lineCount);
 				}
@@ -80,7 +82,7 @@ public class Audio {
 			lineCount++;
 		}
 		if(!songName.equals("")) {
-			songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, loops));
+			songsData.put(songName, new SongData(songName, bpm, offset, loopStartMarker, songEndMarker));
 		}
 	}
 	
@@ -146,16 +148,41 @@ public class Audio {
 	 */
 	public void playSong(Song song) {
 		if(song != null) {
-			currentSong = song;
+			currentSongLoopCount = 0;
 			currentSongPosition = 0f;
+			currentSong = song;
 			
 			song.getMusic().setVolume(options.getMasterVolume() * options.getMusicVolume());
+			/**
+			song.getMusic().setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(Music music) {
+					
+				}
+			});
+			*/
 			song.getMusic().play();
 		}
 	}
 	
+	public void update() {
+		if(currentSong != null) {
+			// Loop song if it ends
+			if(currentSong.getMusic().getPosition() >= currentSong.getSongEndMarkerInSeconds()) {
+				currentSong.getMusic().setPosition(currentSong.getLoopStartMarkerInSeconds());
+				currentSongLoopCount++;
+			}
+			
+			// Update song position
+			currentSongPosition = currentSong.getMusic().getPosition() + currentSongLoopCount*(currentSong.getSongEndMarkerInSeconds() - currentSong.getLoopStartMarkerInSeconds());
+		}
+	}
+	
+	public float getCurrentSongPosition() {
+		return currentSongPosition;
+	}
+	
 	public void pauseMusic() {
-		paused = true;
 		for(Song song : songs.values()) {
 			if(song.getMusic().isPlaying()) {
 				song.getMusic().pause();
@@ -165,7 +192,6 @@ public class Audio {
 	}
 	
 	public void resumeMusic() {
-		paused = false;
 		for(Song song : songs.values()) {
 			if(song.isPaused()) {
 				song.getMusic().play();
