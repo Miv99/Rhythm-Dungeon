@@ -430,7 +430,9 @@ public class EntityActions {
 				
 		// Deal damage to attacked entities
 		int damage = 4;
-		damage *= params.options.getDifficulty().getPlayerDamageMultiplier();
+		if(ComponentMappers.playerMapper.has(params.attacker)) {
+			damage *= params.options.getDifficulty().getPlayerDamageMultiplier();
+		}
 		for(Entity attacked : attackedEntities) {
 			if(!attacked.equals(params.attacker) && ComponentMappers.healthMapper.has(attacked)) {
 				hitEntity(params.audio, attacked, damage);

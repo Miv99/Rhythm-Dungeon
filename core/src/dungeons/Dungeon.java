@@ -123,7 +123,7 @@ public class Dungeon {
 	 * Returns a value proportional the time difference between each BeatLine
 	 */
 	public float calculateBeatHitErrorMargin() {
-		return Math.max(0.06f, (actionBar.getBeatLines().get(1).getTimePositionInSeconds() - actionBar.getBeatLines().first().getTimePositionInSeconds())/2.5f);
+		return Math.max(dungeonParams.options.getDifficulty().getMaximumBeatHitWindowInSeconds(), (actionBar.getBeatLines().get(1).getTimePositionInSeconds() - actionBar.getBeatLines().first().getTimePositionInSeconds())/2.5f);
 	}
 	
 	/**

@@ -8,18 +8,20 @@ import com.badlogic.gdx.Input;
  */
 public class Options {
 	public static enum Difficulty {
-		EASY(140, 1), // 140bpm cap, full beats only
-		NORMAL(160, 2), // 160bpm cap, half beats
-		HARD(180, 2), // 180bpm cap, half beats
-		LUNATIC(200, 4); // 200bpm cap, all player attacks do 25% damage, quarter beats
+		EASY(140, 1, 0.08f), // 140bpm cap, full beats only
+		NORMAL(160, 2, 0.07f), // 160bpm cap, half beats
+		HARD(180, 2, 0.065f), // 180bpm cap, half beats
+		LUNATIC(200, 4, 0.06f); // 200bpm cap, all player attacks do 25% damage, quarter beats
 		
 		private int bpmCap;
 		private int beatLinesPerBeat;
 		private float playerDamageMultiplier;
+		private float maximumBeatHitWindowInSeconds;
 		
-		Difficulty(int bpmCap, int beatLinesPerBeat) {
+		Difficulty(int bpmCap, int beatLinesPerBeat, float maximumBeatHitWindowInSeconds) {
 			this.bpmCap = bpmCap;
 			this.beatLinesPerBeat = beatLinesPerBeat;
+			this.maximumBeatHitWindowInSeconds = maximumBeatHitWindowInSeconds;
 			playerDamageMultiplier = 1f/(float)beatLinesPerBeat;
 		}
 		
@@ -33,6 +35,10 @@ public class Options {
 		
 		public float getPlayerDamageMultiplier() {
 			return playerDamageMultiplier;
+		}
+		
+		public float getMaximumBeatHitWindowInSeconds() {
+			return maximumBeatHitWindowInSeconds;
 		}
 	}
 	
@@ -65,7 +71,7 @@ public class Options {
 	
 	private float actionBarScrollInterval = 16f;
 	
-	private Difficulty difficulty = Difficulty.EASY;
+	private Difficulty difficulty = Difficulty.LUNATIC;
 	
 	private int attackKey1 = Input.Keys.G;
 	private int attackKey2 = Input.Keys.H;
