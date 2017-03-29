@@ -62,15 +62,19 @@ public class AttackLoader {
 				} else if(line.startsWith("can_hit=")) {
 					hittableRequirement = parseHittableRequirementString(line.replace("can_hit=", ""));
 				} else if(line.startsWith("right")) {
+					recordingBuffer.clear();
 					recordingRight = true;
 					recordingAttackPartIndex = Integer.valueOf(line.substring(5, line.lastIndexOf('='))) - 1;
 				} else if(line.startsWith("left")) {
+					recordingBuffer.clear();
 					recordingLeft = true;
 					recordingAttackPartIndex = Integer.valueOf(line.substring(4, line.lastIndexOf('='))) - 1;
 				} else if(line.startsWith("up")) {
+					recordingBuffer.clear();
 					recordingUp = true;
 					recordingAttackPartIndex = Integer.valueOf(line.substring(2, line.lastIndexOf('='))) - 1;
 				} else if(line.startsWith("down")) {
+					recordingBuffer.clear();
 					recordingDown = true;
 					recordingAttackPartIndex = Integer.valueOf(line.substring(4, line.lastIndexOf('='))) - 1;
 				} else if(line.startsWith("attack_delay=")) {
