@@ -322,9 +322,11 @@ public class EntityActions {
 								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i, warningTilesArray.get(i + 1)));
 					} else {
-						entityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
+						EntityAttackParams params = new EntityAttackParams(options, audio, floor, attacker, entityFactory,
 								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
-								targetedTiles, 0, warningTilesArray.get(i + 1)));
+								targetedTiles, 0, warningTilesArray.get(i + 1));
+						runEntityAttackAnimations(params);
+						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
 					}
 				} else {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
@@ -332,9 +334,11 @@ public class EntityActions {
 								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i));
 					} else {
-						entityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
+						EntityAttackParams params = new EntityAttackParams(options, audio, floor, attacker, entityFactory,
 								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
-								targetedTiles, 0));
+								targetedTiles, 0);
+						runEntityAttackAnimations(params);
+						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
 					}
 				}
 			}
@@ -349,16 +353,17 @@ public class EntityActions {
 	}
 	
 	/**
-	 * Instantly do damage calculations. Called only from action bar queue or from Attack.entityStartAttack if there is no delay.
+	 * Do animations only. Does not do damage calculations.
+	 * Called only from action bar queue or from Attack.entityStartAttack if there is no delay.
 	 */
-	public static void entityAttack(EntityAttackParams params) {
-		Tile[][] mapTiles = params.floor.getTiles();
-		
+	public static void runEntityAttackAnimations(EntityAttackParams params) {		
 		// Check if attacker or target is dead
 		if(params.attacker == null 
 				|| (ComponentMappers.healthMapper.has(params.attacker) && ComponentMappers.healthMapper.get(params.attacker).getHealth() <= 0)) {
 			return;
 		}
+		
+		Tile[][] mapTiles = params.floor.getTiles();
 		
 		// Warn next tiles if attack is an attack part
 		AttackComponent attackerAttackComponent = ComponentMappers.attackMapper.get(params.attacker);
@@ -366,6 +371,40 @@ public class EntityActions {
 			attackerAttackComponent.getWarningTiles().addAll(params.nextAttackPartWarningTiles);
 		}
 		
+		// Do animations on tiles
+		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x;
+		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y;
+		for(int x = absX; x < absX + params.targetedTiles.length; x++) {
+			for(int y = absY; y < absY + params.targetedTiles[x - absX].length; y++) {
+				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
+					// Get x and y relative to targetedTiles
+					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
+					if(tile.isAttack()) {
+						params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
+					}
+				}
+			}
+		}
+				
+		// Attacker does attack animation
+		if(ComponentMappers.animationMapper.has(params.attacker)) {
+			AnimationComponent animationComponent = ComponentMappers.animationMapper.get(params.attacker);
+			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+		}
+	}
+	
+	/**
+	 * Instantly do damage calculations only. Called only from action bar queue.
+	 */
+	public static void calculateEntityAttackDamage(EntityAttackParams params) {
+		// Check if attacker or target is dead
+		if(params.attacker == null 
+				|| (ComponentMappers.healthMapper.has(params.attacker) && ComponentMappers.healthMapper.get(params.attacker).getHealth() <= 0)) {
+			return;
+		}
+				
+		Tile[][] mapTiles = params.floor.getTiles();
+
 		// Get entities that are attacked
 		Set<Entity> attackedEntities = new HashSet<Entity>();
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
@@ -384,9 +423,6 @@ public class EntityActions {
 								attackedEntities.add(occupant);
 							}
 						}
-						
-						// Do animation on tile
-						params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
 					}
 				}
 			}
@@ -399,12 +435,6 @@ public class EntityActions {
 			if(!attacked.equals(params.attacker) && ComponentMappers.healthMapper.has(attacked)) {
 				hitEntity(params.audio, attacked, damage);
 			}
-		}
-		
-		// Attacker does attack animation
-		if(ComponentMappers.animationMapper.has(params.attacker)) {
-			AnimationComponent animationComponent = ComponentMappers.animationMapper.get(params.attacker);
-			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
 		}
 	}
 	

@@ -51,13 +51,13 @@ public class BeatLine {
 		circleWeakState = CircleState.Alive;
 	}
 	
-	public void onAttackHit(Options options, Audio audio, Dungeon dungeon, Entity player, Entity target, String attackName, EntityFactory entityFactory) {
+	
+	public void onAttackHit(Audio audio) {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
+			circleWeakIncreasingYPos = true;
 			
 			audio.playSoundEffect("action_bar_attack_hit");
-			
-			EntityActions.entityStartAttack(options, audio, dungeon, player, target, attackName, entityFactory);
 		}
 	}
 	

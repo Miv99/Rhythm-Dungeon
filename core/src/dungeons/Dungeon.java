@@ -294,11 +294,9 @@ public class Dungeon {
 	
 	public class ActionBar {
 		private class PlayerAttack {
-			private BeatLine triggeredBeatLine;
 			private String weaponEquipped;
 			
-			PlayerAttack(BeatLine triggeredBeatLine, String weaponEquipped) {
-				this.triggeredBeatLine = triggeredBeatLine;
+			PlayerAttack(String weaponEquipped) {
 				this.weaponEquipped = weaponEquipped;
 			}
 		}
@@ -343,12 +341,12 @@ public class Dungeon {
 				
 				if(nearestLeft != null && nearestLeft.getCircleWeakState().equals(CircleState.Alive)
 						&& Math.abs(nearestLeft.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
-					nearestLeft.setCircleWeakIncreasingYPos(true);
+					playerAttackQueue.add(new PlayerAttack(ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+					nearestLeft.onAttackHit(dungeonParams.audio);
 				} else if(nearestRight != null && nearestRight.getCircleWeakState().equals(CircleState.Alive)
 						&& Math.abs(nearestRight.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
-					nearestRight.setCircleWeakIncreasingYPos(true);
+					playerAttackQueue.add(new PlayerAttack(ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
+					nearestRight.onAttackHit(dungeonParams.audio);
 				} else if(nearestRight != null) {
 					nearestRight.onAttackMiss();
 				}
@@ -374,8 +372,9 @@ public class Dungeon {
 		
 		public void firePlayerActionsQueue() {
 			for(PlayerAttack attack : playerAttackQueue) {
-				attack.triggeredBeatLine.onAttackHit(dungeonParams.options, dungeonParams.audio, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
+				EntityActions.entityStartAttack(dungeonParams.options, dungeonParams.audio, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
 			}
+			playerAttackQueue.clear();
 		}
 		
 		public void setCursorPosition(float cursorPositionInSeconds) {
@@ -464,6 +463,8 @@ public class Dungeon {
 			private Array<BeatLine> beatLineDeletionQueue;
 			private Array<EntityAttackParams> entityAttackQueue;
 			private Array<EntityAttackParams> entityAttackDeletionQueue;
+			private Array<EntityAttackParams> entityAttackDamageCalculationsQueue;
+			private Array<EntityAttackParams> entityAttackDamageCalculationsDeletionQueue;
 			
 			private int maxBeatCirclesOnScreen;
 			
@@ -491,6 +492,8 @@ public class Dungeon {
 				beatLineDeletionQueue = new Array<BeatLine>();
 				entityAttackQueue = new Array<EntityAttackParams>();
 				entityAttackDeletionQueue = new Array<EntityAttackParams>();
+				entityAttackDamageCalculationsQueue = new Array<EntityAttackParams>();
+				entityAttackDamageCalculationsDeletionQueue = new Array<EntityAttackParams>();
 				this.windowWidth = windowWidth;
 				
 				maxBeatCirclesOnScreen = calculateMaxBeatsOnScreen();
@@ -520,7 +523,6 @@ public class Dungeon {
 			public SpriteBatch getBatch() {
 				return batch;
 			}
-			
 			
 			public void update(float deltaTime) {
 				batch.begin();
@@ -566,14 +568,13 @@ public class Dungeon {
 								time = nextSongEndTime + dungeonParams.audio.getSongLoopSyncDelayInSeconds();
 								syncedNextLoop = true;
 							}
-							//System.out.println(time + ": " + ((dungeonParams.audio.getSongLoopNumber(time) * dungeonParams.audio.getSongLoopSyncDelayInSeconds())));
-							//time += (dungeonParams.audio.getSongLoopNumber(time) * );
 							queueBeatLineAddition(new BeatLine(time, b.isStrongBeat()));
 							
 							b.setReaddedToActionBar(true);
 						}
 						if(!b.isFiredPlayerActionQueue()
 								&& (b.getTimePositionInSeconds() - cursorPositionInSeconds) < -beatHitErrorMarginInSeconds) {
+							onEndOfBeatHitWindow(b.isStrongBeat());
 							firePlayerActionsQueue();
 							b.setFiredPlayerActionQueue(true);
 						}
@@ -589,9 +590,23 @@ public class Dungeon {
 				batch.end();
 			}
 			
+			/**
+			 * Called when a beat is no longer able to be hit by the player
+			 */
+			private void onEndOfBeatHitWindow(boolean strongBeat) {
+				// Entity attack damage calculations queue
+				// Placed in onEndOfBeatHitWindow instead of onNewBeat to resolve entity movements before damage calculations from attacks
+				for(EntityAttackParams params : entityAttackDamageCalculationsQueue) {
+					EntityActions.calculateEntityAttackDamage(params);
+					entityAttackDamageCalculationsDeletionQueue.add(params);
+				}
+				fireEntityAttackDamageCalculationsDeletionQueue();
+			}
+			
 			private void onNewBeat(boolean strongBeat) {
 				float deltaBeat = 1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
 				
+				//TODO: maybe move this to end of bea thit window
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
 					ComponentMappers.attackMapper.get(entity).onNewBeat(deltaBeat);
 				}
@@ -604,17 +619,14 @@ public class Dungeon {
 				for(EntityAttackParams params : entityAttackQueue) {
 					params.setBeatDelay(params.getBeatDelay() - deltaBeat);
 					if(params.getBeatDelay() <= 0) {
-						EntityActions.entityAttack(params);
+						EntityActions.runEntityAttackAnimations(params);
+						entityAttackDamageCalculationsQueue.add(params);
 						entityAttackDeletionQueue.add(params);
 					}
 				}
 				fireEntityAttackDeletionQueue();
 				
-				if(strongBeat) {					
-					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
-						ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
-					}
-										
+				if(strongBeat) {										
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
@@ -623,14 +635,25 @@ public class Dungeon {
 							animationComponent.setQueuedIdleAnimation(true);
 						}
 					}
+					
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
+						ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
+					}
 				}
+			}
+			
+			/**
+			 * Used by Attack.class to wait a certain amount of beats before doing attack animations
+			 */
+			public void queueEntityAttack(EntityAttackParams params) {
+				entityAttackQueue.add(params);
 			}
 			
 			/**
 			 * Used by Attack.class to wait a certain amount of beats before doing damage calculations
 			 */
-			public void queueEntityAttack(EntityAttackParams params) {
-				entityAttackQueue.add(params);
+			public void queueEntityAttackDamageCalculations(EntityAttackParams params) {
+				entityAttackDamageCalculationsQueue.add(params);
 			}
 			
 			private void queueBeatLineAddition(BeatLine newBeatLine) {
@@ -647,6 +670,8 @@ public class Dungeon {
 				beatLineDeletionQueue.clear();
 				entityAttackQueue.clear();
 				entityAttackDeletionQueue.clear();
+				entityAttackDamageCalculationsQueue.clear();
+				entityAttackDamageCalculationsDeletionQueue.clear();
 			}
 			
 			private void fireBeatLineAdditionQueue() {
@@ -667,6 +692,13 @@ public class Dungeon {
 				if(entityAttackDeletionQueue.size > 0) {
 					entityAttackQueue.removeAll(entityAttackDeletionQueue, false);
 					entityAttackDeletionQueue.clear();
+				}
+			}
+			
+			private void fireEntityAttackDamageCalculationsDeletionQueue() {
+				if(entityAttackDamageCalculationsDeletionQueue.size > 0) {
+					entityAttackDamageCalculationsQueue.removeAll(entityAttackDamageCalculationsDeletionQueue, false);
+					entityAttackDamageCalculationsDeletionQueue.clear();
 				}
 			}
 		}
