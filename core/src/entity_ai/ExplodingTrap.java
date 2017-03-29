@@ -1,5 +1,7 @@
 package entity_ai;
 
+import java.util.ArrayList;
+
 import com.badlogic.ashley.core.Component;
 import com.miv.EntityActions;
 
@@ -32,12 +34,16 @@ public class ExplodingTrap extends Stationary {
 			}
 		}
 		tileAttackData[explosionRadiusInTiles][explosionRadiusInTiles] = new TileAttackData(true, true, animationOnTile);
+		
+		ArrayList<TileAttackData[][]> tileAttackDataArray = new ArrayList<TileAttackData[][]>();
+		tileAttackDataArray.add(tileAttackData);
 		attackData = new AttackData(entityHittableRequirement, attackDelayInBeats, warnTilesBeforeAttack,
-				AttackDirectionDeterminant.SELF_FACING, 0, "none", tileAttackData);
+				AttackDirectionDeterminant.SELF_FACING, 0, 0, "none", tileAttackDataArray);
 	}
 
 	@Override
 	public void onActivation() {
 		EntityActions.entityStartAttack(options, audio, dungeon, self, target, attackData, entityFactory);
+		EntityActions.killEntity(audio, engine, dungeon.getFloors()[dungeon.getCurrentFloor()], self);
 	}
 }

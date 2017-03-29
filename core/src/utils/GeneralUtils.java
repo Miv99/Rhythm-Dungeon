@@ -1,7 +1,11 @@
 package utils;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -96,6 +100,20 @@ public class GeneralUtils {
 			for(int y = 0; y < newArray[x].length; y++) {
 				newArray[x][y] = array[newArray[x].length - y - 1][x];
 			}
+		}
+		
+		return newArray;
+	}
+	
+	/**
+	 * Converts the HashMap into an ArrayList sorted by the integer key value of the HashMap
+	 */
+	public static ArrayList<TileAttackData[][]> toOrderedArrayList(HashMap<Integer, TileAttackData[][]> map) {
+		ArrayList<TileAttackData[][]> newArray = new ArrayList<TileAttackData[][]>();
+		
+		SortedSet<Integer> keys = new TreeSet<Integer>(map.keySet());
+		for(Integer key : keys) {
+			newArray.add(map.get(key));
 		}
 		
 		return newArray;

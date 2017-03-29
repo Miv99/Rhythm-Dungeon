@@ -14,6 +14,8 @@ public class AttackComponent implements Component {
 	private HashMap<String, AttackData> attacksData;
 	private String tileBreakAttackName;
 	
+	private float attackDisabledTimeInBeats;
+	
 	public AttackComponent(HashMap<String, AttackData> attacksData) {
 		this.attacksData = attacksData;
 		warningTiles = new Array<WarningTile>();
@@ -23,6 +25,18 @@ public class AttackComponent implements Component {
 		this.attacksData = attacksData;
 		warningTiles = new Array<WarningTile>();
 		this.tileBreakAttackName = tileBreakAttackName;
+	}
+	
+	public void onNewBeat(float deltaBeat) {
+		attackDisabledTimeInBeats -= deltaBeat;
+		
+		for(WarningTile warningTile : warningTiles) {
+			warningTile.onNewBeat(deltaBeat);
+		}
+	}
+	
+	public void setAttackDisabledTimeInBeats(float attackDisabledTimeInBeats) {
+		this.attackDisabledTimeInBeats = attackDisabledTimeInBeats;
 	}
 	
 	public void setAttacksData(HashMap<String, AttackData> attacksData) {
@@ -39,5 +53,9 @@ public class AttackComponent implements Component {
 	
 	public String getTileBreakAttackName() {
 		return tileBreakAttackName;
+	}
+	
+	public float getAttackDisabledTimeInBeats() {
+		return attackDisabledTimeInBeats;
 	}
 }

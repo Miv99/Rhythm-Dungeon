@@ -65,7 +65,7 @@ public class Options {
 	
 	private float actionBarScrollInterval = 16f;
 	
-	private Difficulty difficulty = Difficulty.HARD;
+	private Difficulty difficulty = Difficulty.LUNATIC;
 	
 	private int attackKey1 = Input.Keys.G;
 	private int attackKey2 = Input.Keys.H;

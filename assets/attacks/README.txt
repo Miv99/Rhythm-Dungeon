@@ -7,18 +7,20 @@ direction=SELF_FACING/TARGET_FACING/TARGET_RELATIVE_TO_SELF (how the direction o
 auto_rotate=true/false
 warn_tiles=true/false
 attack_delay=(integer of number of beats after the attack starts that the damage calculations are done)
+disable_attack=(integer of number of beats after the attack starts that the attacker is able to attack again)
 disable_movement=(integer of number of beats after the attack starts that the attacker is able to move)
 '(any single character)'=(name of animation that is drawn on the tile with the specified character)
 (The above line can be repeated any amount with different characters and animation names)
-right=[
+right#=[
+(See ***)
 (String consisting of characters from the legend; see **)
 ]
-(see ***)
-left=[
+(see ****)
+left#=[
 ]
-up=[
+up#=[
 ]
-down=[
+down#=[
 ]
 
 
@@ -31,5 +33,8 @@ down=[
 	can be used in the custom legend to have an animationon the same tile as the focus
   '-' = empty space used solely for visual aid; never to be used in the custom legend
 
-***If auto_rotate is set to true, only [right] is needed. The rest of the hitboxes' data are created by
+***The # is a number that starts at 1 and represents the attack parts. For example, having right1 and right2 means
+   right1 will be the first attack hitboxes thrown out, followed by right2 one beat later.
+
+****If auto_rotate is set to true, only [right] is needed. The rest of the hitboxes' data are created by
    rotating [right] different ways

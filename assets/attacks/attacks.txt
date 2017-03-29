@@ -5,9 +5,10 @@ direction=SELF_FACING
 auto_rotate=true
 warn_tiles=false
 attack_delay=0
+disable_attack=0
 disable_movement=0
 '0'=none
-right=[
+right1=[
 #0
 ]
 
@@ -18,9 +19,10 @@ direction=SELF_FACING
 auto_rotate=true
 warn_tiles=false
 attack_delay=0
+disable_attack=0
 disable_movement=0
 '0'=slash
-right=[
+right1=[
 #0
 ]
 
@@ -31,10 +33,31 @@ direction=SELF_FACING
 auto_rotate=true
 warn_tiles=false
 attack_delay=0
+disable_attack=0
 disable_movement=0
 '0'=slash
-right=[
+right1=[
 #-0
+]
+
+name=skeleton_fire_sword
+animation_name=player_sword
+can_hit=all
+direction=SELF_FACING
+auto_rotate=true
+warn_tiles=true
+attack_delay=1
+disable_attack=2
+disable_movement=2
+'0'=slash
+'1'=slash
+right1=[
+#0
+]
+right2=[
+-1-
+#11
+-1-
 ]
 
 name=dragon_breath
@@ -44,10 +67,11 @@ direction=SELF_FACING
 auto_rotate=true
 warn_tiles=true
 attack_delay=2
+disable_attack=2
 disable_movement=1
 '#'=none
 '0'=none
-right=[
+right1=[
 --0
 #00
 --0

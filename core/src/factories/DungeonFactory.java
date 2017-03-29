@@ -62,8 +62,8 @@ public class DungeonFactory {
 		 */
 		Entity trap1 = dungeonParams.getEntityFactory().createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("default_trap"), new Point(30, 30), 1);
 		int trap1Radius = 5;
-		EntityAIParams trap1Params = new EntityAIParams(dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, trap1, null, trap1Radius);
-		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(trap1Params, PlayerComponent.class, true, trap1Radius, "none")));
+		EntityAIParams trap1Params = new EntityAIParams(dungeonParams.getEngine(), dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, trap1, null, trap1Radius);
+		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(trap1Params, PlayerComponent.class, true, 3, trap1Radius, "none")));
 		spawns.add(trap1);
 		
 		dungeon.setFloors(floors);

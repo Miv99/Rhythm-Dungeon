@@ -1,5 +1,6 @@
 package entity_ai;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.miv.Options;
 
@@ -9,6 +10,7 @@ import factories.EntityFactory;
 
 public abstract class EntityAI {
 	public static class EntityAIParams {
+		protected Engine engine;
 		protected EntityFactory entityFactory;
 		protected Entity self;
 		protected Entity target;
@@ -17,7 +19,8 @@ public abstract class EntityAI {
 		protected Dungeon dungeon;
 		protected Audio audio;
 		
-		public EntityAIParams(EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
+		public EntityAIParams(Engine engine, EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles) {
+			this.engine = engine;
 			this.entityFactory = entityFactory;
 			this.options = options;
 			this.audio = audio;
@@ -29,6 +32,7 @@ public abstract class EntityAI {
 	}
 	
 	protected Options options;
+	protected Engine engine;
 	protected Dungeon dungeon;
 	protected EntityFactory entityFactory;
 	protected Audio audio;
@@ -44,6 +48,7 @@ public abstract class EntityAI {
 	protected Entity self;
 		
 	public EntityAI(EntityAIParams params) {
+		this.engine = params.engine;
 		this.entityFactory = params.entityFactory;
 		this.options = params.options;
 		this.audio = params.audio;

@@ -64,6 +64,10 @@ public class Dungeon {
 			this.deathSystem = deathSystem;
 		}
 		
+		public Engine getEngine() {
+			return engine;
+		}
+		
 		public int getMaxFloors() {
 			return maxFloors;
 		}
@@ -589,30 +593,28 @@ public class Dungeon {
 				float deltaBeat = 1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
 				
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
-					for(WarningTile warningTile : ComponentMappers.attackMapper.get(entity).getWarningTiles()) {
-						warningTile.onNewBeat(deltaBeat);
-					}
+					ComponentMappers.attackMapper.get(entity).onNewBeat(deltaBeat);
 				}
 				
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
 					ComponentMappers.hitboxMapper.get(entity).onNewBeat(deltaBeat);
 				}
 				
+				// Lower beat delay on all entity attack queues
+				for(EntityAttackParams params : entityAttackQueue) {
+					params.setBeatDelay(params.getBeatDelay() - deltaBeat);
+					if(params.getBeatDelay() <= 0) {
+						EntityActions.entityAttack(params);
+						entityAttackDeletionQueue.add(params);
+					}
+				}
+				fireEntityAttackDeletionQueue();
+				
 				if(strongBeat) {					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
 						ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
 					}
-					
-					// Lower beat delay on all entity attack queues
-					for(EntityAttackParams params : entityAttackQueue) {
-						params.setBeatDelay(params.getBeatDelay() - 1);
-						if(params.getBeatDelay() < 0) {
-							EntityActions.entityAttack(params);
-							entityAttackDeletionQueue.add(params);
-						}
-					}
-					fireEntityAttackDeletionQueue();
-					
+										
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);

@@ -24,7 +24,7 @@ death_sound=monster_death
 
 name=player
 player=true
-player_default_attack=player_sword
+player_default_attack=skeleton_fire_sword
 hitbox=1x1
 sprite=player
 hurt_sound=human_hurt

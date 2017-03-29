@@ -15,6 +15,7 @@ import components.TileComponent;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
 import utils.FileUtils;
+import utils.GeneralUtils;
 
 public class AttackLoader {
 	// HashMap of attackName:attackData
@@ -29,19 +30,21 @@ public class AttackLoader {
 		AttackDirectionDeterminant directionDeterminant = null;
 		Class<? extends Component> hittableRequirement = null;
 		boolean autoRotate = false;
+		int recordingAttackPartIndex = 0;
 		boolean recordingRight = false;
 		boolean recordingLeft = false;
 		boolean recordingUp = false;
 		boolean recordingDown = false;
 		int attackDelay = 0;
 		boolean warnTilesBeforeAttack = false;
+		int disabledAttackTime = 0;
 		int disabledMovementTime = 0;
 		Array<String> recordingBuffer = new Array<String>();
 		HashMap<Character, String> animationMap = new HashMap<Character, String>();
-		TileAttackData[][] tileAttackDataRight = null;
-		TileAttackData[][] tileAttackDataLeft = null;
-		TileAttackData[][] tileAttackDataUp = null;
-		TileAttackData[][] tileAttackDataDown = null;
+		HashMap<Integer, TileAttackData[][]> tileAttackDataRight = new HashMap<Integer, TileAttackData[][]>();
+		HashMap<Integer, TileAttackData[][]> tileAttackDataLeft = new HashMap<Integer, TileAttackData[][]>();
+		HashMap<Integer, TileAttackData[][]> tileAttackDataUp = new HashMap<Integer, TileAttackData[][]>();
+		HashMap<Integer, TileAttackData[][]> tileAttackDataDown = new HashMap<Integer, TileAttackData[][]>();
 		int lineCount = 1;
 		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
@@ -58,28 +61,32 @@ public class AttackLoader {
 					warnTilesBeforeAttack = Boolean.valueOf(line.replace("warn_tiles=", ""));
 				} else if(line.startsWith("can_hit=")) {
 					hittableRequirement = parseHittableRequirementString(line.replace("can_hit=", ""));
-				} else if(line.startsWith("right=[")) {
+				} else if(line.startsWith("right")) {
 					recordingRight = true;
-				} else if(line.startsWith("left=[")) {
+					recordingAttackPartIndex = Integer.valueOf(line.substring(5, line.lastIndexOf('='))) - 1;
+				} else if(line.startsWith("left")) {
 					recordingLeft = true;
-				} else if(line.startsWith("up=[")) {
+					recordingAttackPartIndex = Integer.valueOf(line.substring(4, line.lastIndexOf('='))) - 1;
+				} else if(line.startsWith("up")) {
 					recordingUp = true;
-				} else if(line.startsWith("down=[")) {
+					recordingAttackPartIndex = Integer.valueOf(line.substring(2, line.lastIndexOf('='))) - 1;
+				} else if(line.startsWith("down")) {
 					recordingDown = true;
+					recordingAttackPartIndex = Integer.valueOf(line.substring(4, line.lastIndexOf('='))) - 1;
 				} else if(line.startsWith("attack_delay=")) {
 					attackDelay = Integer.valueOf(line.replace("attack_delay=", ""));
 				} else if(line.startsWith("]")) {
 					if(recordingRight) {
-						tileAttackDataRight = parseTileAttackDataStrings(animationMap, recordingBuffer);
+						tileAttackDataRight.put(recordingAttackPartIndex, parseTileAttackDataStrings(animationMap, recordingBuffer));
 						recordingRight = false;
 					} else if(recordingLeft) {
-						tileAttackDataLeft = parseTileAttackDataStrings(animationMap, recordingBuffer);
+						tileAttackDataLeft.put(recordingAttackPartIndex, parseTileAttackDataStrings(animationMap, recordingBuffer));
 						recordingLeft = false;
 					} else if(recordingUp) {
-						tileAttackDataUp = parseTileAttackDataStrings(animationMap, recordingBuffer);
+						tileAttackDataUp.put(recordingAttackPartIndex, parseTileAttackDataStrings(animationMap, recordingBuffer));
 						recordingUp = false;
 					} else if(recordingDown) {
-						tileAttackDataDown = parseTileAttackDataStrings(animationMap, recordingBuffer);
+						tileAttackDataDown.put(recordingAttackPartIndex, parseTileAttackDataStrings(animationMap, recordingBuffer));
 						recordingDown = false;
 					}
 				} else if(recordingRight
@@ -91,21 +98,23 @@ public class AttackLoader {
 					animationMap.put(line.charAt(1), line.substring(4, line.length()));
 				} else if(line.startsWith("disable_movement=")) {
 					disabledMovementTime = Integer.valueOf(line.replaceAll("disable_movement=", ""));
+				} else if(line.startsWith("disable_attack=")) {
+					disabledAttackTime = Integer.valueOf(line.replaceAll("disable_attack=", ""));
 				} else if(line.equals("")) {
-					if(!attackName.equals("")) {
+					if(!attackName.equals("")) {						
 						if(autoRotate) {
 							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-									disabledMovementTime, animationName, tileAttackDataRight);
+									disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
 							attacksData.put(attackName, attackData);
 						} else {
-							HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
-							directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
-							directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
-							directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
-							directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
+							HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTileAttackData = new HashMap<Direction, ArrayList<TileAttackData[][]>>();
+							directionalTileAttackData.put(Direction.RIGHT, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+							directionalTileAttackData.put(Direction.LEFT, GeneralUtils.toOrderedArrayList(tileAttackDataLeft));
+							directionalTileAttackData.put(Direction.UP, GeneralUtils.toOrderedArrayList(tileAttackDataUp));
+							directionalTileAttackData.put(Direction.DOWN, GeneralUtils.toOrderedArrayList(tileAttackDataDown));
 							
 							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-									disabledMovementTime, animationName, directionalTileAttackData);
+									disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
 							attacksData.put(attackName, attackData);
 						}
 						
@@ -118,14 +127,15 @@ public class AttackLoader {
 						recordingUp = false;
 						recordingDown = false;
 						recordingBuffer.clear();
-						tileAttackDataRight = null;
-						tileAttackDataLeft = null;
-						tileAttackDataUp = null;
-						tileAttackDataDown = null;
 						attackDelay = 0;
 						warnTilesBeforeAttack = false;
 						disabledMovementTime = 0;
+						disabledAttackTime = 0;
 						animationMap.clear();
+						tileAttackDataRight.clear();
+						tileAttackDataLeft.clear();
+						tileAttackDataUp.clear();
+						tileAttackDataDown.clear();
 					}
 				} else {
 					System.out.println("Attacks data invalid format at line " + lineCount);
@@ -142,17 +152,17 @@ public class AttackLoader {
 		if(!attackName.equals("")) {
 			if(autoRotate) {
 				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-						disabledMovementTime, animationName, tileAttackDataRight);
+						disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
 				attacksData.put(attackName, attackData);
 			} else {
-				HashMap<Direction, TileAttackData[][]> directionalTileAttackData = new HashMap<Direction, TileAttackData[][]>();
-				directionalTileAttackData.put(Direction.RIGHT, tileAttackDataRight);
-				directionalTileAttackData.put(Direction.LEFT, tileAttackDataLeft);
-				directionalTileAttackData.put(Direction.UP, tileAttackDataUp);
-				directionalTileAttackData.put(Direction.DOWN, tileAttackDataDown);
+				HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTileAttackData = new HashMap<Direction, ArrayList<TileAttackData[][]>>();
+				directionalTileAttackData.put(Direction.RIGHT, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+				directionalTileAttackData.put(Direction.LEFT, GeneralUtils.toOrderedArrayList(tileAttackDataLeft));
+				directionalTileAttackData.put(Direction.UP, GeneralUtils.toOrderedArrayList(tileAttackDataUp));
+				directionalTileAttackData.put(Direction.DOWN, GeneralUtils.toOrderedArrayList(tileAttackDataDown));
 				
 				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-						disabledMovementTime, animationName, directionalTileAttackData);
+						disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
 				attacksData.put(attackName, attackData);
 			}
 		}
