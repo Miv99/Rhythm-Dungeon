@@ -32,6 +32,8 @@ public class Audio {
 	private int currentSongLoopCount;
 	private float currentSongPosition;
 	
+	private float songLoopSyncDelayInSeconds;
+	
 	public Audio(Options options) {
 		this.options = options;
 	}
@@ -91,7 +93,7 @@ public class Audio {
 		File[] soundEffectsFiles = soundEffectsFolder.listFiles();
 		for(int i = 0; i < soundEffectsFiles.length; i++) {
 			if(soundEffectsFiles[i].isFile() && isSupportedAudioFormat(FileUtils.getExtension(soundEffectsFiles[i]))) {
-				soundEffects.put(soundEffectsFiles[i].getName(), Gdx.audio.newSound(new FileHandle(soundEffectsFiles[i])));
+				soundEffects.put(soundEffectsFiles[i].getName().substring(0, soundEffectsFiles[i].getName().length() - 4), Gdx.audio.newSound(new FileHandle(soundEffectsFiles[i])));
 			}
 			// Get subfolders
 			else if(soundEffectsFiles[i].isDirectory()) {				
@@ -151,6 +153,7 @@ public class Audio {
 			currentSongLoopCount = 0;
 			currentSongPosition = 0f;
 			currentSong = song;
+			songLoopSyncDelayInSeconds = calculateSongLoopSyncDelayInSeconds();
 			
 			song.getMusic().setVolume(options.getMasterVolume() * options.getMusicVolume());
 			/**
@@ -178,6 +181,19 @@ public class Audio {
 		}
 	}
 	
+	/**
+	 * Returns the song loop number that the given time is part of
+	 */
+	public float getSongLoopNumber(float timeInSeconds) {
+		int i = 0;
+		while(true) {
+			if(timeInSeconds < (currentSong.getOffsetInSeconds() + (i + 1) * (currentSong.getSongEndMarkerInSeconds() - currentSong.getLoopStartMarkerInSeconds()))) {
+				return i;
+			}
+			i++;
+		}
+	}
+	
 	public float getCurrentSongPosition() {
 		return currentSongPosition;
 	}
@@ -198,6 +214,31 @@ public class Audio {
 				song.setPaused(false);
 			}
 		}
+	}
+	
+	/**
+	 * Returns the number of seconds that between the current song's end and the beginning of the song's
+	 * loop that the beat lines after the song's end must be delayed for
+	 */
+	public float calculateSongLoopSyncDelayInSeconds() {
+		float secondsPerBeat = 60f/currentSong.getBpm();
+		float loopStartBeatOffset = (currentSong.getLoopStartMarkerInSeconds() - currentSong.getOffsetInSeconds()) % secondsPerBeat;
+		float songEndBeatOffset = (currentSong.getSongEndMarkerInSeconds() - currentSong.getOffsetInSeconds()) % secondsPerBeat;
+		// I have no idea why this works
+		songEndBeatOffset += 0.5f;
+		if(songEndBeatOffset > loopStartBeatOffset) {
+			return (1f - songEndBeatOffset + loopStartBeatOffset) * secondsPerBeat;
+		} else {
+			return (loopStartBeatOffset - songEndBeatOffset) * secondsPerBeat;
+		}
+	}
+	
+	public float getSongLoopSyncDelayInSeconds() {
+		return songLoopSyncDelayInSeconds;
+	}
+	
+	public int getCurrentSongLoopCount() {
+		return currentSongLoopCount;
 	}
 	
 	public Song getCurrentSong() {

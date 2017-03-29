@@ -119,14 +119,14 @@ public class Dungeon {
 	 * Returns a value proportional the time difference between each BeatLine
 	 */
 	public float calculateBeatHitErrorMargin() {
-		return Math.max(0.1f, (actionBar.getBeatLines().get(1).getTimeUntilCursorLineInSeconds() - actionBar.getBeatLines().first().getTimeUntilCursorLineInSeconds())/2.5f);
+		return Math.max(0.06f, (actionBar.getBeatLines().get(1).getTimePositionInSeconds() - actionBar.getBeatLines().first().getTimePositionInSeconds())/2.5f);
 	}
 	
 	/**
 	 * Returns a value proportional the time difference between each BeatLine
 	 */
 	public float calculateBeatMissErrorMargin() {
-		return ((actionBar.getBeatLines().get(1).getTimeUntilCursorLineInSeconds() - actionBar.getBeatLines().first().getTimeUntilCursorLineInSeconds()) * (float)dungeonParams.options.getDifficulty().getBeatLinesPerBeat());
+		return ((actionBar.getBeatLines().get(1).getTimePositionInSeconds() - actionBar.getBeatLines().first().getTimePositionInSeconds()) * (float)dungeonParams.options.getDifficulty().getBeatLinesPerBeat());
 	}
 	
 	/**
@@ -165,6 +165,8 @@ public class Dungeon {
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
 		
+		actionBar.actionBarSystem.syncedNextLoop = false;
+		actionBar.actionBarSystem.lastKnownLoopCount = 0;
 		actionBar.actionBarSystem.clearQueues();
 		
 		beatHitErrorMarginInSeconds = calculateBeatHitErrorMargin();
@@ -195,9 +197,6 @@ public class Dungeon {
 	}
 	
 	public void update(float deltaTime) {
-		tileRenderSystem.update(deltaTime);
-		actionBar.actionBarSystem.update(deltaTime);
-		
 		if(floors[currentFloor].isActionsDisabled()) {
 			actionsDisabledTimeLeftInSeconds -= deltaTime;
 			if(actionsDisabledTimeLeftInSeconds <= 0) {
@@ -339,11 +338,11 @@ public class Dungeon {
 				BeatLine nearestRight = getNearestCircleFromRight(false);
 				
 				if(nearestLeft != null && nearestLeft.getCircleWeakState().equals(CircleState.Alive)
-						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+						&& Math.abs(nearestLeft.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 					playerAttackQueue.add(new PlayerAttack(nearestLeft, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
 					nearestLeft.setCircleWeakIncreasingYPos(true);
 				} else if(nearestRight != null && nearestRight.getCircleWeakState().equals(CircleState.Alive)
-						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+						&& Math.abs(nearestRight.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
 					playerAttackQueue.add(new PlayerAttack(nearestRight, ComponentMappers.playerMapper.get(dungeonParams.player).getWeaponEquipped()));
 					nearestRight.setCircleWeakIncreasingYPos(true);
 				} else if(nearestRight != null) {
@@ -357,15 +356,12 @@ public class Dungeon {
 				BeatLine nearestLeft = getNearestCircleFromLeft(true);
 				BeatLine nearestRight = getNearestCircleFromRight(true);
 
-				//TODO: remove this
-				//EntityActions.moveEntity(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
-
 				if(nearestLeft != null && nearestLeft.getCircleWeakState().equals(CircleState.Alive)
-						&& Math.abs(nearestLeft.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					nearestLeft.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
+						&& Math.abs(nearestLeft.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+					nearestLeft.onMovementHit(dungeonParams.audio, dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 				} else if(nearestRight != null && nearestRight.getCircleWeakState().equals(CircleState.Alive)
-						&& Math.abs(nearestRight.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
-					nearestRight.onMovementHit(dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
+						&& Math.abs(nearestRight.getTimePositionInSeconds() - cursorPositionInSeconds) <= Dungeon.this.getBeatHitErrorMarginInSeconds()) {
+					nearestRight.onMovementHit(dungeonParams.audio, dungeonParams.engine, floors[currentFloor], dungeonParams.player, movementDirection);
 				} else if(nearestRight != null) {
 					nearestRight.onMovementMiss();
 				}
@@ -391,19 +387,19 @@ public class Dungeon {
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
 					if(b.isStrongBeat()
-							&& b.getTimeUntilCursorLineInSeconds() <= cursorPositionInSeconds) {
-						if(b.getTimeUntilCursorLineInSeconds() > smallest) {
+							&& b.getTimePositionInSeconds() <= cursorPositionInSeconds) {
+						if(b.getTimePositionInSeconds() > smallest) {
 							nearestLeft = b;
-							smallest = b.getTimeUntilCursorLineInSeconds();
+							smallest = b.getTimePositionInSeconds();
 						}
 					}
 				}
 			} else {
 				for(BeatLine b : beatLines) {
-					if(b.getTimeUntilCursorLineInSeconds() <= cursorPositionInSeconds) {
-						if(b.getTimeUntilCursorLineInSeconds() > smallest) {
+					if(b.getTimePositionInSeconds() <= cursorPositionInSeconds) {
+						if(b.getTimePositionInSeconds() > smallest) {
 							nearestLeft = b;
-							smallest = b.getTimeUntilCursorLineInSeconds();
+							smallest = b.getTimePositionInSeconds();
 						}
 					}
 				}
@@ -420,19 +416,19 @@ public class Dungeon {
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
 					if(b.isStrongBeat()
-							&& b.getTimeUntilCursorLineInSeconds() > cursorPositionInSeconds) {
-						if(b.getTimeUntilCursorLineInSeconds() < largest) {
+							&& b.getTimePositionInSeconds() > cursorPositionInSeconds) {
+						if(b.getTimePositionInSeconds() < largest) {
 							nearestRight = b;
-							largest = b.getTimeUntilCursorLineInSeconds();
+							largest = b.getTimePositionInSeconds();
 						}
 					}
 				}
 			} else {
 				for(BeatLine b : beatLines) {
-					if(b.getTimeUntilCursorLineInSeconds() > cursorPositionInSeconds) {
-						if(b.getTimeUntilCursorLineInSeconds() < largest) {
+					if(b.getTimePositionInSeconds() > cursorPositionInSeconds) {
+						if(b.getTimePositionInSeconds() < largest) {
 							nearestRight = b;
-							largest = b.getTimeUntilCursorLineInSeconds();
+							largest = b.getTimePositionInSeconds();
 						}
 					}
 				}
@@ -482,6 +478,9 @@ public class Dungeon {
 			private final float cursorLineXPos = 512f;
 			private final float axisYPos = 64f;
 			
+			private int lastKnownLoopCount;
+			private boolean syncedNextLoop;
+			
 			public ActionBarSystem(float windowWidth) {
 				batch = new SpriteBatch();
 				beatLineAdditionQueue = new Array<BeatLine>();
@@ -518,11 +517,17 @@ public class Dungeon {
 				return batch;
 			}
 			
+			
 			public void update(float deltaTime) {
 				batch.begin();
 				
 				batch.draw(actionBarAxis, 0, axisYPos, dungeonParams.options.getWindowWidth(), actionBarAxisHeight);
 				batch.draw(cursorLine, cursorLineXPos, cursorLineYPos);
+				
+				if(lastKnownLoopCount != dungeonParams.audio.getCurrentSongLoopCount()) {
+					lastKnownLoopCount = dungeonParams.audio.getCurrentSongLoopCount();
+					syncedNextLoop = false;
+				}
 				
 				if(!ActionBar.this.isPaused()) {					
 					for(BeatLine b : actionBar.getBeatLines()) {
@@ -535,8 +540,8 @@ public class Dungeon {
 						}
 						
 						// Draw BeatLines and circles
-						float x = (((b.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds)/dungeonParams.options.getActionBarScrollInterval()) * windowWidth * maxBeatCirclesOnScreen) + cursorLineXPos;
-						if(b.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds < dungeonParams.options.getActionBarScrollInterval()) {
+						float x = (((b.getTimePositionInSeconds() - cursorPositionInSeconds)/dungeonParams.options.getActionBarScrollInterval()) * windowWidth * maxBeatCirclesOnScreen) + cursorLineXPos;
+						if(b.getTimePositionInSeconds() - cursorPositionInSeconds < dungeonParams.options.getActionBarScrollInterval()) {
 							batch.draw(circleWeakBeat, x + circleWeakXOffset, circleWeakBeatYPos + b.getCircleWeakYPositionRelativeToAxis());
 							if(b.isStrongBeat()) {
 								batch.draw(circleStrongBeat, x , circleStrongBeatYPos + b.getCircleStrongYPositionRelativeToAxis());
@@ -544,14 +549,27 @@ public class Dungeon {
 						}
 						
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
-						if(b.getTimeUntilCursorLineInSeconds() <= cursorPositionInSeconds
+						if(b.getTimePositionInSeconds() <= cursorPositionInSeconds
 								&& !b.isReaddedToActionBar()) {
 							onNewBeat(b.isStrongBeat());
-							queueBeatLineAddition(new BeatLine(b.getTimeUntilCursorLineInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * 4f))) * 4 * maxBeatCirclesOnScreen, b.isStrongBeat()));
+							
+							float time = actionBar.getBeatLines().get(actionBar.getBeatLines().size - 1).getTimePositionInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor)*dungeonParams.options.getDifficulty().getBeatLinesPerBeat())));
+							
+							// Delays the first BeatLine of each song loop so that the beat timing is maintained
+							float nextSongEndTime = dungeonParams.audio.getCurrentSong().getOffsetInSeconds() + (dungeonParams.audio.getCurrentSongLoopCount() + 1)*(dungeonParams.audio.getCurrentSong().getSongEndMarkerInSeconds() - dungeonParams.audio.getCurrentSong().getLoopStartMarkerInSeconds());
+							if(!syncedNextLoop
+									&& time >= nextSongEndTime) {
+								time = nextSongEndTime + dungeonParams.audio.getSongLoopSyncDelayInSeconds();
+								syncedNextLoop = true;
+							}
+							//System.out.println(time + ": " + ((dungeonParams.audio.getSongLoopNumber(time) * dungeonParams.audio.getSongLoopSyncDelayInSeconds())));
+							//time += (dungeonParams.audio.getSongLoopNumber(time) * );
+							queueBeatLineAddition(new BeatLine(time, b.isStrongBeat()));
+							
 							b.setReaddedToActionBar(true);
 						}
 						if(!b.isFiredPlayerActionQueue()
-								&& (b.getTimeUntilCursorLineInSeconds() - cursorPositionInSeconds) < -beatHitErrorMarginInSeconds) {
+								&& (b.getTimePositionInSeconds() - cursorPositionInSeconds) < -beatHitErrorMarginInSeconds) {
 							firePlayerActionsQueue();
 							b.setFiredPlayerActionQueue(true);
 						}

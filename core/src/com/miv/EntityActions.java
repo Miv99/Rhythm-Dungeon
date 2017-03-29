@@ -167,7 +167,7 @@ public class EntityActions {
 						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
 						EntityAI ai = ComponentMappers.entityAIMapper.get(enemy).getEntityAI();
 						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
-								>= ai.getActivationRadiusInTiles()) {
+								<= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);
 						}
 					}

@@ -25,8 +25,7 @@ public class BeatLine {
 	private CircleState circleStrongState;
 	// State of weak circle
 	private CircleState circleWeakState;
-	// Time until the beat line reaches the cursor line
-	private float timeUntilCursorLineInSeconds;
+	private float timePositionInSeconds;
 	// If the circle on the beatline has had the attack key pressed
 	private boolean attackTriggered;
 	private float circleStrongYPositionRelativeToAxis = 0f;
@@ -42,8 +41,8 @@ public class BeatLine {
 	// If the BeatLine has fired the player action queue in ActionBarSystem
 	private boolean firedPlayerActionQueue;
 	
-	public BeatLine(float timeUntiLCursorLineInSeconds, boolean strongBeat) {
-		this.timeUntilCursorLineInSeconds = timeUntiLCursorLineInSeconds;
+	public BeatLine(float timePositionInSeconds, boolean strongBeat) {
+		this.timePositionInSeconds = timePositionInSeconds;
 		this.strongBeat = strongBeat;
 		
 		if(strongBeat) {
@@ -56,7 +55,7 @@ public class BeatLine {
 		if(circleWeakState.equals(CircleState.Alive)) {
 			circleWeakState = CircleState.Dying;
 			
-			//TODO: play sound effect
+			audio.playSoundEffect("action_bar_attack_hit");
 			
 			EntityActions.entityStartAttack(options, audio, dungeon, player, target, attackName, entityFactory);
 		}
@@ -66,12 +65,12 @@ public class BeatLine {
 		circleWeakState = CircleState.Locked;
 	}
 	
-	public void onMovementHit(Engine engine, Floor floor, Entity player, Direction movementDirection) {
+	public void onMovementHit(Audio audio, Engine engine, Floor floor, Entity player, Direction movementDirection) {
 		if(circleStrongState.equals(CircleState.Alive)) {
 			circleStrongState = CircleState.Dying;
 			circleStrongIncreasingYPos = true;
 			
-			//TODO: play sound effect
+			audio.playSoundEffect("action_bar_movement_hit");
 			
 			EntityActions.moveEntity(engine, floor, player, movementDirection);
 		}
@@ -79,7 +78,10 @@ public class BeatLine {
 	
 	public void onMovementMiss() {
 		circleStrongState = CircleState.Locked;
-		//TODO: play sound effect
+	}
+	
+	public void setTimePositionInSeconds(float timePositionInSeconds) {
+		this.timePositionInSeconds = timePositionInSeconds;
 	}
 	
 	public void setCircleWeakIncreasingYPos(boolean circleWeakIncreasingYPos) {
@@ -110,8 +112,8 @@ public class BeatLine {
 		return deletionQueued;
 	}
 	
-	public float getTimeUntilCursorLineInSeconds() {
-		return timeUntilCursorLineInSeconds;
+	public float getTimePositionInSeconds() {
+		return timePositionInSeconds;
 	}
 	
 	public boolean isFiredPlayerActionQueue() {

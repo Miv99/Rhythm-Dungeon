@@ -60,15 +60,15 @@ public class Options {
 	private int windowHeight = 900;
 	
 	private float masterVolume = 0.5f;
-	private float soundEffectsVolume = 1f;
-	private float musicVolume = 1f;
+	private float soundEffectsVolume = 0.35f;
+	private float musicVolume = 0.2f;
 	
 	private float actionBarScrollInterval = 16f;
 	
-	private Difficulty difficulty = Difficulty.LUNATIC;
+	private Difficulty difficulty = Difficulty.HARD;
 	
-	private int attackKey1 = Input.Keys.A;
-	private int attackKey2 = Input.Keys.S;
+	private int attackKey1 = Input.Keys.G;
+	private int attackKey2 = Input.Keys.H;
 	
 	// Temporary values that become permanent once changes are applied
 	private boolean fullscreenTemp;
