@@ -27,6 +27,10 @@ public class TileWarningSystem extends EntitySystem {
 		
 		deletionQueue = new Array<WarningTile>();
 	}
+	
+	public void setTiming(float bpm, int beatLinesPerBeat) {
+		
+	}
 
 	@Override
 	public void addedToEngine(Engine engine) {
@@ -64,13 +68,8 @@ public class TileWarningSystem extends EntitySystem {
 			
 			for(WarningTile tile : attack.getWarningTiles()) {
 				// Change alpha of red color depending on how many beats remain until attack hits the warning tile
-				if(tile.getMaxTimeUntilAttackInBeats() == 1f) {
-					shapeRenderer.setColor(r, g, b, 0.8f);
-				} else {
-					shapeRenderer.setColor(r, g, b, 
-							((tile.getMaxTimeUntilAttackInBeats() - tile.getTimeUntilAttackInBeats())/tile.getMaxTimeUntilAttackInBeats() * 0.8f) + 0.2f);
-				}
-
+				shapeRenderer.setColor(r, g, b, 
+						((tile.getMaxTimeUntilAttackInBeats() - tile.getTimeUntilAttackInBeats())/tile.getMaxTimeUntilAttackInBeats() * 0.8f) + 0.2f);
 				
 				shapeRenderer.rect(tile.getX() * Options.TILE_SIZE, tile.getY() * Options.TILE_SIZE, Options.TILE_SIZE, Options.TILE_SIZE);
 								

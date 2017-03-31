@@ -97,6 +97,8 @@ public class Dungeon {
 		}
 	}
 	
+	private static int INVISIBLE_BEATLINES_PER_BEAT = 4;
+	
 	private DungeonParams dungeonParams;
 	
 	private ActionBar actionBar;
@@ -321,16 +323,22 @@ public class Dungeon {
 		 */
 		public void spawnPrimaryBeatLines(float offsetInSeconds) {
 			beatLines.clear();
-			int beatLinesPerBeat = dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
 			
 			float time = offsetInSeconds;
-			for(int i = 0; i < actionBarSystem.calculateMaxBeatsOnScreen() * beatLinesPerBeat; i++) {
-				if(i % beatLinesPerBeat == 0) {
-					beatLines.add(new BeatLine(time, true));
-				} else {
-					beatLines.add(new BeatLine(time, false));
+			for(int i = 0; i < actionBarSystem.calculateMaxBeatsOnScreen() * INVISIBLE_BEATLINES_PER_BEAT; i++) {
+				boolean strongBeat = false;
+				boolean invisible = true;
+				
+				if(i % 4 == 0) {
+					strongBeat = true;
 				}
-				time += (60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * (float)beatLinesPerBeat));
+				if(i % dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 0) {
+					invisible = false;
+				}
+				
+				beatLines.add(new BeatLine(time, strongBeat, invisible));
+				
+				time += (60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * (float)INVISIBLE_BEATLINES_PER_BEAT));
 			}
 		}
 		
@@ -557,9 +565,9 @@ public class Dungeon {
 						// Once the BeatLine crosses the cursor, spawn a new BeatLine
 						if(b.getTimePositionInSeconds() <= cursorPositionInSeconds
 								&& !b.isReaddedToActionBar()) {
-							onNewBeat(b.isStrongBeat());
+							onNewBeat(b.isStrongBeat(), b.isInvisible());
 							
-							float time = actionBar.getBeatLines().get(actionBar.getBeatLines().size - 1).getTimePositionInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor)*dungeonParams.options.getDifficulty().getBeatLinesPerBeat())));
+							float time = actionBar.getBeatLines().get(actionBar.getBeatLines().size - 1).getTimePositionInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor)*INVISIBLE_BEATLINES_PER_BEAT)));
 							
 							// Delays the first BeatLine of each song loop so that the beat timing is maintained
 							float nextSongEndTime = dungeonParams.audio.getCurrentSong().getOffsetInSeconds() + (dungeonParams.audio.getCurrentSongLoopCount() + 1)*(dungeonParams.audio.getCurrentSong().getSongEndMarkerInSeconds() - dungeonParams.audio.getCurrentSong().getLoopStartMarkerInSeconds());
@@ -568,14 +576,16 @@ public class Dungeon {
 								time = nextSongEndTime + dungeonParams.audio.getSongLoopSyncDelayInSeconds();
 								syncedNextLoop = true;
 							}
-							queueBeatLineAddition(new BeatLine(time, b.isStrongBeat()));
+							queueBeatLineAddition(new BeatLine(time, b.isStrongBeat(), b.isInvisible()));
 							
 							b.setReaddedToActionBar(true);
 						}
 						if(!b.isFiredPlayerActionQueue()
 								&& (b.getTimePositionInSeconds() - cursorPositionInSeconds) < -beatHitErrorMarginInSeconds) {
-							onEndOfBeatHitWindow(b.isStrongBeat());
-							firePlayerActionsQueue();
+							onEndOfBeatHitWindow(b.isStrongBeat(), b.isInvisible());
+							if(!b.isInvisible()) {
+								firePlayerActionsQueue();
+							}
 							b.setFiredPlayerActionQueue(true);
 						}
 						if(x + 40f < 0
@@ -593,20 +603,21 @@ public class Dungeon {
 			/**
 			 * Called when a beat is no longer able to be hit by the player
 			 */
-			private void onEndOfBeatHitWindow(boolean strongBeat) {
-				// Entity attack damage calculations queue
-				// Placed in onEndOfBeatHitWindow instead of onNewBeat to resolve entity movements before damage calculations from attacks
-				for(EntityAttackParams params : entityAttackDamageCalculationsQueue) {
-					EntityActions.calculateEntityAttackDamage(params);
-					entityAttackDamageCalculationsDeletionQueue.add(params);
+			private void onEndOfBeatHitWindow(boolean isStrongBeat, boolean isInvisibleBeat) {
+				if(!isInvisibleBeat) {
+					// Entity attack damage calculations queue
+					// Placed in onEndOfBeatHitWindow instead of onNewBeat to resolve entity movements before damage calculations from attacks
+					for(EntityAttackParams params : entityAttackDamageCalculationsQueue) {
+						EntityActions.calculateEntityAttackDamage(params);
+						entityAttackDamageCalculationsDeletionQueue.add(params);
+					}
+					fireEntityAttackDamageCalculationsDeletionQueue();
 				}
-				fireEntityAttackDamageCalculationsDeletionQueue();
 			}
 			
-			private void onNewBeat(boolean strongBeat) {
-				float deltaBeat = 1f/dungeonParams.options.getDifficulty().getBeatLinesPerBeat();
+			private void onNewBeat(boolean isStrongBeat, boolean isInvisibleBeat) {
+				float deltaBeat = 1f/INVISIBLE_BEATLINES_PER_BEAT;
 				
-				//TODO: maybe move this to end of bea thit window
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
 					ComponentMappers.attackMapper.get(entity).onNewBeat(deltaBeat);
 				}
@@ -626,7 +637,7 @@ public class Dungeon {
 				}
 				fireEntityAttackDeletionQueue();
 				
-				if(strongBeat) {										
+				if(isStrongBeat) {										
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);

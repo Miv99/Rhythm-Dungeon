@@ -20,7 +20,7 @@ public class BeatLine {
 	}
 	
 	// If the beatline is on a full note as opposed to a quarter note
-	private boolean strongBeat;
+	private boolean isStrongBeat;
 	// State of strong circle
 	private CircleState circleStrongState;
 	// State of weak circle
@@ -41,11 +41,14 @@ public class BeatLine {
 	// If the BeatLine has fired the player action queue in ActionBarSystem
 	private boolean firedPlayerActionQueue;
 	
-	public BeatLine(float timePositionInSeconds, boolean strongBeat) {
+	private boolean isInvisible;
+	
+	public BeatLine(float timePositionInSeconds, boolean isStrongBeat, boolean isInvisible) {
 		this.timePositionInSeconds = timePositionInSeconds;
-		this.strongBeat = strongBeat;
+		this.isStrongBeat = isStrongBeat;
+		this.isInvisible = isInvisible;
 		
-		if(strongBeat) {
+		if(isStrongBeat) {
 			circleStrongState = CircleState.Alive;
 		}
 		circleWeakState = CircleState.Alive;
@@ -121,7 +124,11 @@ public class BeatLine {
 	}
 	
 	public boolean isStrongBeat() {
-		return strongBeat;
+		return isStrongBeat;
+	}
+	
+	public boolean isInvisible() {
+		return isInvisible;
 	}
 	
 	public CircleState getCircleWeakState() {
