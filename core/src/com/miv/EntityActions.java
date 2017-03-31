@@ -72,46 +72,46 @@ public class EntityActions {
 		}
 	}
 	public static class EntityAttackParams {
+		private Engine engine;
 		private Options options;
 		private Audio audio;
 		private Floor floor;
 		private Entity attacker;
 		private EntityFactory entityFactory;
 		private AttackData attackData;
-		private Point attackerAttackOrigin;
 		private Point focusAbsoluteMapPosition;
 		private Point focusPositionRelativeToTargetttedTiles;
 		private TileAttackData[][] targetedTiles;
 		private Array<WarningTile> nextAttackPartWarningTiles;
 		private float beatDelay;
 		
-		public EntityAttackParams(Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
-				AttackData attackData, Point attackerAttackOrigin, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
+		public EntityAttackParams(Engine engine, Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
+				AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
 				TileAttackData[][] targetedTiles, int beatDelay, Array<WarningTile> nextAttackPartWarningTiles) {
-				this.options = options;
-				this.audio = audio;
-				this.floor = floor;
-				this.attacker = attacker;
-				this.entityFactory = entityFactory;
-				this.attackData = attackData;
-				this.attackerAttackOrigin = attackerAttackOrigin;
-				this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
-				this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
-				this.targetedTiles = targetedTiles;
-				this.beatDelay = beatDelay;
-				this.nextAttackPartWarningTiles = nextAttackPartWarningTiles;
-			}
-		
-		public EntityAttackParams(Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
-			AttackData attackData, Point attackerAttackOrigin, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
-			TileAttackData[][] targetedTiles, int beatDelay) {
+			this.engine = engine;
 			this.options = options;
 			this.audio = audio;
 			this.floor = floor;
 			this.attacker = attacker;
 			this.entityFactory = entityFactory;
 			this.attackData = attackData;
-			this.attackerAttackOrigin = attackerAttackOrigin;
+			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
+			this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
+			this.targetedTiles = targetedTiles;
+			this.beatDelay = beatDelay;
+			this.nextAttackPartWarningTiles = nextAttackPartWarningTiles;
+		}
+		
+		public EntityAttackParams(Engine engine, Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
+			AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
+			TileAttackData[][] targetedTiles, int beatDelay) {
+			this.engine = engine;
+			this.options = options;
+			this.audio = audio;
+			this.floor = floor;
+			this.attacker = attacker;
+			this.entityFactory = entityFactory;
+			this.attackData = attackData;
 			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
 			this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
 			this.targetedTiles = targetedTiles;
@@ -191,6 +191,9 @@ public class EntityActions {
 							ai.setActivated(true);
 						}
 					}
+					
+					ComponentMappers.playerMapper.get(entity).setMovedInLastBeat(true);
+					ComponentMappers.playerMapper.get(entity).setLastPosition(xNew, yNew);
 				}
 				
 				// If the entity moving is an enemy, check if it goes in range of any friendly AI
@@ -213,15 +216,15 @@ public class EntityActions {
 		}
 	}
 
-	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
+	public static void entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
-			entityStartAttack(options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
+			entityStartAttack(engine, options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
 		} catch(NullPointerException e) {
 			System.out.println("No attack exists named \"" + attackName + "\"");
 		}
 	}
 	
-	public static void entityStartAttack(Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
+	public static void entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
 		Floor floor = dungeon.getFloors()[dungeon.getCurrentFloor()];
 		AttackComponent attackerAttackComponent = ComponentMappers.attackMapper.get(attacker);
 
@@ -318,24 +321,24 @@ public class EntityActions {
 				// Queue entity attack after beat delay
 				if(i + 1 < warningTilesArray.size) {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
-						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
-								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
+								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i, warningTilesArray.get(i + 1)));
 					} else {
-						EntityAttackParams params = new EntityAttackParams(options, audio, floor, attacker, entityFactory,
-								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+						EntityAttackParams params = new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
+								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, 0, warningTilesArray.get(i + 1));
 						runEntityAttackAnimations(params);
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
 					}
 				} else {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
-						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(options, audio, floor, attacker, entityFactory,
-								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
+								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i));
 					} else {
-						EntityAttackParams params = new EntityAttackParams(options, audio, floor, attacker, entityFactory,
-								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+						EntityAttackParams params = new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
+								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, 0);
 						runEntityAttackAnimations(params);
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
@@ -419,8 +422,18 @@ public class EntityActions {
 						// Get attackble entities that reside on the absolute tile
 						for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
 							// Check if occupant has the entityHittableRequirement component
+							// and check if occupant is player that just moved and was previously in a safe tile
 							if(occupant.getComponent(entityHittableRequirement) != null) {
-								attackedEntities.add(occupant);
+								if(ComponentMappers.playerMapper.has(occupant)) {
+									PlayerComponent playerComponent = ComponentMappers.playerMapper.get(occupant);
+									Point lastPosition = playerComponent.getLastPosition();
+									if((playerComponent.isMovedInLastBeat() && !isSafeTileForPlayer(params.engine, mapTiles, lastPosition.x, lastPosition.y)) 
+											|| !playerComponent.isMovedInLastBeat()) {
+										attackedEntities.add(occupant);
+									}
+								} else {
+									attackedEntities.add(occupant);
+								}
 							}
 						}
 					}
@@ -484,6 +497,21 @@ public class EntityActions {
 		
 		//TODO: remove this
 		engine.removeEntity(entity);
+	}
+	
+	/**
+	 * Checks if the specified tile is going to be attacked by any enemies within the next beat
+	 */
+	private static boolean isSafeTileForPlayer(Engine engine, Tile[][] tiles, int x, int y) {
+		for(Entity e : engine.getEntitiesFor(Family.all(AttackComponent.class).get())) {
+			AttackComponent attack = ComponentMappers.attackMapper.get(e);
+			for(WarningTile warningTile : attack.getWarningTiles()) {
+				if(warningTile.getX() == x && warningTile.getY() == y) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	/**

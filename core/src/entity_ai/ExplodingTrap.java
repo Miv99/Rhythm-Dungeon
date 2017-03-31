@@ -43,7 +43,7 @@ public class ExplodingTrap extends Stationary {
 
 	@Override
 	public void onActivation() {
-		EntityActions.entityStartAttack(options, audio, dungeon, self, target, attackData, entityFactory);
+		EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, attackData, entityFactory);
 		EntityActions.killEntity(audio, engine, dungeon.getFloors()[dungeon.getCurrentFloor()], self);
 	}
 }

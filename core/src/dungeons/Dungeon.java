@@ -329,10 +329,20 @@ public class Dungeon {
 				boolean strongBeat = false;
 				boolean invisible = true;
 				
-				if(i % 4 == 0) {
+				//TODO: make this not hard-coded
+				int a = 0;
+				if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 1) {
+					a = 4;
+				} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 2) {
+					a = 2;
+				} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 4) {
+					a = 1;
+				}
+				
+				if(i % INVISIBLE_BEATLINES_PER_BEAT == 0) {
 					strongBeat = true;
 				}
-				if(i % dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 0) {
+				if(i % a == 0) {
 					invisible = false;
 				}
 				
@@ -380,7 +390,7 @@ public class Dungeon {
 		
 		public void firePlayerActionsQueue() {
 			for(PlayerAttack attack : playerAttackQueue) {
-				EntityActions.entityStartAttack(dungeonParams.options, dungeonParams.audio, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
+				EntityActions.entityStartAttack(dungeonParams.engine, dungeonParams.options, dungeonParams.audio, Dungeon.this, dungeonParams.player, null, attack.weaponEquipped, dungeonParams.entityFactory);
 			}
 			playerAttackQueue.clear();
 		}
@@ -398,6 +408,7 @@ public class Dungeon {
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
 					if(b.isStrongBeat()
+							&& !b.isInvisible()
 							&& b.getTimePositionInSeconds() <= cursorPositionInSeconds) {
 						if(b.getTimePositionInSeconds() > smallest) {
 							nearestLeft = b;
@@ -407,7 +418,8 @@ public class Dungeon {
 				}
 			} else {
 				for(BeatLine b : beatLines) {
-					if(b.getTimePositionInSeconds() <= cursorPositionInSeconds) {
+					if(b.getTimePositionInSeconds() <= cursorPositionInSeconds
+							&& !b.isInvisible()) {
 						if(b.getTimePositionInSeconds() > smallest) {
 							nearestLeft = b;
 							smallest = b.getTimePositionInSeconds();
@@ -427,6 +439,7 @@ public class Dungeon {
 			if(requireStrongBeat) {
 				for(BeatLine b : beatLines) {
 					if(b.isStrongBeat()
+							&& !b.isInvisible()
 							&& b.getTimePositionInSeconds() > cursorPositionInSeconds) {
 						if(b.getTimePositionInSeconds() < largest) {
 							nearestRight = b;
@@ -436,7 +449,8 @@ public class Dungeon {
 				}
 			} else {
 				for(BeatLine b : beatLines) {
-					if(b.getTimePositionInSeconds() > cursorPositionInSeconds) {
+					if(b.getTimePositionInSeconds() > cursorPositionInSeconds
+							&& !b.isInvisible()) {
 						if(b.getTimePositionInSeconds() < largest) {
 							nearestRight = b;
 							largest = b.getTimePositionInSeconds();
@@ -555,7 +569,8 @@ public class Dungeon {
 						
 						// Draw BeatLines and circles
 						float x = (((b.getTimePositionInSeconds() - cursorPositionInSeconds)/dungeonParams.options.getActionBarScrollInterval()) * windowWidth * maxBeatCirclesOnScreen) + cursorLineXPos;
-						if(b.getTimePositionInSeconds() - cursorPositionInSeconds < dungeonParams.options.getActionBarScrollInterval()) {
+						if(!b.isInvisible()
+								&& b.getTimePositionInSeconds() - cursorPositionInSeconds < dungeonParams.options.getActionBarScrollInterval()) {
 							batch.draw(circleWeakBeat, x + circleWeakXOffset, circleWeakBeatYPos + b.getCircleWeakYPositionRelativeToAxis());
 							if(b.isStrongBeat()) {
 								batch.draw(circleStrongBeat, x , circleStrongBeatYPos + b.getCircleStrongYPositionRelativeToAxis());
@@ -612,6 +627,10 @@ public class Dungeon {
 						entityAttackDamageCalculationsDeletionQueue.add(params);
 					}
 					fireEntityAttackDamageCalculationsDeletionQueue();
+					
+					if(isStrongBeat) {
+						ComponentMappers.playerMapper.get(dungeonParams.player).setMovedInLastBeat(false);
+					}
 				}
 			}
 			

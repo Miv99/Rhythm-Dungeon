@@ -52,7 +52,7 @@ public class PulsatingExpandingRingTrap extends Stationary {
 	@Override
 	public void onNewBeat() {
 		if(activated) {
-			EntityActions.entityStartAttack(options, audio, dungeon, self, target, attackData, entityFactory);
+			EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, attackData, entityFactory);
 		}
 	}
 }

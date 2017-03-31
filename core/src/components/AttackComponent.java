@@ -11,6 +11,7 @@ import special_tiles.WarningTile;
 public class AttackComponent implements Component {
 	// Objects used to display a warning sign on tiles of incoming attacks
 	private Array<WarningTile> warningTiles;
+	private Array<WarningTile> warningTilesDeletionQueue;
 	private HashMap<String, AttackData> attacksData;
 	private String tileBreakAttackName;
 	
@@ -19,6 +20,7 @@ public class AttackComponent implements Component {
 	public AttackComponent(HashMap<String, AttackData> attacksData) {
 		this.attacksData = attacksData;
 		warningTiles = new Array<WarningTile>();
+		warningTilesDeletionQueue = new Array<WarningTile>();
 	}
 	
 	public AttackComponent(HashMap<String, AttackData> attacksData, String tileBreakAttackName) {
@@ -32,7 +34,12 @@ public class AttackComponent implements Component {
 		
 		for(WarningTile warningTile : warningTiles) {
 			warningTile.onNewBeat(deltaBeat);
+			if(warningTile.getTimeUntilAttackInBeats() < 0f) {
+				warningTilesDeletionQueue.add(warningTile);
+			}
 		}
+		warningTiles.removeAll(warningTilesDeletionQueue, false);
+		warningTilesDeletionQueue.clear();
 	}
 	
 	public void setAttackDisabledTimeInBeats(float attackDisabledTimeInBeats) {

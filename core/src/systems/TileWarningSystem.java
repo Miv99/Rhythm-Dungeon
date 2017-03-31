@@ -27,10 +27,6 @@ public class TileWarningSystem extends EntitySystem {
 		
 		deletionQueue = new Array<WarningTile>();
 	}
-	
-	public void setTiming(float bpm, int beatLinesPerBeat) {
-		
-	}
 
 	@Override
 	public void addedToEngine(Engine engine) {
