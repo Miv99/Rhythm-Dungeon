@@ -27,6 +27,11 @@ public class MapUtils {
 		return entityHitbox.getHitbox()[relativeX][relativeY];
 	}
 	
+	public static boolean boundingRectsIntersect(HitboxType[][] hitbox1, int hitbox1X, int hitbox1Y, HitboxType[][] hitbox2, int hitbox2X, int hitbox2Y) {
+		return (Math.abs(hitbox2X - hitbox1X) < Math.min(hitbox1.length, hitbox2.length) 
+				&& Math.abs(hitbox2Y - hitbox1Y) < Math.min(hitbox1[0].length, hitbox2[0].length));
+	}
+	
 	public static Direction getRelativeDirection(Point point, Point relativeTo) {
 		if(point.x - relativeTo.x == 0) {
 			if(point.y - relativeTo.y > 0) {

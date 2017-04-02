@@ -1,4 +1,4 @@
-package entity_ai;
+package movement_ai;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -8,30 +8,21 @@ import audio.Audio;
 import dungeons.Dungeon;
 import factories.EntityFactory;
 
-public abstract class EntityAI {
-	public static class EntityAIParams {
+public abstract class MovementAI {
+	public static class MovementAIParams {
 		protected Engine engine;
-		protected EntityFactory entityFactory;
-		protected Entity target;
-		protected Options options;
 		protected Dungeon dungeon;
-		protected Audio audio;
+		protected Entity target;
 		
-		public EntityAIParams(Engine engine, EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity target) {
+		public MovementAIParams(Engine engine, Dungeon dungeon, Entity target) {
 			this.engine = engine;
-			this.entityFactory = entityFactory;
-			this.options = options;
-			this.audio = audio;
 			this.dungeon = dungeon;
 			this.target = target;
 		}
 	}
 	
-	protected Options options;
 	protected Engine engine;
 	protected Dungeon dungeon;
-	protected EntityFactory entityFactory;
-	protected Audio audio;
 	
 	// The number of tiles any entity with PlayerComponent must
 	// come within the enemy entity for the enemy entity
@@ -43,11 +34,8 @@ public abstract class EntityAI {
 	protected Entity target;
 	protected Entity self;
 		
-	public EntityAI(EntityAIParams params, Entity self, int activationRadiusInTiles) {
+	public MovementAI(MovementAIParams params, Entity self, int activationRadiusInTiles) {
 		this.engine = params.engine;
-		this.entityFactory = params.entityFactory;
-		this.options = params.options;
-		this.audio = params.audio;
 		this.dungeon = params.dungeon;
 		this.target = params.target;
 		this.self = self;

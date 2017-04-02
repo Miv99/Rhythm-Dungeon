@@ -24,8 +24,10 @@ import components.AnimationComponent;
 import components.AttackComponent;
 import components.EntityAIComponent;
 import components.HitboxComponent;
+import components.MovementAIComponent;
 import data.AnimationLoader;
 import data.EntityLoader;
+import entity_ai.PathFinder;
 import factories.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
@@ -199,7 +201,7 @@ public class Dungeon {
 	}
 	
 	private void disableEntityActions(float timeInSeconds) {
-		
+		//TODO
 	}
 	
 	public void update(float deltaTime) {
@@ -620,6 +622,7 @@ public class Dungeon {
 			 */
 			private void onEndOfBeatHitWindow(boolean isStrongBeat, boolean isInvisibleBeat) {
 				if(!isInvisibleBeat) {
+					/**
 					// Entity attack damage calculations queue
 					// Placed in onEndOfBeatHitWindow instead of onNewBeat to resolve entity movements before damage calculations from attacks
 					for(EntityAttackParams params : entityAttackDamageCalculationsQueue) {
@@ -627,6 +630,7 @@ public class Dungeon {
 						entityAttackDamageCalculationsDeletionQueue.add(params);
 					}
 					fireEntityAttackDamageCalculationsDeletionQueue();
+					*/
 					
 					if(isStrongBeat) {
 						ComponentMappers.playerMapper.get(dungeonParams.player).setMovedInLastBeat(false);
@@ -644,6 +648,13 @@ public class Dungeon {
 				for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HitboxComponent.class).get())) {
 					ComponentMappers.hitboxMapper.get(entity).onNewBeat(deltaBeat);
 				}
+				
+				// Entity attack damage calculations queue
+				for(EntityAttackParams params : entityAttackDamageCalculationsQueue) {
+					EntityActions.calculateEntityAttackDamage(params);
+					entityAttackDamageCalculationsDeletionQueue.add(params);
+				}
+				fireEntityAttackDamageCalculationsDeletionQueue();
 				
 				// Lower beat delay on all entity attack queues
 				for(EntityAttackParams params : entityAttackQueue) {
@@ -664,6 +675,10 @@ public class Dungeon {
 								&& !animationComponent.isRemoveEntityOnAnimationFinish()) {
 							animationComponent.setQueuedIdleAnimation(true);
 						}
+					}
+					
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(MovementAIComponent.class).get())) {
+						ComponentMappers.movementAIMapper.get(entity).getMovementAI().onNewBeat();
 					}
 					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {

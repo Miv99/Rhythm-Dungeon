@@ -3,11 +3,13 @@ package entity_ai;
 import java.util.ArrayList;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.miv.EntityActions;
 
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
+import movement_ai.Stationary;
 
 /**
  * ExplodingTrap generates its own attack pattern
@@ -19,12 +21,12 @@ import data.AttackData.TileAttackData;
  * -xxx-
  * --x--
  */
-public class ExplodingTrap extends Stationary {
+public class ExplodingTrap extends EntityAI {
 	private AttackData attackData;
 	
-	public ExplodingTrap(EntityAIParams params, Class<? extends Component> entityHittableRequirement, boolean warnTilesBeforeAttack,
+	public ExplodingTrap(EntityAIParams params, Entity self, int activationRadiusInTiles, Class<? extends Component> entityHittableRequirement, boolean warnTilesBeforeAttack,
 			int explosionRadiusInTiles, int attackDelayInBeats, String animationOnTile) {
-		super(params);
+		super(params, self, activationRadiusInTiles);
 		
 		// Create AttackData for the explosion
 		TileAttackData[][] tileAttackData = new TileAttackData[explosionRadiusInTiles*2 + 1][explosionRadiusInTiles*2 + 1];
@@ -45,5 +47,11 @@ public class ExplodingTrap extends Stationary {
 	public void onActivation() {
 		EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, attackData, entityFactory);
 		EntityActions.killEntity(audio, engine, dungeon.getFloors()[dungeon.getCurrentFloor()], self);
+	}
+
+	@Override
+	public void onNewBeat() {
+		// TODO Auto-generated method stub
+		
 	}
 }

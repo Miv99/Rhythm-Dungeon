@@ -3,24 +3,27 @@ package entity_ai;
 import java.util.ArrayList;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.miv.EntityActions;
 
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
 import data.AttackData.TileAttackData;
+import movement_ai.Stationary;
 
 /**
  * Fires a new expanding pulse after the old pulse reaches its maximum radius
  */
-public class PulsatingExpandingRingTrap extends Stationary {
+public class PulsatingExpandingRingTrap extends EntityAI {
 	private AttackData attackData;
 	
 	/**
 	 * @param pulseExpansionFrequencyInBeats - number of beats before the pulse expands by a radius of 1
 	 */
-	public PulsatingExpandingRingTrap(EntityAIParams params, Class<? extends Component> entityHittableRequirement, boolean warnTilesBeforeAttack,
+	public PulsatingExpandingRingTrap(EntityAIParams params, Entity self, int activationRadiusInTiles, 
+			Class<? extends Component> entityHittableRequirement, boolean warnTilesBeforeAttack,
 			int disableAttackTimeInBeats, int ringMaxRadiusInTiles, String animationOnTile) {
-		super(params);
+		super(params, self, activationRadiusInTiles);
 		
 		ringMaxRadiusInTiles++;
 				

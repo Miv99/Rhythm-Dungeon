@@ -81,12 +81,13 @@ public class EntityActions {
 		private AttackData attackData;
 		private Point focusAbsoluteMapPosition;
 		private Point focusPositionRelativeToTargetttedTiles;
+		private Point attackerAttackOrigin;
 		private TileAttackData[][] targetedTiles;
 		private Array<WarningTile> nextAttackPartWarningTiles;
 		private float beatDelay;
 		
 		public EntityAttackParams(Engine engine, Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
-				AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
+				AttackData attackData, Point attackerAttackOrigin, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
 				TileAttackData[][] targetedTiles, int beatDelay, Array<WarningTile> nextAttackPartWarningTiles) {
 			this.engine = engine;
 			this.options = options;
@@ -95,6 +96,7 @@ public class EntityActions {
 			this.attacker = attacker;
 			this.entityFactory = entityFactory;
 			this.attackData = attackData;
+			this.attackerAttackOrigin = attackerAttackOrigin;
 			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
 			this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
 			this.targetedTiles = targetedTiles;
@@ -103,7 +105,7 @@ public class EntityActions {
 		}
 		
 		public EntityAttackParams(Engine engine, Options options, Audio audio, Floor floor, Entity attacker, EntityFactory entityFactory,
-			AttackData attackData, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
+			AttackData attackData, Point attackerAttackOrigin, Point focusAbsoluteMapPosition, Point focusPositionRelativeToTargetttedTiles,
 			TileAttackData[][] targetedTiles, int beatDelay) {
 			this.engine = engine;
 			this.options = options;
@@ -112,6 +114,7 @@ public class EntityActions {
 			this.attacker = attacker;
 			this.entityFactory = entityFactory;
 			this.attackData = attackData;
+			this.attackerAttackOrigin = attackerAttackOrigin;
 			this.focusAbsoluteMapPosition = focusAbsoluteMapPosition;
 			this.focusPositionRelativeToTargetttedTiles = focusPositionRelativeToTargetttedTiles;
 			this.targetedTiles = targetedTiles;
@@ -274,10 +277,10 @@ public class EntityActions {
 						for(int x = 0; x < targetedTiles.length; x++) {
 							for(int y = 0; y < targetedTiles[x].length; y++) {
 								// x and y iterations so far
-								if(targetedTiles[x + attackerAttackOrigin.x][y + attackerAttackOrigin.y].isAttack()) {
+								if(targetedTiles[x][y].isAttack()) {
 									warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats() * 2, 
-											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x, 
-											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y));
+											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x, 
+											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y));
 								}
 							}
 						}
@@ -287,10 +290,10 @@ public class EntityActions {
 						for(int x = 0; x < targetedTiles.length; x++) {
 							for(int y = 0; y < targetedTiles[x].length; y++) {
 								// x and y iterations so far
-								if(targetedTiles[x + attackerAttackOrigin.x][y + attackerAttackOrigin.y].isAttack()) {
+								if(targetedTiles[x][y].isAttack()) {
 									warningTiles.add(new WarningTile(1, 
-											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x, 
-											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y));
+											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x, 
+											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y));
 								}
 							}
 						}
@@ -322,11 +325,11 @@ public class EntityActions {
 				if(i + 1 < warningTilesArray.size) {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
-								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i, warningTilesArray.get(i + 1)));
 					} else {
 						EntityAttackParams params = new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
-								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, 0, warningTilesArray.get(i + 1));
 						runEntityAttackAnimations(params);
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
@@ -334,11 +337,11 @@ public class EntityActions {
 				} else {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttack(new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
-								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, attackData.getAttackDelayInBeats() + i));
 					} else {
 						EntityAttackParams params = new EntityAttackParams(engine, options, audio, floor, attacker, entityFactory,
-								attackData, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
+								attackData, attackerAttackOrigin, focusAbsoluteMapPosition, focusPositionRelativeToTargetttedTiles,
 								targetedTiles, 0);
 						runEntityAttackAnimations(params);
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
@@ -411,8 +414,8 @@ public class EntityActions {
 		// Get entities that are attacked
 		Set<Entity> attackedEntities = new HashSet<Entity>();
 		Class<? extends Component> entityHittableRequirement = params.attackData.getEntityHittableRequirement();
-		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x;
-		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y;
+		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x + params.attackerAttackOrigin.x;
+		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y + params.attackerAttackOrigin.y;
 		for(int x = absX; x < absX + params.targetedTiles.length; x++) {
 			for(int y = absY; y < absY + params.targetedTiles[x - absX].length; y++) {
 				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
@@ -545,7 +548,22 @@ public class EntityActions {
 		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
 	}
 	
-	private static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
+	public static boolean isValidMovement(Tile[][] tiles, Entity entity, int xEntity, int yEntity, Direction direction) {
+		HitboxType[][] hitbox;
+		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
+		if(direction.isHorizontal()) {
+			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
+		} else {
+			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
+		}
+		
+		xEntity += direction.getDeltaX();
+		yEntity += direction.getDeltaY();
+		
+		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
+	}
+	
+	public static boolean isValidPosition(Tile[][] tiles, Entity entity, HitboxType[][] hitbox, int xEntity, int yEntity) {
 		// Check if the entity out of bounds
 		if(xEntity + hitbox.length > tiles.length
 				|| yEntity + hitbox[0].length > tiles[0].length

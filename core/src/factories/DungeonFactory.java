@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -12,12 +13,16 @@ import com.miv.EntityActions.Direction;
 
 import audio.Audio;
 import components.EntityAIComponent;
+import components.MovementAIComponent;
 import components.PlayerComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
 import entity_ai.EntityAI.EntityAIParams;
+import entity_ai.ExplodingTrap;
 import entity_ai.PulsatingExpandingRingTrap;
+import movement_ai.EfficientChaser;
+import movement_ai.MovementAI.MovementAIParams;
 import dungeons.Floor;
 import dungeons.Tile;
 import utils.GeneralUtils;
@@ -49,11 +54,35 @@ public class DungeonFactory {
 		
 		Floor[] floors = new Floor[dungeonParams.getMaxFloors()];
 		
-		floors[0] = generateFloor(dungeonParams, 0);
-			
+		//floors[0] = generateFloor(dungeonParams, 0);
+		floors[0] = new Floor(200, 200);
+		for(int x = 0; x < floors[0].getTiles().length; x++) {
+			for(int y = 0; y < floors[0].getTiles()[x].length; y++) {
+				Tile t = new Tile(new Point(x, y));
+				floors[0].getTiles()[x][y] = t;
+				t.setSprite(dungeonParams.getImages().loadSprite("stone_tile"));
+				t.setHitboxType(HitboxType.INTANGIBLE);
+			}
+		}
+		for(int y = 0; y < 40; y++) {
+			floors[0].getTiles()[25][y].setSprite(dungeonParams.getImages().loadSprite("stone_wall"));
+			floors[0].getTiles()[25][y].setHitboxType(HitboxType.TANGIBLE);
+		}
+		for(int y = 44; y < 80; y++) {
+			floors[0].getTiles()[25][y].setSprite(dungeonParams.getImages().loadSprite("stone_wall"));
+			floors[0].getTiles()[25][y].setHitboxType(HitboxType.TANGIBLE);
+		}
+		
+		//Engine engine, EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles
+		EntityAIParams entityAIParams = new EntityAIParams(dungeonParams.getEngine(), dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, dungeonParams.getPlayer());
+		MovementAIParams movementAIParams = new MovementAIParams(dungeonParams.getEngine(), dungeon, dungeonParams.getPlayer());
+		
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
-		spawns.add(dungeonParams.getEntityFactory()
-				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(5, 5), 5));
+		Entity dragon1 = dungeonParams.getEntityFactory()
+				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(20, 30), 5);
+		dragon1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(entityAIParams, dragon1, 10, PlayerComponent.class, true, 4, 3, "none")));
+		dragon1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, dragon1, 10)));
+		spawns.add(dragon1);
 		/**
 		 * EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles
 		 * 
@@ -62,8 +91,7 @@ public class DungeonFactory {
 		 */
 		Entity trap1 = dungeonParams.getEntityFactory().createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("default_trap"), new Point(30, 30), 1);
 		int trap1Radius = 5;
-		EntityAIParams trap1Params = new EntityAIParams(dungeonParams.getEngine(), dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, trap1, null, trap1Radius);
-		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(trap1Params, PlayerComponent.class, true, 3, trap1Radius, "none")));
+		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(entityAIParams, trap1, 10, PlayerComponent.class, true, 3, trap1Radius, "none")));
 		spawns.add(trap1);
 		
 		dungeon.setFloors(floors);

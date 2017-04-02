@@ -17,6 +17,7 @@ import components.EnemyComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
+import components.MovementAIComponent;
 import components.PlayerComponent;
 import data.AnimationData;
 import data.AttackData;
@@ -26,6 +27,7 @@ import data.HitboxData.HitboxType;
 import dungeons.Tile;
 import entity_ai.EntityAI;
 import graphics.Images;
+import movement_ai.MovementAI;
 
 public class EntityFactory {
 	private Images images;
@@ -101,6 +103,15 @@ public class EntityFactory {
 		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {
 			e.add(new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle"));
 		}
+				
+		return e;
+	}
+	
+	public Entity createEntity(EntityData entityData, Point mapPosition, int healthPoints, EntityAI entityAI, MovementAI movementAI) {
+		Entity e = createEntity(entityData, mapPosition, healthPoints);
+		
+		e.add(new EntityAIComponent(entityAI));
+		e.add(new MovementAIComponent(movementAI));
 				
 		return e;
 	}
