@@ -50,6 +50,8 @@ public class HitboxComponent implements Component {
 		if(attackOrigin == null) {
 			attackOrigin = new Point(0, 0);
 			hasAttackOrigin = false;
+		} else {
+			hasAttackOrigin = true;
 		}
 	}
 	

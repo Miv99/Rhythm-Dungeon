@@ -44,8 +44,12 @@ public class PathFinder {
             return 0;
         }
     }
-	
-	public static Array<Direction> calculateBestPath(Tile[][] tiles, int maxSteps, Entity mover, Entity target) {
+		
+	/**
+	 * NOT DONE WITH THIS YET.
+	 * Also, it's really laggy so I'll probably never use it.
+	 */
+	public static Array<Direction> calculateBestPathWithAStar(Tile[][] tiles, int maxSteps, Entity mover, Entity target) {
 		Array<Direction> path = new Array<Direction>();
 		Point start = ComponentMappers.hitboxMapper.get(mover).getMapPosition();
 		Point end = ComponentMappers.hitboxMapper.get(target).getMapPosition();

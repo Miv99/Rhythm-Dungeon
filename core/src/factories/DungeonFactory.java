@@ -82,7 +82,7 @@ public class DungeonFactory {
 		Entity dragon1 = dungeonParams.getEntityFactory()
 				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(20, 30), 5);
 		dragon1.add(new EntityAIComponent(new Dragon(entityAIParams, dragon1, 10)));
-		dragon1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, dragon1, 10)));
+		dragon1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, dragon1, 10, 1)));
 		spawns.add(dragon1);
 		/**
 		 * EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles

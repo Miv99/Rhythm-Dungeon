@@ -285,7 +285,6 @@ public class EntityActions {
 				Array<WarningTile> warningTiles = new Array<WarningTile>();
 				if(i == 0) {
 					if(attackData.isWarnTilesBeforeAttack()) {
-						System.out.println(focusAbsoluteMapPosition + ", " + focusPositionRelativeToTargetttedTiles + ", " + attackerAttackOrigin);
 						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
 						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
 						for(int x = absX; x < absX + targetedTiles.length; x++) {
@@ -294,7 +293,6 @@ public class EntityActions {
 									// Get x and y relative to targetedTiles
 									TileAttackData tile = targetedTiles[x - absX][y - absY];
 									if(tile.isAttack()) {
-										//System.out.println("WT: " + x + ", " + y);
 										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), x, y));
 									}
 								}
@@ -441,7 +439,6 @@ public class EntityActions {
 					// Get x and y relative to targetedTiles
 					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
 					if(tile.isAttack()) {
-						//System.out.println("DAMAGE CALC: " + x + ", " + y);
 						// Get attackble entities that reside on the absolute tile
 						for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
 							// Check if occupant has the entityHittableRequirement component
