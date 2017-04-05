@@ -91,6 +91,14 @@ public class HitboxComponent implements Component {
 		return hitbox;
 	}
 	
+	public int getCenterMapPositionX() {
+		return mapPosition.x + hitbox.length/2;
+	}
+	
+	public int getCenterMapPositionY() {
+		return mapPosition.y + hitbox[0].length/2;
+	}
+	
 	public Point getMapPosition() {
 		return mapPosition;
 	}

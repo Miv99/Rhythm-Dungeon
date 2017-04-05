@@ -188,11 +188,13 @@ public class EntityActions {
 				
 				// If the entity moving is a player, check if it goes in range of any AI
 				if(ComponentMappers.playerMapper.has(entity)) {
+					Point hitboxCenterPosition = new Point(hitboxPosition.x + hitbox.length/2, hitboxPosition.y + hitbox[0].length/2);
+					
 					// Entity AI
 					for(Entity e : engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
-						Point entityPosition = ComponentMappers.hitboxMapper.get(e).getMapPosition();
+						HitboxComponent eHitboxComponent = ComponentMappers.hitboxMapper.get(e);
 						EntityAI ai = ComponentMappers.entityAIMapper.get(e).getEntityAI();
-						if(Math.hypot(entityPosition.x - hitboxPosition.x, entityPosition.y - hitboxPosition.y) 
+						if(Math.hypot(eHitboxComponent.getCenterMapPositionX() - hitboxCenterPosition.x, eHitboxComponent.getCenterMapPositionY() - hitboxCenterPosition.y) 
 								<= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);
 						}
@@ -200,9 +202,9 @@ public class EntityActions {
 					
 					// Movement AI
 					for(Entity e : engine.getEntitiesFor(Family.all(MovementAIComponent.class).get())) {
-						Point enemyPosition = ComponentMappers.hitboxMapper.get(e).getMapPosition();
+						HitboxComponent eHitboxComponent = ComponentMappers.hitboxMapper.get(e);
 						MovementAI ai = ComponentMappers.movementAIMapper.get(e).getMovementAI();
-						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
+						if(Math.hypot(eHitboxComponent.getCenterMapPositionX() - hitboxCenterPosition.x, eHitboxComponent.getCenterMapPositionY() - hitboxCenterPosition.y) 
 								<= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);
 						}
