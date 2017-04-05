@@ -108,6 +108,7 @@ public class Dungeon {
 	
 	private SongSelector songSelector;
 	private int currentFloor;
+	private float bpm;
 	
 	private Floor[] floors;
 	
@@ -149,6 +150,7 @@ public class Dungeon {
 		currentFloor = newFloor;
 		
 		dungeonParams.deathSystem.setFloor(floors[currentFloor]);
+		bpm = calculateBpmFromFloor(dungeonParams.options, currentFloor);
 		
 		// Generate floor if floor does not exist
 		if(floors[currentFloor] == null) {
@@ -165,17 +167,15 @@ public class Dungeon {
 		if(song != null) {
 			dungeonParams.audio.playSong(song);
 		} else {
-			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + calculateBpmFromFloor(dungeonParams.options, currentFloor));
+			System.out.println("This should never appear. There is no song avaliable for floor " + newFloor + ": BPM = " + bpm);
 		}
 		
-		dungeonParams.animationLoader.updateAllAnimationFrameDuration(calculateBpmFromFloor(dungeonParams.options, currentFloor));
+		dungeonParams.animationLoader.updateAllAnimationFrameDuration(bpm);
 		
 		actionBar.beatLines.clear();
 		actionBar.spawnPrimaryBeatLines(song.getOffsetInSeconds());
 		
-		actionBar.actionBarSystem.syncedNextLoop = false;
-		actionBar.actionBarSystem.lastKnownLoopCount = 0;
-		actionBar.actionBarSystem.clearQueues();
+		actionBar.actionBarSystem.onEnterNewFloor();
 		
 		beatHitErrorMarginInSeconds = calculateBeatHitErrorMargin();
 		beatMissErrorMarginInSeconds = calculateBeatMissErrorMargin();
@@ -186,11 +186,23 @@ public class Dungeon {
 		disableEntityActions(song.getOffsetInSeconds() - getBeatMissErrorMarginInSeconds());
 	}
 	
+	private int getInvisibleBeatLineSpawnModulusDivisor() {
+		if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 1) {
+			return 4;
+		} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 2) {
+			return 2;
+		} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 4) {
+			return 1;
+		} else {
+			System.out.println("this should never appear");
+			return 0;
+		}
+	}
+	
 	/**
-	 * Uses the current floor to select a new song to play
+	 * Uses the current bpm
 	 */
 	private Song selectNewSongByCurrentFloor() {
-		float bpm = calculateBpmFromFloor(dungeonParams.options, currentFloor);
 		Song song = null;
 		try {
 			song = songSelector.selectSongByBpm(bpm);
@@ -313,7 +325,7 @@ public class Dungeon {
 		private boolean paused;
 				
 		private ActionBarSystem actionBarSystem;
-		
+				
 		public ActionBar() {
 			beatLines = new Array<BeatLine>();
 			actionBarSystem = new ActionBarSystem(dungeonParams.options.getWindowWidth());
@@ -331,26 +343,17 @@ public class Dungeon {
 				boolean strongBeat = false;
 				boolean invisible = true;
 				
-				//TODO: make this not hard-coded
-				int a = 0;
-				if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 1) {
-					a = 4;
-				} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 2) {
-					a = 2;
-				} else if(dungeonParams.options.getDifficulty().getBeatLinesPerBeat() == 4) {
-					a = 1;
-				}
-				
+				int invisibleBeatLineSpawnModulusDivisor = getInvisibleBeatLineSpawnModulusDivisor();
 				if(i % INVISIBLE_BEATLINES_PER_BEAT == 0) {
 					strongBeat = true;
 				}
-				if(i % a == 0) {
+				if(i % invisibleBeatLineSpawnModulusDivisor == 0) {
 					invisible = false;
 				}
 				
 				beatLines.add(new BeatLine(time, strongBeat, invisible));
 				
-				time += (60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor) * (float)INVISIBLE_BEATLINES_PER_BEAT));
+				time += (60f/(bpm * (float)INVISIBLE_BEATLINES_PER_BEAT));
 			}
 		}
 		
@@ -510,6 +513,9 @@ public class Dungeon {
 			private int lastKnownLoopCount;
 			private boolean syncedNextLoop;
 			
+			private int newBeatCounter;
+			private int invisibleBeatLineSpawnModulusDivisor;
+			
 			public ActionBarSystem(float windowWidth) {
 				batch = new SpriteBatch();
 				beatLineAdditionQueue = new Array<BeatLine>();
@@ -534,10 +540,19 @@ public class Dungeon {
 				cursorLineYPos = axisYPos + (actionBarAxis.getHeight() - cursorLine.getHeight())/2f;
 				circleStrongBeatYPos = axisYPos + (actionBarAxis.getHeight() - circleStrongBeat.getHeight())/2f;
 				circleWeakBeatYPos = axisYPos + (actionBarAxis.getHeight() - circleWeakBeat.getHeight())/2f;
+				
+				invisibleBeatLineSpawnModulusDivisor = getInvisibleBeatLineSpawnModulusDivisor();
+			}
+			
+			private void onEnterNewFloor() {
+				syncedNextLoop = false;
+				lastKnownLoopCount = 0;
+				clearQueues();
+				maxBeatCirclesOnScreen = calculateMaxBeatsOnScreen();
 			}
 			
 			private int calculateMaxBeatsOnScreen() {
-				 return Math.round(dungeonParams.options.getActionBarScrollInterval()/((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor))))/4f);
+				 return Math.round(dungeonParams.options.getActionBarScrollInterval()/((60f/(bpm)))/4f);
 			}
 			
 			public void setWindowWidth(float windowWidth) {
@@ -584,17 +599,37 @@ public class Dungeon {
 								&& !b.isReaddedToActionBar()) {
 							onNewBeat(b.isStrongBeat(), b.isInvisible());
 							
-							float time = actionBar.getBeatLines().get(actionBar.getBeatLines().size - 1).getTimePositionInSeconds() + ((60f/(calculateBpmFromFloor(dungeonParams.options, currentFloor)*INVISIBLE_BEATLINES_PER_BEAT)));
+							float time = 0;
+							if(beatLineAdditionQueue.size > 0) {
+								time = beatLineAdditionQueue.get(beatLineAdditionQueue.size - 1).getTimePositionInSeconds() + ((60f/(bpm*INVISIBLE_BEATLINES_PER_BEAT)));
+							} else {
+								time = actionBar.getBeatLines().get(actionBar.getBeatLines().size - 1).getTimePositionInSeconds() + ((60f/(bpm*INVISIBLE_BEATLINES_PER_BEAT)));
+							}
+							
+							boolean isStrongBeat = false;
+							if(newBeatCounter % INVISIBLE_BEATLINES_PER_BEAT == 0) {
+								isStrongBeat = true;
+							}
+							
+							boolean isInvisibleBeat = true;
+							if(newBeatCounter % invisibleBeatLineSpawnModulusDivisor == 0) {
+								isInvisibleBeat = false;
+							}
+							
+							newBeatCounter++;
 							
 							// Delays the first BeatLine of each song loop so that the beat timing is maintained
 							float nextSongEndTime = dungeonParams.audio.getCurrentSong().getOffsetInSeconds() + (dungeonParams.audio.getCurrentSongLoopCount() + 1)*(dungeonParams.audio.getCurrentSong().getSongEndMarkerInSeconds() - dungeonParams.audio.getCurrentSong().getLoopStartMarkerInSeconds());
 							if(!syncedNextLoop
-									&& time >= nextSongEndTime) {
+									&& time > nextSongEndTime) {
 								time = nextSongEndTime + dungeonParams.audio.getSongLoopSyncDelayInSeconds();
 								syncedNextLoop = true;
+								newBeatCounter = 0;
+								// This "fixes" some bug where an extra beat line would be placed at the start of every loop
+								isInvisibleBeat = true;
 							}
-							queueBeatLineAddition(new BeatLine(time, b.isStrongBeat(), b.isInvisible()));
-							
+							queueBeatLineAddition(new BeatLine(time, isStrongBeat, isInvisibleBeat));
+														
 							b.setReaddedToActionBar(true);
 						}
 						if(!b.isFiredPlayerActionQueue()

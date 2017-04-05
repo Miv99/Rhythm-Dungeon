@@ -224,8 +224,6 @@ public class Audio {
 		float secondsPerBeat = 60f/currentSong.getBpm();
 		float loopStartBeatOffset = (currentSong.getLoopStartMarkerInSeconds() - currentSong.getOffsetInSeconds()) % secondsPerBeat;
 		float songEndBeatOffset = (currentSong.getSongEndMarkerInSeconds() - currentSong.getOffsetInSeconds()) % secondsPerBeat;
-		// I have no idea why this works
-		songEndBeatOffset += 0.5f;
 		if(songEndBeatOffset > loopStartBeatOffset) {
 			return (1f - songEndBeatOffset + loopStartBeatOffset) * secondsPerBeat;
 		} else {
