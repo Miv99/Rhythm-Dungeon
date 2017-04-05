@@ -32,17 +32,17 @@ public class MapUtils {
 				&& Math.abs(hitbox2Y - hitbox1Y) < Math.min(hitbox1[0].length, hitbox2[0].length));
 	}
 	
-	public static Direction getRelativeDirection(Point point, Point relativeTo) {
-		if(point.x - relativeTo.x == 0) {
-			if(point.y - relativeTo.y > 0) {
+	public static Direction getRelativeDirection(int x1, int y1, int relativeToX, int relativeToY) {
+		if(x1 - relativeToX == 0) {
+			if(y1 - relativeToY > 0) {
 				return Direction.UP;
 			} else {
 				return Direction.DOWN;
 			}
 		}
 		
-		float slope = (float)(point.y - relativeTo.y)/(point.x - relativeTo.x);
-		if(point.x - relativeTo.x > 0) {
+		float slope = (float)(y1 - relativeToY)/(x1 - relativeToX);
+		if(x1 - relativeToX > 0) {
 			if(slope > -1 && slope < 1) {
 				return Direction.RIGHT;
 			} else if(slope > 1) {
@@ -84,5 +84,9 @@ public class MapUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static Direction getRelativeDirection(Point point, Point relativeTo) {
+		return getRelativeDirection(point.x, point.y, relativeTo.x, relativeTo.y);
 	}
 }

@@ -19,6 +19,7 @@ import components.FriendlyAIComponent;
 import components.HealthComponent;
 import components.HitboxComponent;
 import components.ImageComponent;
+import components.MovementAIComponent;
 import components.PlayerComponent;
 import data.AttackData;
 import data.AttackData.AttackDirectionDeterminant;
@@ -29,6 +30,7 @@ import dungeons.Floor;
 import dungeons.Tile;
 import entity_ai.EntityAI;
 import factories.EntityFactory;
+import movement_ai.MovementAI;
 import special_tiles.SpecialTile;
 import special_tiles.WarningTile;
 import utils.MapUtils;
@@ -184,11 +186,22 @@ public class EntityActions {
 					}
 				}
 				
-				// If the entity moving is a player, check if it goes in range of any entity AI
+				// If the entity moving is a player, check if it goes in range of any AI
 				if(ComponentMappers.playerMapper.has(entity)) {
-					for(Entity enemy : engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
-						Point enemyPosition = ComponentMappers.hitboxMapper.get(enemy).getMapPosition();
-						EntityAI ai = ComponentMappers.entityAIMapper.get(enemy).getEntityAI();
+					// Entity AI
+					for(Entity e : engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
+						Point entityPosition = ComponentMappers.hitboxMapper.get(e).getMapPosition();
+						EntityAI ai = ComponentMappers.entityAIMapper.get(e).getEntityAI();
+						if(Math.hypot(entityPosition.x - hitboxPosition.x, entityPosition.y - hitboxPosition.y) 
+								<= ai.getActivationRadiusInTiles()) {
+							ai.setActivated(true);
+						}
+					}
+					
+					// Movement AI
+					for(Entity e : engine.getEntitiesFor(Family.all(MovementAIComponent.class).get())) {
+						Point enemyPosition = ComponentMappers.hitboxMapper.get(e).getMapPosition();
+						MovementAI ai = ComponentMappers.movementAIMapper.get(e).getMovementAI();
 						if(Math.hypot(enemyPosition.x - hitboxPosition.x, enemyPosition.y - hitboxPosition.y) 
 								<= ai.getActivationRadiusInTiles()) {
 							ai.setActivated(true);
@@ -232,24 +245,22 @@ public class EntityActions {
 		AttackComponent attackerAttackComponent = ComponentMappers.attackMapper.get(attacker);
 
 		if(!floor.isActionsDisabled() && attackerAttackComponent.getAttackDisabledTimeInBeats() <= 0) {
+			Tile[][] mapTiles = floor.getTiles();
 			HitboxComponent attackerHitboxComponent = ComponentMappers.hitboxMapper.get(attacker);
 			Point attackerPosition = attackerHitboxComponent.getMapPosition();
 					
 			AttackDirectionDeterminant directionDeterminant = attackData.getAttackDirectionDeterminant();
 			Direction attackDirection = null;
 			Point focusAbsoluteMapPosition = null;
-			Point attackerAttackOrigin = null;
+			Point attackerAttackOrigin = new Point(attackerHitboxComponent.getAttackOrigin());
 			if(directionDeterminant.equals(AttackDirectionDeterminant.SELF_FACING)) {
 				attackDirection = attackerHitboxComponent.getFacing();
-				attackerAttackOrigin = attackerHitboxComponent.getAttackOrigin();
 				focusAbsoluteMapPosition = new Point(attackerPosition);
 			} else if(directionDeterminant.equals(AttackDirectionDeterminant.TARGET_FACING)) {
 				attackDirection = ComponentMappers.hitboxMapper.get(target).getFacing();
-				attackerAttackOrigin = new Point(0, 0);
 				focusAbsoluteMapPosition = new Point(ComponentMappers.hitboxMapper.get(target).getMapPosition());
 			} else if(directionDeterminant.equals(AttackDirectionDeterminant.TARGET_RELATIVE_TO_SELF)) {
-				attackDirection = MapUtils.getRelativeDirection(ComponentMappers.hitboxMapper.get(target).getMapPosition(), attackerPosition);
-				attackerAttackOrigin = new Point(0, 0);
+				attackDirection = MapUtils.getRelativeDirection(ComponentMappers.hitboxMapper.get(target).getMapPosition(), new Point(attackerPosition.x + attackerAttackOrigin.x, attackerPosition.y + attackerAttackOrigin.y));
 				focusAbsoluteMapPosition = new Point(attackerPosition);
 			} else {
 				System.out.println("YOU FORGOT TO MAKE AN IF STATEMENT FOR " + directionDeterminant + " IN Attack.class");
@@ -274,26 +285,34 @@ public class EntityActions {
 				Array<WarningTile> warningTiles = new Array<WarningTile>();
 				if(i == 0) {
 					if(attackData.isWarnTilesBeforeAttack()) {
-						for(int x = 0; x < targetedTiles.length; x++) {
-							for(int y = 0; y < targetedTiles[x].length; y++) {
-								// x and y iterations so far
-								if(targetedTiles[x][y].isAttack()) {
-									warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats() * 2, 
-											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x, 
-											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y));
+						System.out.println(focusAbsoluteMapPosition + ", " + focusPositionRelativeToTargetttedTiles + ", " + attackerAttackOrigin);
+						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
+						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
+						for(int x = absX; x < absX + targetedTiles.length; x++) {
+							for(int y = absY; y < absY + targetedTiles[x - absX].length; y++) {
+								if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
+									// Get x and y relative to targetedTiles
+									TileAttackData tile = targetedTiles[x - absX][y - absY];
+									if(tile.isAttack()) {
+										//System.out.println("WT: " + x + ", " + y);
+										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), x, y));
+									}
 								}
 							}
 						}
 					}
 				} else {
 					if(attackData.isWarnTilesBeforeAttack()) {
-						for(int x = 0; x < targetedTiles.length; x++) {
-							for(int y = 0; y < targetedTiles[x].length; y++) {
-								// x and y iterations so far
-								if(targetedTiles[x][y].isAttack()) {
-									warningTiles.add(new WarningTile(1, 
-											x + focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x, 
-											y + focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y));
+						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
+						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
+						for(int x = absX; x < absX + targetedTiles.length; x++) {
+							for(int y = absY; y < absY + targetedTiles[x - absX].length; y++) {
+								if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
+									// Get x and y relative to targetedTiles
+									TileAttackData tile = targetedTiles[x - absX][y - absY];
+									if(tile.isAttack()) {
+										warningTiles.add(new WarningTile(1, x, y));
+									}
 								}
 							}
 						}
@@ -378,8 +397,8 @@ public class EntityActions {
 		}
 		
 		// Do animations on tiles
-		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x;
-		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y;
+		int absX = params.focusAbsoluteMapPosition.x - params.focusPositionRelativeToTargetttedTiles.x + params.attackerAttackOrigin.x;
+		int absY = params.focusAbsoluteMapPosition.y - params.focusPositionRelativeToTargetttedTiles.y + params.attackerAttackOrigin.y;
 		for(int x = absX; x < absX + params.targetedTiles.length; x++) {
 			for(int y = absY; y < absY + params.targetedTiles[x - absX].length; y++) {
 				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
@@ -422,6 +441,7 @@ public class EntityActions {
 					// Get x and y relative to targetedTiles
 					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
 					if(tile.isAttack()) {
+						//System.out.println("DAMAGE CALC: " + x + ", " + y);
 						// Get attackble entities that reside on the absolute tile
 						for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
 							// Check if occupant has the entityHittableRequirement component
@@ -532,20 +552,9 @@ public class EntityActions {
 		}
 	}
 	
-	private static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
-		HitboxType[][] hitbox;
-		HitboxComponent hitboxComponent = ComponentMappers.hitboxMapper.get(entity);
-		if(direction.isHorizontal()) {
-			hitbox = hitboxComponent.getHitboxesData().get(hitboxComponent.getHitboxName() + "_" + direction.stringRepresentation).getHitbox();
-		} else {
-			hitbox = ComponentMappers.hitboxMapper.get(entity).getHitbox();
-		}
-		
-		Point currentPosition = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
-		int xEntity = currentPosition.x + direction.getDeltaX();
-		int yEntity = currentPosition.y + direction.getDeltaY();
-		
-		return isValidPosition(tiles, entity, hitbox, xEntity, yEntity);
+	public static boolean isValidMovement(Tile[][] tiles, Entity entity, Direction direction) {
+		Point pos = ComponentMappers.hitboxMapper.get(entity).getMapPosition();
+		return isValidMovement(tiles, entity, pos.x, pos.y, direction);
 	}
 	
 	public static boolean isValidMovement(Tile[][] tiles, Entity entity, int xEntity, int yEntity, Direction direction) {

@@ -18,6 +18,7 @@ import components.PlayerComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
+import entity_ai.Dragon;
 import entity_ai.EntityAI.EntityAIParams;
 import entity_ai.ExplodingTrap;
 import entity_ai.PulsatingExpandingRingTrap;
@@ -64,7 +65,7 @@ public class DungeonFactory {
 				t.setHitboxType(HitboxType.INTANGIBLE);
 			}
 		}
-		for(int y = 0; y < 40; y++) {
+		for(int y = 0; y < 20; y++) {
 			floors[0].getTiles()[25][y].setSprite(dungeonParams.getImages().loadSprite("stone_wall"));
 			floors[0].getTiles()[25][y].setHitboxType(HitboxType.TANGIBLE);
 		}
@@ -80,7 +81,7 @@ public class DungeonFactory {
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
 		Entity dragon1 = dungeonParams.getEntityFactory()
 				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(20, 30), 5);
-		dragon1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(entityAIParams, dragon1, 10, PlayerComponent.class, true, 4, 3, "none")));
+		dragon1.add(new EntityAIComponent(new Dragon(entityAIParams, dragon1, 10)));
 		dragon1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, dragon1, 10)));
 		spawns.add(dragon1);
 		/**
@@ -92,7 +93,7 @@ public class DungeonFactory {
 		Entity trap1 = dungeonParams.getEntityFactory().createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("default_trap"), new Point(30, 30), 1);
 		int trap1Radius = 5;
 		trap1.add(new EntityAIComponent(new PulsatingExpandingRingTrap(entityAIParams, trap1, 10, PlayerComponent.class, true, 3, trap1Radius, "none")));
-		spawns.add(trap1);
+		//spawns.add(trap1);
 		
 		dungeon.setFloors(floors);
 		

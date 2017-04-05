@@ -63,14 +63,14 @@ right2=[
 name=dragon_breath
 animation_name=dragon_breath
 can_hit=player
-direction=SELF_FACING
+direction=TARGET_RELATIVE_TO_SELF
 auto_rotate=true
 warn_tiles=true
 attack_delay=2
 disable_attack=2
 disable_movement=1
 '#'=none
-'0'=none
+'0'=slash
 right1=[
 --0
 #00

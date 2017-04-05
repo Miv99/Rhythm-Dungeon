@@ -20,6 +20,7 @@ public class HitboxComponent implements Component {
 	// Point on hitbox where attacks originate from; defaulted to (0, 0) if none specified from HitboxData
 	private Point attackOrigin;
 	private String hitboxName;
+	private boolean hasAttackOrigin;
 	
 	private boolean movementDisabled;
 	private float movementDisabledTimeInBeats;
@@ -38,15 +39,17 @@ public class HitboxComponent implements Component {
 		}
 		
 		// Find attack origin
-		attackOrigin = new Point(0, 0);
 		for(int x = 0; x < hitbox.length; x++) {
 			for(int y = 0; y < hitbox[x].length; y++) {
 				if(hitbox[x][y].isAttackOrigin()) {
-					attackOrigin.x = x;
-					attackOrigin.y = y;
+					attackOrigin = new Point(x, y);
 					break;
 				}
 			}
+		}
+		if(attackOrigin == null) {
+			attackOrigin = new Point(0, 0);
+			hasAttackOrigin = false;
 		}
 	}
 	
@@ -60,14 +63,16 @@ public class HitboxComponent implements Component {
 	}
 	
 	public void faceDirection(Direction direction) {
-		facing = direction;
 		if(direction.isHorizontal()) {
 			horizontalFacing = direction;
 			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
 			
 			// Flip attack origin horizontally
-			attackOrigin.x = hitbox.length - attackOrigin.x - 1;
+			if(horizontalFacing != direction) {
+				attackOrigin.x = hitbox.length - attackOrigin.x - 1;
+			}
 		}
+		facing = direction;
 	}
 	
 	public void setMapPosition(int x, int y) {
@@ -110,5 +115,9 @@ public class HitboxComponent implements Component {
 	
 	public String getHitboxName() {
 		return hitboxName;
+	}
+	
+	public boolean hasAttackOrigin() {
+		return hasAttackOrigin;
 	}
 }
