@@ -295,7 +295,7 @@ public class EntityActions {
 									// Get x and y relative to targetedTiles
 									TileAttackData tile = targetedTiles[x - absX][y - absY];
 									if(tile.isAttack()) {
-										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), x, y));
+										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats() + 1, x, y));
 									}
 								}
 							}
