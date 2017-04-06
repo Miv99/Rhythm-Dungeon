@@ -302,6 +302,7 @@ public class EntityActions {
 						}
 					}
 				} else {
+					// Multi-step attacks display warning tiles for steps other than the first one only after the previous step has been completed
 					if(attackData.isWarnTilesBeforeAttack()) {
 						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
 						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
@@ -335,11 +336,6 @@ public class EntityActions {
 					}
 				}
 				
-				// Warn tiles
-				if(warningTilesArray.size > 0) {
-					attackerAttackComponent.getWarningTiles().addAll(warningTilesArray.first());
-				}
-				
 				// Queue entity attack after beat delay
 				if(i + 1 < warningTilesArray.size) {
 					if(attackData.getAttackDelayInBeats() + i > 0) {
@@ -366,6 +362,11 @@ public class EntityActions {
 						dungeon.getActionBar().getActionBarSystem().queueEntityAttackDamageCalculations(params);
 					}
 				}
+			}
+			
+			// Warn tiles
+			if(warningTilesArray.size > 0) {
+				attackerAttackComponent.getWarningTiles().addAll(warningTilesArray.first());
 			}
 			
 			if(attackData.getDisabledAttackTimeInBeats() > 0) {
