@@ -9,6 +9,7 @@ import com.miv.EntityActions.Direction;
 
 import components.HitboxComponent;
 import dungeons.Floor;
+import movement_ai.PathFinder.NoPathsException;
 import utils.MapUtils;
 
 public class EfficientChaser extends MovementAI {
@@ -46,6 +47,8 @@ public class EfficientChaser extends MovementAI {
 	@Override
 	public void onNewBeat() {
 		if(activated) {
+			
+			/**
 			if(movementDisableCounter <= 0) {
 				// Prioritize moving attack origin towards player. If entity has no attack origin, try to move hitbox center towards player instead.
 				Floor currentFloor = dungeon.getFloors()[dungeon.getCurrentFloor()];
@@ -84,8 +87,18 @@ public class EfficientChaser extends MovementAI {
 				}
 				
 				movementDisableCounter = movementDisableAfterMovementInBeats;
-			} else {
+			} else if(!selfHitboxComponent.isMovementDisabled()) {
 				movementDisableCounter--;
+			}
+			*/
+			
+			try {
+				Floor currentFloor = dungeon.getFloors()[dungeon.getCurrentFloor()];
+				Direction direction = PathFinder.calculateBestPathFirstStep(dungeon.getFloors()[dungeon.getCurrentFloor()].getTiles(), activationRadiusInTiles, self, target);
+				EntityActions.moveEntity(engine, currentFloor, self, direction);
+			} catch (NoPathsException e) {
+				// Do nothing
+				System.out.println("rip");
 			}
 		}
 	}

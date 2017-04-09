@@ -1,4 +1,4 @@
-package entity_ai;
+package movement_ai;
 
 import java.awt.Point;
 import java.util.Comparator;
@@ -15,6 +15,14 @@ import dungeons.Tile;
 import utils.MapUtils;
 
 public class PathFinder {
+	public static class NoPathsException extends Exception {
+		private static final long serialVersionUID = 2300779561134374157L;
+
+		public NoPathsException() {
+			super();
+		}
+	}
+	
 	private static class TileCell {
 		int heuristicCost = 0;
         int finalCost = 0;
@@ -37,22 +45,20 @@ public class PathFinder {
             if(nodeSecond.finalCost > nodeFirst.finalCost) {
             	return -1;
             }
-            /**
-             * return c1.finalCost<c2.finalCost?-1:
-                        c1.finalCost>c2.finalCost?1:0;
-             */
             return 0;
         }
     }
 		
 	/**
-	 * NOT DONE WITH THIS YET.
-	 * Also, it's really laggy so I'll probably never use it.
+	 * Uses A*
+	 * Takes into account the hitboxes of the mover and target
+	 * @return - the direction of the first step in the calculated best path
 	 */
-	public static Array<Direction> calculateBestPathWithAStar(Tile[][] tiles, int maxSteps, Entity mover, Entity target) {
-		Array<Direction> path = new Array<Direction>();
-		Point start = ComponentMappers.hitboxMapper.get(mover).getMapPosition();
-		Point end = ComponentMappers.hitboxMapper.get(target).getMapPosition();
+	public static Direction calculateBestPathFirstStep(Tile[][] tiles, int maxSteps, Entity mover, Entity target) throws NoPathsException {
+		HitboxType[][] moverHitbox = ComponentMappers.hitboxMapper.get(mover).getHitbox();
+		HitboxType[][] targetHitbox = ComponentMappers.hitboxMapper.get(target).getHitbox();
+		Point start = new Point(ComponentMappers.hitboxMapper.get(mover).getMapPosition().x + moverHitbox.length/2, ComponentMappers.hitboxMapper.get(mover).getMapPosition().y + moverHitbox[0].length/2);
+		Point end = new Point(ComponentMappers.hitboxMapper.get(target).getMapPosition().x + targetHitbox.length/2, ComponentMappers.hitboxMapper.get(target).getMapPosition().y + targetHitbox[0].length/2);
 		
 		// Create and populate TileCell array
 		int searchSquareXStart = Math.max(0, start.x - maxSteps);
@@ -60,6 +66,12 @@ public class PathFinder {
 		int searchSquareXEnd = Math.min(tiles.length, start.x + maxSteps);
 		int searchSquareYEnd = Math.min(tiles[0].length, start.y + maxSteps);
 		TileCell[][] tileCells = new TileCell[searchSquareXEnd - searchSquareXStart][searchSquareYEnd - searchSquareYStart];
+		if(end.x - start.x >= maxSteps
+				|| end.y - start.y >= maxSteps
+				|| end.x - searchSquareXStart < 0
+				|| end.y - searchSquareYStart < 0) {
+			throw new NoPathsException();
+		}
 		for(int x = 0; x < tileCells.length; x++) {
 			for(int y = 0; y < tileCells[x].length; y++) {
 				if(!tiles[searchSquareXStart + x][searchSquareYStart + y].getHitboxType().isTangible()) {
@@ -74,16 +86,13 @@ public class PathFinder {
 		boolean[][] closed = new boolean[tileCells.length][tileCells[0].length];
 		TileCell current;
 		
-		HitboxType[][] moverHitbox = ComponentMappers.hitboxMapper.get(mover).getHitbox();
-		HitboxType[][] targetHitbox = ComponentMappers.hitboxMapper.get(target).getHitbox();
-		
 		while(true) {
 			current = open.poll();
 			if(current == null) {
 				break;
 			}
 			closed[current.x][current.y] = true;
-			if(current.equals(tileCells[end.x - searchSquareXStart][end.y - searchSquareYStart])
+			if((current.x == end.x && current.y == end.y)
 					|| MapUtils.boundingRectsIntersect(moverHitbox, current.x, current.y, targetHitbox, end.x, end.y)) {
 				break;
 			}
@@ -111,39 +120,44 @@ public class PathFinder {
             }
 		}
 		
-		if(closed[end.x - searchSquareXStart][end.y - searchSquareXStart]) {
+		if(closed[end.x - searchSquareXStart][end.y - searchSquareYStart]) {
 			//Trace back the path 
-            System.out.println("Path: ");
-            TileCell c = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
-            System.out.print("(" + c.x + ", " + c.y + ")");
-            int steps = 0;
-            while(c.parent != null) {
-                System.out.println(" -> " + "(" + c.parent.x + ", " + c.parent.y + ")");
-                c = c.parent;
-                
-                steps++;
-                if(steps >= maxSteps) {
-                	path.clear();
-                	return path;
-                }
-            } 
+	        TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
+	        TileCell lastCell = null;
+	        while(cell.parent != null) {
+	        	lastCell = cell;
+	        	cell = cell.parent;
+	        } 
+	        System.out.println(lastCell.x + ", " + lastCell.y + ", " + cell.x + ", " + cell.y);
+	        for(Direction d : Direction.values()) {
+	        	if(lastCell.x - cell.x == d.getDeltaX()
+	        			&& lastCell.y - cell.y == d.getDeltaY()) {
+	        		return d;
+	        	}
+	        }
 		}
-		
-		return path;
+		System.out.println(closed[end.x - searchSquareXStart][end.y - searchSquareXStart]);
+		throw new NoPathsException();
 	}
 	
 	/**
-	 * The path found using this method assumes the mover has a 1x1 hitbox
+	 * Uses A*
+	 * The path found in this method assumes the mover has a 1x1 hitbox
+	 * @return - the direction of the first step in the calculated best path
 	 */
-	public static Array<Direction> calculateBestPath(Tile[][] tiles, int maxSteps, Point start, Point end) {
-		Array<Direction> path = new Array<Direction>();
-		
+	public static Direction calculateBestPathFirstStep(Tile[][] tiles, int maxSteps, Point start, Point end) throws NoPathsException {
 		// Create and populate TileCell array
 		int searchSquareXStart = Math.max(0, start.x - maxSteps);
 		int searchSquareYStart = Math.max(0, start.y - maxSteps);
 		int searchSquareXEnd = Math.min(tiles.length, start.x + maxSteps);
 		int searchSquareYEnd = Math.min(tiles[0].length, start.y + maxSteps);
 		TileCell[][] tileCells = new TileCell[searchSquareXEnd - searchSquareXStart][searchSquareYEnd - searchSquareYStart];
+		if(end.x - start.x >= maxSteps
+				|| end.y - start.y >= maxSteps
+				|| end.x - searchSquareXStart < 0
+				|| end.y - searchSquareYStart < 0) {
+			throw new NoPathsException();
+		}
 		for(int x = 0; x < tileCells.length; x++) {
 			for(int y = 0; y < tileCells[x].length; y++) {
 				if(!tiles[searchSquareXStart + x][searchSquareYStart + y].getHitboxType().isTangible()) {
@@ -153,7 +167,7 @@ public class PathFinder {
 			}
 		}
 		
-		PriorityQueue<TileCell> open = new PriorityQueue<TileCell>(11, new TileComparator()); 
+		PriorityQueue<TileCell> open = new PriorityQueue<TileCell>(11, new TileComparator());
 		open.add(tileCells[start.x - searchSquareXStart][start.y - searchSquareYStart]);
 		boolean[][] closed = new boolean[tileCells.length][tileCells[0].length];
 		TileCell current;
@@ -164,7 +178,7 @@ public class PathFinder {
 				break;
 			}
 			closed[current.x][current.y] = true;
-			if(current.equals(tileCells[end.x - searchSquareXStart][end.y - searchSquareYStart])) {
+			if(current.x == end.x && current.y == end.y) {
 				break;
 			}
 			
@@ -187,25 +201,24 @@ public class PathFinder {
             }
 		}
 		
-		if(closed[end.x - searchSquareXStart][end.y - searchSquareXStart]) {
+		if(closed[end.x - searchSquareXStart][end.y - searchSquareYStart]) {
 			//Trace back the path 
-            System.out.println("Path: ");
-            TileCell c = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
-            System.out.print("(" + c.x + ", " + c.y + ")");
-            int steps = 0;
-            while(c.parent != null && steps < maxSteps) {
-                System.out.println(" -> " + "(" + c.parent.x + ", " + c.parent.y + ")");
-                c = c.parent;
-                steps++;
+            TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
+            TileCell lastCell = null;
+            while(cell.parent != null) {
+            	lastCell = cell;
+            	cell = cell.parent;
             } 
             
-            if(steps >= maxSteps) {
-            	path.clear();
-            	return path;
+            for(Direction d : Direction.values()) {
+            	if(lastCell.x - cell.x == d.getDeltaX()
+            			&& lastCell.y - cell.y == d.getDeltaY()) {
+            		return d;
+            	}
             }
 		}
 		
-		return path;
+		throw new NoPathsException();
 	}
 	
 	private static void checkAndUpdateCost(PriorityQueue<TileCell> open, boolean[][] closed, TileCell current, TileCell cell, int cost) {
