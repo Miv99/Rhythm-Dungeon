@@ -63,7 +63,8 @@ public class AttackData {
 	private int disabledMovementTimeInBeats;
 	// Beats after the attack starts that te attacker cannot attack for
 	private int disabledAttackTimeInBeats;
-	private boolean warnTilesBeforeAttack;
+	// If warnTilesBeforeAttack[0] is true, the attack part with index 0 will have warning tiles
+	private boolean[] warnTilesBeforeAttack;
 	// Marks which tiles are to be targeted depending TileAttackDirectionType (see its comments)
 	// Each 2d [x][y] array can have only one AttackTileType of either isSelf or isTarget being true
 	private HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTilesAttackData;
@@ -74,7 +75,7 @@ public class AttackData {
 	/**
 	 * Use when tile attack data are not simply rotations of each other
 	 */
-	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
+	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean[] warnTilesBeforeAttack,
 			AttackDirectionDeterminant attackDirectionDeterminant, int disabledAttackTimeInBeats, int disabledMovementTimeInBeats,
 			String attackerAnimationName, HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTilesAttackData) {
 		this.entityHittableRequirement = entityHittableRequirement;
@@ -91,7 +92,7 @@ public class AttackData {
 	 * Rotates the tile attack data for each possible direction given the right-facing tile attack data
 	 * @param targetTilesFacingRight - which tiles are targeted if the target is facing right
 	 */
-	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
+	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean[] warnTilesBeforeAttack,
 			AttackDirectionDeterminant attackDirectionDeterminant, int disabledAttackTimeInBeats, int disabledMovementTimeInBeats, 
 			String attackerAnimationName, ArrayList<TileAttackData[][]> targetTilesFacingRight) {
 		this.entityHittableRequirement = entityHittableRequirement;
@@ -120,7 +121,63 @@ public class AttackData {
 		directionalTilesAttackData.put(Direction.LEFT, attackPartLeft);
 		directionalTilesAttackData.put(Direction.UP, attackPartUp);
 		directionalTilesAttackData.put(Direction.DOWN, attackPartDown);
+	}
+	
+	/**
+	 * Use when tile attack data are not simply rotations of each other
+	 */
+	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
+			AttackDirectionDeterminant attackDirectionDeterminant, int disabledAttackTimeInBeats, int disabledMovementTimeInBeats,
+			String attackerAnimationName, HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTilesAttackData) {
+		this.entityHittableRequirement = entityHittableRequirement;
+		this.attackDelayInBeats = attackDelayInBeats;
+		this.warnTilesBeforeAttack = new boolean[directionalTilesAttackData.get(Direction.RIGHT).size()];
+		for(int i = 0; i < this.warnTilesBeforeAttack.length; i++) {
+			this.warnTilesBeforeAttack[i] = warnTilesBeforeAttack;
+		}
+		this.attackDirectionDeterminant = attackDirectionDeterminant;
+		this.disabledAttackTimeInBeats = disabledAttackTimeInBeats;
+		this.disabledMovementTimeInBeats = disabledMovementTimeInBeats;
+		this.attackerAnimationName = attackerAnimationName;
+		this.directionalTilesAttackData = directionalTilesAttackData;
+	}
+	
+	/**
+	 * Rotates the tile attack data for each possible direction given the right-facing tile attack data
+	 * @param targetTilesFacingRight - which tiles are targeted if the target is facing right
+	 */
+	public AttackData(Class<? extends Component> entityHittableRequirement, int attackDelayInBeats, boolean warnTilesBeforeAttack,
+			AttackDirectionDeterminant attackDirectionDeterminant, int disabledAttackTimeInBeats, int disabledMovementTimeInBeats, 
+			String attackerAnimationName, ArrayList<TileAttackData[][]> targetTilesFacingRight) {
+		this.entityHittableRequirement = entityHittableRequirement;
+		this.attackDelayInBeats = attackDelayInBeats;
+		this.warnTilesBeforeAttack = new boolean[directionalTilesAttackData.get(Direction.RIGHT).size()];
+		for(int i = 0; i < this.warnTilesBeforeAttack.length; i++) {
+			this.warnTilesBeforeAttack[i] = warnTilesBeforeAttack;
+		}
+		this.attackDirectionDeterminant = attackDirectionDeterminant;
+		this.disabledAttackTimeInBeats = disabledAttackTimeInBeats;
+		this.disabledMovementTimeInBeats = disabledMovementTimeInBeats;
+		this.attackerAnimationName = attackerAnimationName;
 		
+		// Rotate target tiles
+		directionalTilesAttackData = new HashMap<Direction, ArrayList<TileAttackData[][]>>();
+		directionalTilesAttackData.put(Direction.RIGHT, targetTilesFacingRight);
+		
+		ArrayList<TileAttackData[][]> attackPartLeft = new ArrayList<TileAttackData[][]>();
+		ArrayList<TileAttackData[][]> attackPartUp = new ArrayList<TileAttackData[][]>();
+		ArrayList<TileAttackData[][]> attackPartDown = new ArrayList<TileAttackData[][]>();
+		for(int i = 0; i < targetTilesFacingRight.size(); i++) {
+			TileAttackData[][] targetTilesLeft = GeneralUtils.horizontallyFlipArray(targetTilesFacingRight.get(i));
+			attackPartLeft.add(targetTilesLeft);
+			TileAttackData[][] targetTilesUp = GeneralUtils.rotateClockwise(targetTilesLeft);
+			attackPartUp.add(targetTilesUp);
+			TileAttackData[][] targetTilesFacingDown = GeneralUtils.verticallyFlipArray(targetTilesUp);
+			attackPartDown.add(targetTilesFacingDown);
+		}
+		directionalTilesAttackData.put(Direction.LEFT, attackPartLeft);
+		directionalTilesAttackData.put(Direction.UP, attackPartUp);
+		directionalTilesAttackData.put(Direction.DOWN, attackPartDown);
 	}
 	
 	public String getAttackerAnimationName() {
@@ -147,7 +204,7 @@ public class AttackData {
 		return attackDelayInBeats;
 	}
 	
-	public boolean isWarnTilesBeforeAttack() {
+	public boolean[] getWarnTilesBeforeAttack() {
 		return warnTilesBeforeAttack;
 	}
 	

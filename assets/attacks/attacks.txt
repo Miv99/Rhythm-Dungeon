@@ -3,7 +3,6 @@ animation_name=player_shovel
 can_hit=tile
 direction=SELF_FACING
 auto_rotate=true
-warn_tiles=false
 attack_delay=0
 disable_attack=0
 disable_movement=0
@@ -11,13 +10,13 @@ disable_movement=0
 right1=[
 #0
 ]
+warn_tiles=false
 
 name=player_sword
 animation_name=player_sword
 can_hit=all
 direction=SELF_FACING
 auto_rotate=true
-warn_tiles=false
 attack_delay=0
 disable_attack=0
 disable_movement=0
@@ -25,13 +24,13 @@ disable_movement=0
 right1=[
 #0
 ]
+warn_tiles=false
 
 name=player_bow
 animation_name=player_bow
 can_hit=all
 direction=SELF_FACING
 auto_rotate=true
-warn_tiles=false
 attack_delay=0
 disable_attack=0
 disable_movement=0
@@ -39,13 +38,13 @@ disable_movement=0
 right1=[
 #-0
 ]
+warn_tiles=none
 
 name=skeleton_fire_sword
 animation_name=player_sword
 can_hit=all
 direction=SELF_FACING
 auto_rotate=true
-warn_tiles=true
 attack_delay=1
 disable_attack=2
 disable_movement=2
@@ -59,13 +58,13 @@ right2=[
 #11
 -1-
 ]
+warn_tiles=1,2
 
 name=dragon_fire_breath
 animation_name=dragon_fire_breath
 can_hit=player
 direction=TARGET_RELATIVE_TO_SELF
 auto_rotate=true
-warn_tiles=true
 attack_delay=2
 disable_attack=3
 disable_movement=2
@@ -76,3 +75,4 @@ right1=[
 #00
 --0
 ]
+warn_tiles=1

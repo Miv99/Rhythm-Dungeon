@@ -297,7 +297,7 @@ public class EntityActions {
 				// Create warning tiles of incoming attacks
 				Array<WarningTile> warningTiles = new Array<WarningTile>();
 				if(i == 0) {
-					if(attackData.isWarnTilesBeforeAttack()) {
+					if(attackData.getWarnTilesBeforeAttack()[0]) {
 						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
 						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
 						for(int x = absX; x < absX + targetedTiles.length; x++) {
@@ -314,7 +314,7 @@ public class EntityActions {
 					}
 				} else {
 					// Multi-step attacks display warning tiles for steps other than the first one only after the previous step has been completed
-					if(attackData.isWarnTilesBeforeAttack()) {
+					if(attackData.getWarnTilesBeforeAttack()[i]) {
 						int absX = focusAbsoluteMapPosition.x - focusPositionRelativeToTargetttedTiles.x + attackerAttackOrigin.x;
 						int absY = focusAbsoluteMapPosition.y - focusPositionRelativeToTargetttedTiles.y + attackerAttackOrigin.y;
 						for(int x = absX; x < absX + targetedTiles.length; x++) {

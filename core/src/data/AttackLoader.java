@@ -1,7 +1,9 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Array;
@@ -36,7 +38,7 @@ public class AttackLoader {
 		boolean recordingUp = false;
 		boolean recordingDown = false;
 		int attackDelay = 0;
-		boolean warnTilesBeforeAttack = false;
+		boolean[] warnTilesBeforeAttack = null;
 		int disabledAttackTime = 0;
 		int disabledMovementTime = 0;
 		Array<String> recordingBuffer = new Array<String>();
@@ -58,7 +60,7 @@ public class AttackLoader {
 				} else if(line.startsWith("auto_rotate=")) {
 					autoRotate = Boolean.valueOf(line.replace("auto_rotate=", ""));
 				} else if(line.startsWith("warn_tiles=")) {
-					warnTilesBeforeAttack = Boolean.valueOf(line.replace("warn_tiles=", ""));
+					warnTilesBeforeAttack = parseWarningTilesString(line.replace("warn_tiles=", ""));
 				} else if(line.startsWith("can_hit=")) {
 					hittableRequirement = parseHittableRequirementString(line.replace("can_hit=", ""));
 				} else if(line.startsWith("right")) {
@@ -107,9 +109,15 @@ public class AttackLoader {
 				} else if(line.equals("")) {
 					if(!attackName.equals("")) {						
 						if(autoRotate) {
-							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-									disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
-							attacksData.put(attackName, attackData);
+							if(warnTilesBeforeAttack.length == 0) {
+								AttackData attackData = new AttackData(hittableRequirement, attackDelay, false, directionDeterminant, 
+										disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+								attacksData.put(attackName, attackData);
+							} else {
+								AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+										disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+								attacksData.put(attackName, attackData);
+							}
 						} else {
 							HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTileAttackData = new HashMap<Direction, ArrayList<TileAttackData[][]>>();
 							directionalTileAttackData.put(Direction.RIGHT, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
@@ -117,9 +125,15 @@ public class AttackLoader {
 							directionalTileAttackData.put(Direction.UP, GeneralUtils.toOrderedArrayList(tileAttackDataUp));
 							directionalTileAttackData.put(Direction.DOWN, GeneralUtils.toOrderedArrayList(tileAttackDataDown));
 							
-							AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-									disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
-							attacksData.put(attackName, attackData);
+							if(warnTilesBeforeAttack.length == 0) {
+								AttackData attackData = new AttackData(hittableRequirement, attackDelay, false, directionDeterminant, 
+										disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
+								attacksData.put(attackName, attackData);
+							} else {
+								AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+										disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
+								attacksData.put(attackName, attackData);
+							}
 						}
 						
 						attackName = "";
@@ -132,7 +146,7 @@ public class AttackLoader {
 						recordingDown = false;
 						recordingBuffer.clear();
 						attackDelay = 0;
-						warnTilesBeforeAttack = false;
+						warnTilesBeforeAttack = new boolean[0];
 						disabledMovementTime = 0;
 						disabledAttackTime = 0;
 						animationMap.clear();
@@ -155,9 +169,15 @@ public class AttackLoader {
 		}
 		if(!attackName.equals("")) {
 			if(autoRotate) {
-				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-						disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
-				attacksData.put(attackName, attackData);
+				if(warnTilesBeforeAttack.length == 0) {
+					AttackData attackData = new AttackData(hittableRequirement, attackDelay, false, directionDeterminant, 
+							disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+					attacksData.put(attackName, attackData);
+				} else {
+					AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+							disabledAttackTime, disabledMovementTime, animationName, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
+					attacksData.put(attackName, attackData);
+				}
 			} else {
 				HashMap<Direction, ArrayList<TileAttackData[][]>> directionalTileAttackData = new HashMap<Direction, ArrayList<TileAttackData[][]>>();
 				directionalTileAttackData.put(Direction.RIGHT, GeneralUtils.toOrderedArrayList(tileAttackDataRight));
@@ -165,9 +185,15 @@ public class AttackLoader {
 				directionalTileAttackData.put(Direction.UP, GeneralUtils.toOrderedArrayList(tileAttackDataUp));
 				directionalTileAttackData.put(Direction.DOWN, GeneralUtils.toOrderedArrayList(tileAttackDataDown));
 				
-				AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
-						disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
-				attacksData.put(attackName, attackData);
+				if(warnTilesBeforeAttack.length == 0) {
+					AttackData attackData = new AttackData(hittableRequirement, attackDelay, false, directionDeterminant, 
+							disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
+					attacksData.put(attackName, attackData);
+				} else {
+					AttackData attackData = new AttackData(hittableRequirement, attackDelay, warnTilesBeforeAttack, directionDeterminant, 
+							disabledAttackTime, disabledMovementTime, animationName, directionalTileAttackData);
+					attacksData.put(attackName, attackData);
+				}
 			}
 		}
 	}
@@ -205,6 +231,27 @@ public class AttackLoader {
 			}
 		}
 		return tileAttackData;
+	}
+	
+	private boolean[] parseWarningTilesString(String string) throws NumberFormatException {
+		if(string.equals("none")) {
+			return new boolean[0];
+		}
+		
+		// Remove all non-numbers
+		string = string.replaceAll("[^-?0-9]+", " ");
+		
+		List<String> nums = Arrays.asList(string.trim().split(","));
+		boolean[] warnTiles = new boolean[nums.size()];
+		
+		for(String s : nums) {
+			try {
+				warnTiles[Integer.valueOf(s)] = true;
+			} catch(Exception e) {
+				throw new NumberFormatException();
+			}
+		}
+		return warnTiles;
 	}
 	
 	public HashMap<String, AttackData> getAttacksData() {

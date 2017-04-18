@@ -5,7 +5,6 @@ animation_name=(name of animation that the attacker does)
 can_hit=all/player/enemy (type of entity that can be attacked by this attack)
 direction=SELF_FACING/TARGET_FACING/TARGET_RELATIVE_TO_SELF (how the direction of the attack is determined; see below*)
 auto_rotate=true/false
-warn_tiles=true/false
 attack_delay=(integer of number of beats after the attack starts that the damage calculations are done)
 disable_attack=(integer of number of beats after the attack starts that the attacker is able to attack again)
 disable_movement=(integer of number of beats after the attack starts that the attacker is able to move)
@@ -22,6 +21,8 @@ up#=[
 ]
 down#=[
 ]
+warn_tiles=none/#,#,#,...
+(see *****)
 
 
 *SELF_FACING: Direction determined is the direction the attacker is facing
@@ -38,3 +39,7 @@ down#=[
 
 ****If auto_rotate is set to true, only [right] is needed. The rest of the hitboxes' data are created by
    rotating [right] different ways
+   
+*****If "warn_tiles=none", no warning tiles will appear for any attack parts.
+	You can set "warn_tiles=#,#,#,..." where # is the index of the attack part to have warning tiles for that attack part.
+	For example, "warn_tiles=1,4" would mean warning tiles for only right1 and right4
