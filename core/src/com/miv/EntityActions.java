@@ -238,15 +238,22 @@ public class EntityActions {
 		}
 	}
 
-	public static void entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
+	/**
+	 * Returns true if attack was successful (if actions were not disabled)
+	 */
+	public static boolean entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, String attackName, EntityFactory entityFactory) {
 		try {
-			entityStartAttack(engine, options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
+			return entityStartAttack(engine, options, audio, dungeon, attacker, target, ComponentMappers.attackMapper.get(attacker).getAttacksData().get(attackName), entityFactory);
 		} catch(NullPointerException e) {
 			System.out.println("No attack exists named \"" + attackName + "\"");
+			return false;
 		}
 	}
 	
-	public static void entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
+	/**
+	 * Returns true if attack was successful (if actions were not disabled)
+	 */
+	public static boolean entityStartAttack(Engine engine, Options options, Audio audio, Dungeon dungeon, Entity attacker, Entity target, AttackData attackData, EntityFactory entityFactory) {
 		Floor floor = dungeon.getFloors()[dungeon.getCurrentFloor()];
 		AttackComponent attackerAttackComponent = ComponentMappers.attackMapper.get(attacker);
 
@@ -270,7 +277,7 @@ public class EntityActions {
 				focusAbsoluteMapPosition = new Point(attackerPosition);
 			} else {
 				System.out.println("YOU FORGOT TO MAKE AN IF STATEMENT FOR " + directionDeterminant + " IN Attack.class");
-				return;
+				return false;
 			}
 			
 			Array<TileAttackData[][]> targetedTilesArray = new Array<TileAttackData[][]>();
@@ -385,6 +392,10 @@ public class EntityActions {
 				AnimationComponent animationComponent = ComponentMappers.animationMapper.get(attacker);
 				animationComponent.startAnimation(attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
 			}
+			
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

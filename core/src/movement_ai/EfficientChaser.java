@@ -98,7 +98,6 @@ public class EfficientChaser extends MovementAI {
 				EntityActions.moveEntity(engine, currentFloor, self, direction);
 			} catch (NoPathsException e) {
 				// Do nothing
-				System.out.println("rip");
 			}
 		}
 	}
