@@ -17,16 +17,37 @@ dragon_idle
   orig: 128, 128
   offset: 0, 0
   index: 1
-dragon_idle
+dragon_fire_breath
   rotate: false
   xy: 131, 109
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+dragon_fire_breath
+  rotate: false
+  xy: 261, 109
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+dragon_fire_breath
+  rotate: false
+  xy: 391, 109
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+dragon_idle
+  rotate: false
+  xy: 521, 109
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
 action_bar_axis
   rotate: false
-  xy: 261, 45
+  xy: 651, 45
   size: 16, 192
   orig: 16, 192
   offset: 0, 0
@@ -40,7 +61,7 @@ action_bar_circle_strong_beat
   index: -1
 action_bar_cursor_line
   rotate: false
-  xy: 279, 121
+  xy: 669, 121
   size: 15, 116
   orig: 15, 116
   offset: 0, 0
@@ -54,7 +75,7 @@ action_bar_circle_weak_beat
   index: -1
 stone_wall
   rotate: false
-  xy: 296, 173
+  xy: 686, 173
   size: 32, 64
   orig: 32, 64
   offset: 0, 0
@@ -75,105 +96,154 @@ crack
   index: 2
 default_trap
   rotate: false
-  xy: 296, 139
+  xy: 686, 139
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-fire_guy
+fire_spirit
   rotate: false
-  xy: 330, 205
+  xy: 720, 205
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+fire_spirit_idle
+  rotate: false
+  xy: 720, 205
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+fire_spirit_idle
+  rotate: false
+  xy: 35, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+ladder_down_tile
+  rotate: false
+  xy: 165, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 player
   rotate: false
-  xy: 35, 1
+  xy: 720, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 player_idle
   rotate: false
-  xy: 165, 75
+  xy: 754, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 player_idle
   rotate: false
-  xy: 330, 171
+  xy: 199, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 player_shovel
   rotate: false
-  xy: 364, 205
+  xy: 754, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 rock
   rotate: false
-  xy: 199, 75
+  xy: 788, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-slash
+skeleton
   rotate: false
-  xy: 364, 171
+  xy: 233, 75
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+skeleton_idle
+  rotate: false
+  xy: 233, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
-slash
+skeleton_idle
   rotate: false
-  xy: 398, 205
+  xy: 788, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 slash
   rotate: false
-  xy: 398, 171
+  xy: 822, 205
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+slash
+  rotate: false
+  xy: 267, 75
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+slash
+  rotate: false
+  xy: 822, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 slash
   rotate: false
-  xy: 432, 205
+  xy: 856, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 slash
   rotate: false
-  xy: 432, 171
+  xy: 301, 75
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
 small_rocks
   rotate: false
-  xy: 466, 205
+  xy: 856, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 small_rocks
   rotate: false
-  xy: 466, 171
+  xy: 890, 205
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 stone_tile
   rotate: false
-  xy: 330, 137
+  xy: 335, 75
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+wood_chest
+  rotate: false
+  xy: 890, 171
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

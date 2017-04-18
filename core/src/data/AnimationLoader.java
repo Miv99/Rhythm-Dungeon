@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.miv.EntityActions.Direction;
+
+import dungeons.Dungeon;
+
 import com.miv.Options;
 
 import graphics.Images;
@@ -92,7 +95,7 @@ public class AnimationLoader {
 	 */
 	public void updateAllAnimationFrameDuration(float newBpm) {
 		for(AnimationData data : animationsData.values()) {
-			data.getAnimation().setFrameDuration(data.getFrameCount()/(newBpm/data.getAnimationDurationInBeats()) * 4);
+			data.getAnimation().setFrameDuration(data.getFrameCount()/(newBpm/data.getAnimationDurationInBeats()) * Dungeon.INVISIBLE_BEATLINES_PER_BEAT);
 		}
 	}
 	

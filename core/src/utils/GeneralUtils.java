@@ -7,10 +7,12 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 import data.AttackData.TileAttackData;
 import data.HitboxData.HitboxType;
+import dungeons.Tile;
 
 /**
  * WARNING: All my 2D arrays are (cols x rows)
@@ -117,5 +119,9 @@ public class GeneralUtils {
 		}
 		
 		return newArray;
+	}
+	
+	public static Tile getRandomTile(Tile[][] tiles) {
+		return tiles[MathUtils.random(tiles.length - 1)][MathUtils.random(tiles[0].length - 1)];
 	}
 }

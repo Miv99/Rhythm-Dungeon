@@ -17,8 +17,7 @@ public class Dragon extends EntityAI {
 	@Override
 	public void onNewBeat() {
 		if(activated) {
-			EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, "dragon_breath", entityFactory);
+			EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, "dragon_fire_breath", entityFactory);
 		}
 	}
-
 }

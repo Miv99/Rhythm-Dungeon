@@ -27,12 +27,12 @@ import components.HitboxComponent;
 import components.MovementAIComponent;
 import data.AnimationLoader;
 import data.EntityLoader;
-import entity_ai.PathFinder;
 import factories.DungeonFactory;
 import factories.EntityFactory;
 import graphics.Images;
 import hud.BeatLine;
 import hud.BeatLine.CircleState;
+import movement_ai.PathFinder;
 import special_tiles.WarningTile;
 import systems.DeathSystem;
 
@@ -99,7 +99,7 @@ public class Dungeon {
 		}
 	}
 	
-	private static int INVISIBLE_BEATLINES_PER_BEAT = 4;
+	public static int INVISIBLE_BEATLINES_PER_BEAT = 4;
 	
 	private DungeonParams dungeonParams;
 	
@@ -143,6 +143,7 @@ public class Dungeon {
 	 * TODO: adjust growth function depending on bpmCap
 	 */
 	public static float calculateBpmFromFloor(Options options, int floor) {
+		//return 200;
 		return Math.min(options.getDifficulty().getBpmCap(), 100f + ((float)Math.round(floor/5f) * 10f));		
 	}
 	
@@ -154,7 +155,7 @@ public class Dungeon {
 		
 		// Generate floor if floor does not exist
 		if(floors[currentFloor] == null) {
-			floors[currentFloor] = DungeonFactory.generateFloor(dungeonParams, currentFloor);
+			floors[currentFloor] = DungeonFactory.generateFloor(this, dungeonParams, currentFloor);
 		}
 		
 		// Spawn in entities
@@ -657,6 +658,7 @@ public class Dungeon {
 			 */
 			private void onEndOfBeatHitWindow(boolean isStrongBeat, boolean isInvisibleBeat) {
 				if(!isInvisibleBeat) {
+					float deltaBeat = 1f/INVISIBLE_BEATLINES_PER_BEAT;
 					/**
 					// Entity attack damage calculations queue
 					// Placed in onEndOfBeatHitWindow instead of onNewBeat to resolve entity movements before damage calculations from attacks
@@ -667,8 +669,23 @@ public class Dungeon {
 					fireEntityAttackDamageCalculationsDeletionQueue();
 					*/
 					
+					// Lower beat delay on all entity attack queues
+					for(EntityAttackParams params : entityAttackQueue) {
+						params.setBeatDelay(params.getBeatDelay() - deltaBeat);
+						if(params.getBeatDelay() <= 0) {
+							EntityActions.runEntityAttackAnimations(params);
+							entityAttackDamageCalculationsQueue.add(params);
+							entityAttackDeletionQueue.add(params);
+						}
+					}
+					fireEntityAttackDeletionQueue();
+					
 					if(isStrongBeat) {
 						ComponentMappers.playerMapper.get(dungeonParams.player).setMovedInLastBeat(false);
+						
+						for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
+							ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
+						}
 					}
 				}
 			}
@@ -691,22 +708,11 @@ public class Dungeon {
 				}
 				fireEntityAttackDamageCalculationsDeletionQueue();
 				
-				// Lower beat delay on all entity attack queues
-				for(EntityAttackParams params : entityAttackQueue) {
-					params.setBeatDelay(params.getBeatDelay() - deltaBeat);
-					if(params.getBeatDelay() <= 0) {
-						EntityActions.runEntityAttackAnimations(params);
-						entityAttackDamageCalculationsQueue.add(params);
-						entityAttackDeletionQueue.add(params);
-					}
-				}
-				fireEntityAttackDeletionQueue();
-				
-				if(isStrongBeat) {										
+				if(isStrongBeat) {
 					// Start idle animations on any entities that aren't currently doing any animations
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(AnimationComponent.class).get())) {
 						AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
-						if(!animationComponent.isInNonIdleAnimation()
+						if(animationComponent.isPlayingIdleAnimation()
 								&& !animationComponent.isRemoveEntityOnAnimationFinish()) {
 							animationComponent.setQueuedIdleAnimation(true);
 						}
@@ -714,10 +720,6 @@ public class Dungeon {
 					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(MovementAIComponent.class).get())) {
 						ComponentMappers.movementAIMapper.get(entity).getMovementAI().onNewBeat();
-					}
-					
-					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(EntityAIComponent.class).get())) {
-						ComponentMappers.entityAIMapper.get(entity).getEntityAI().onNewBeat();
 					}
 				}
 			}

@@ -22,8 +22,11 @@ import entity_ai.Dragon;
 import entity_ai.EntityAI.EntityAIParams;
 import entity_ai.ExplodingTrap;
 import entity_ai.PulsatingExpandingRingTrap;
+import graphics.Images;
 import movement_ai.EfficientChaser;
 import movement_ai.MovementAI.MovementAIParams;
+import special_tiles.ChestTile;
+import special_tiles.LadderTile;
 import dungeons.Floor;
 import dungeons.Tile;
 import utils.GeneralUtils;
@@ -55,7 +58,8 @@ public class DungeonFactory {
 		
 		Floor[] floors = new Floor[dungeonParams.getMaxFloors()];
 		
-		//floors[0] = generateFloor(dungeonParams, 0);
+		//floors[0] = generateFloor(dungeon, dungeonParams, 0);
+		
 		floors[0] = new Floor(200, 200);
 		for(int x = 0; x < floors[0].getTiles().length; x++) {
 			for(int y = 0; y < floors[0].getTiles()[x].length; y++) {
@@ -73,6 +77,7 @@ public class DungeonFactory {
 			floors[0].getTiles()[25][y].setSprite(dungeonParams.getImages().loadSprite("stone_wall"));
 			floors[0].getTiles()[25][y].setHitboxType(HitboxType.TANGIBLE);
 		}
+		
 		
 		//Engine engine, EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles
 		EntityAIParams entityAIParams = new EntityAIParams(dungeonParams.getEngine(), dungeonParams.getEntityFactory(), dungeonParams.getOptions(), dungeonParams.getAudio(), dungeon, dungeonParams.getPlayer());
@@ -100,7 +105,7 @@ public class DungeonFactory {
 		return dungeon;
 	}
 	
-	public static Floor generateFloor(DungeonParams dungeonParams, int floorNumber) {
+	public static Floor generateFloor(Dungeon dungeon, DungeonParams dungeonParams, int floorNumber) {
 		int floorSideLength = getFloorMaxSideLength(floorNumber);
 		Floor floor = new Floor(floorSideLength, floorSideLength);
 		
@@ -108,16 +113,17 @@ public class DungeonFactory {
 		Array<Rectangle> roomRectangles = generateRoomRectangles(10, 10, floorSideLength - 10, floorSideLength - 10);
 		Array<Room> rooms = toRoomsArray(roomRectangles);
 		
-		
 		try {
 			randomizeRoomTypes(rooms, floorNumber);
 		} catch(InsufficientRoomsException e) {
 			System.out.println("Not enough rooms. Re-generating floor.");
-			return generateFloor(dungeonParams, floorNumber);
+			return generateFloor(dungeon, dungeonParams, floorNumber);
 		}
 		
 		// Randomize rooms' layout based on room types
-		
+		for(Room room : rooms) {
+			randomizeRoomLayout(dungeon, dungeonParams, room, floorNumber);
+		}
 
 		// Carve corridors
 		Array<Rectangle> corridorsRectangles = generateCorridors(roomRectangles);
@@ -167,7 +173,8 @@ public class DungeonFactory {
 		}
 		
 		for(Tile tile : allRoomTiles) {
-			if(!tile.isTangibleTile()) {
+			if(!tile.isTangibleTile() 
+					&& tile.getSpecialTile() == null) {
 				// Randomly place visual overlays on tiles
 				if(Math.random() < 0.005) {
 					tile.addSpriteOverlay(dungeonParams.getImages().loadGroupedSprites("small_rocks").random());
@@ -183,6 +190,26 @@ public class DungeonFactory {
 		}
 		
 		return floor;
+	}
+	
+	private static void randomizeRoomLayout(Dungeon dungeon, DungeonParams dungeonParams, Room room, int currentFloor) {
+		Images images = dungeonParams.getImages();
+		
+		if(room.roomType == RoomType.ENTRANCE) {
+			// TODO: Randomly place tile that leads back to surface
+		} else if(room.roomType == RoomType.EXIT) {
+			// Randomly place ladder down
+			Tile ladder = GeneralUtils.getRandomTile(room.tiles);
+			ladder.setSpecialTile(new LadderTile(dungeon).setTileOverlay(images.loadSprite("ladder_down_tile")));
+		} else if(room.roomType == RoomType.TREASURE) {
+			Tile chest = GeneralUtils.getRandomTile(room.tiles);
+			if(currentFloor < 15) {
+				chest.setSpecialTile(new ChestTile().randomizeContent(currentFloor).setTileOverlay(images.loadSprite("wood_chest")));
+			}
+			//TODO: different  types of chests
+		} else if(room.roomType == RoomType.TRAPS_AND_TREASURE) {
+			//TODO
+		}
 	}
 	
 	/**

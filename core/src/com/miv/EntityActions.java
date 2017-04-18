@@ -172,7 +172,9 @@ public class EntityActions {
 				
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);
-				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
+				if(animationComponent.isPlayingIdleAnimation()) {
+					animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+				}
 				
 				// Trigger special tile events, if any
 				SpecialTile specialTile = tiles[xNew][yNew].getSpecialTile();
@@ -229,7 +231,9 @@ public class EntityActions {
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);
-				animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.LOOP);
+				if(animationComponent.isPlayingIdleAnimation()) {
+					animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+				}
 			}
 		}
 	}
@@ -295,7 +299,7 @@ public class EntityActions {
 									// Get x and y relative to targetedTiles
 									TileAttackData tile = targetedTiles[x - absX][y - absY];
 									if(tile.isAttack()) {
-										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats() + 1, x, y));
+										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), x, y));
 									}
 								}
 							}
@@ -375,6 +379,12 @@ public class EntityActions {
 			if(attackData.getDisabledMovementTimeInBeats() > 0) {
 				attackerHitboxComponent.disableMovement(attackData.getDisabledMovementTimeInBeats());
 			}
+			
+			// Attacker does attack animation
+			if(ComponentMappers.animationMapper.has(attacker)) {
+				AnimationComponent animationComponent = ComponentMappers.animationMapper.get(attacker);
+				animationComponent.startAnimation(attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+			}
 		}
 	}
 	
@@ -410,12 +420,6 @@ public class EntityActions {
 					}
 				}
 			}
-		}
-				
-		// Attacker does attack animation
-		if(ComponentMappers.animationMapper.has(params.attacker)) {
-			AnimationComponent animationComponent = ComponentMappers.animationMapper.get(params.attacker);
-			animationComponent.startAnimation(params.attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(params.attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
 		}
 	}
 	

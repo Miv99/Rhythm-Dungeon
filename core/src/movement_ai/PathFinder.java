@@ -121,22 +121,24 @@ public class PathFinder {
 		}
 		
 		if(closed[end.x - searchSquareXStart][end.y - searchSquareYStart]) {
-			//Trace back the path 
-	        TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
+			// Trace back the path 
+			TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareYStart];
 	        TileCell lastCell = null;
 	        while(cell.parent != null) {
 	        	lastCell = cell;
 	        	cell = cell.parent;
 	        } 
-	        System.out.println(lastCell.x + ", " + lastCell.y + ", " + cell.x + ", " + cell.y);
-	        for(Direction d : Direction.values()) {
-	        	if(lastCell.x - cell.x == d.getDeltaX()
-	        			&& lastCell.y - cell.y == d.getDeltaY()) {
-	        		return d;
+	        try {
+	        	for(Direction d : Direction.values()) {
+	        		if(lastCell.x - cell.x == d.getDeltaX()
+		        			&& lastCell.y - cell.y == d.getDeltaY()) {
+		        		return d;
+		        	}
 	        	}
+	        } catch(NullPointerException e) {
+	        	throw new NoPathsException();
 	        }
 		}
-		System.out.println(closed[end.x - searchSquareXStart][end.y - searchSquareXStart]);
 		throw new NoPathsException();
 	}
 	
@@ -202,22 +204,24 @@ public class PathFinder {
 		}
 		
 		if(closed[end.x - searchSquareXStart][end.y - searchSquareYStart]) {
-			//Trace back the path 
-            TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareXStart];
-            TileCell lastCell = null;
-            while(cell.parent != null) {
-            	lastCell = cell;
-            	cell = cell.parent;
-            } 
-            
-            for(Direction d : Direction.values()) {
-            	if(lastCell.x - cell.x == d.getDeltaX()
-            			&& lastCell.y - cell.y == d.getDeltaY()) {
-            		return d;
-            	}
-            }
+			// Trace back the path 
+			TileCell cell = tileCells[end.x - searchSquareXStart][end.y - searchSquareYStart];
+	        TileCell lastCell = null;
+	        while(cell.parent != null) {
+	        	lastCell = cell;
+	        	cell = cell.parent;
+	        } 
+	        try {
+	        	for(Direction d : Direction.values()) {
+	        		if(lastCell.x - cell.x == d.getDeltaX()
+		        			&& lastCell.y - cell.y == d.getDeltaY()) {
+		        		return d;
+		        	}
+	        	}
+	        } catch(NullPointerException e) {
+	        	throw new NoPathsException();
+	        }
 		}
-		
 		throw new NoPathsException();
 	}
 	

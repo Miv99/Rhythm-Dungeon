@@ -7,5 +7,8 @@ duration=2
 name=dragon_idle
 duration=2
 
+name=dragon_fire_breath
+duration=5
+
 name=slash
 duration=1/8

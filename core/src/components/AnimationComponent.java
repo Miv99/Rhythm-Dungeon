@@ -33,6 +33,7 @@ public class AnimationComponent implements Component {
 			if(animations.get(animationName) == null) {
 				System.out.println("Missing animation: " + animationName);
 			} else {
+				playingIdleAnimation = animationName.contains(idleAnimationName);
 				animationStateTime = 0f;
 				currentAnimation = animations.get(animationName).getAnimation();
 				currentAnimation.setPlayMode(animationPlayMode);
@@ -49,6 +50,7 @@ public class AnimationComponent implements Component {
 			if(animations.get(newAnimationName) == null) {
 				System.out.println("Missing animation: " + newAnimationName);
 			} else {
+				playingIdleAnimation = newAnimationName.contains(idleAnimationName);
 				currentAnimation = animations.get(newAnimationName).getAnimation();
 				currentAnimation.setPlayMode(animationPlayMode);
 			}
@@ -64,11 +66,11 @@ public class AnimationComponent implements Component {
 	/**
 	 * Returns whether or not the current animation is one that is not the idle animation. Returns false if no animation in progress.
 	 */
-	public boolean isInNonIdleAnimation() {
+	public boolean isPlayingIdleAnimation() {
 		if(currentAnimation == null) {
-			return false;
+			return true;
 		} else {
-			return !playingIdleAnimation;
+			return playingIdleAnimation;
 		}
 	}
 	
@@ -96,7 +98,8 @@ public class AnimationComponent implements Component {
 	public void update(float deltaTime) {
 		if(currentAnimation != null) {
 			animationStateTime += deltaTime;
-			if(currentAnimation.isAnimationFinished(animationStateTime)) {
+			if((currentAnimation.isAnimationFinished(animationStateTime) && !playingIdleAnimation && !currentAnimation.getPlayMode().equals(PlayMode.NORMAL))
+					|| (currentAnimation.isAnimationFinished(animationStateTime) && removeEntityOnAnimationFinish)) {
 				cancelAnimation();
 			}
 		}

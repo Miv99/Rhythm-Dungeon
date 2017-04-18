@@ -19,8 +19,9 @@ public abstract class SpecialTile {
 	 */
 	public abstract void onEnemyTrigger();
 	
-	public void setTileOverlay(Sprite tileOverlay) {
+	public SpecialTile setTileOverlay(Sprite tileOverlay) {
 		this.tileOverlay = tileOverlay;
+		return this;
 	}
 	
 	public void setDeactivated(boolean deactivated) {

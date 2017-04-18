@@ -66,13 +66,13 @@ public class HitboxComponent implements Component {
 	
 	public void faceDirection(Direction direction) {
 		if(direction.isHorizontal()) {
-			horizontalFacing = direction;
 			hitbox = hitboxesData.get(hitboxName + "_" + horizontalFacing.getStringRepresentation()).getHitbox();
 			
 			// Flip attack origin horizontally
 			if(horizontalFacing != direction) {
 				attackOrigin.x = hitbox.length - attackOrigin.x - 1;
 			}
+			horizontalFacing = direction;
 		}
 		facing = direction;
 	}

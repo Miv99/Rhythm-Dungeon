@@ -35,3 +35,15 @@ hitbox=dragon
 sprite=dragon
 hurt_sound=monster_hurt
 death_sound=monster_death
+
+name=skeleton
+hitbox=1x1
+sprite=skeleton
+hurt_sound=monster_hurt
+death_sound=monster_death
+
+name=fire_spirit
+hitbox=1x1
+sprite=fire_spirit
+hurt_sound=monster_hurt
+death_sound=monster_death
