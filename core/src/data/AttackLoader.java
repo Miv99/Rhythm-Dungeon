@@ -60,7 +60,7 @@ public class AttackLoader {
 				} else if(line.startsWith("auto_rotate=")) {
 					autoRotate = Boolean.valueOf(line.replace("auto_rotate=", ""));
 				} else if(line.startsWith("warn_tiles=")) {
-					warnTilesBeforeAttack = parseWarningTilesString(line.replace("warn_tiles=", ""));
+					warnTilesBeforeAttack = parseWarningTilesString(line.replace("warn_tiles=", ""), tileAttackDataRight.size());
 				} else if(line.startsWith("can_hit=")) {
 					hittableRequirement = parseHittableRequirementString(line.replace("can_hit=", ""));
 				} else if(line.startsWith("right")) {
@@ -233,20 +233,19 @@ public class AttackLoader {
 		return tileAttackData;
 	}
 	
-	private boolean[] parseWarningTilesString(String string) throws NumberFormatException {
+	private boolean[] parseWarningTilesString(String string, int attackPartsCount) throws NumberFormatException {
+		boolean[] warnTiles = new boolean[attackPartsCount];
 		if(string.equals("none")) {
-			return new boolean[0];
+			return warnTiles;
 		}
 		
 		// Remove all non-numbers
 		string = string.replaceAll("[^-?0-9]+", " ");
 		
-		List<String> nums = Arrays.asList(string.trim().split(","));
-		boolean[] warnTiles = new boolean[nums.size()];
-		
+		List<String> nums = Arrays.asList(string.trim().split(" "));
 		for(String s : nums) {
 			try {
-				warnTiles[Integer.valueOf(s)] = true;
+				warnTiles[Integer.valueOf(s) - 1] = true;
 			} catch(Exception e) {
 				throw new NumberFormatException();
 			}

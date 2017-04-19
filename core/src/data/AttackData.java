@@ -151,7 +151,7 @@ public class AttackData {
 			String attackerAnimationName, ArrayList<TileAttackData[][]> targetTilesFacingRight) {
 		this.entityHittableRequirement = entityHittableRequirement;
 		this.attackDelayInBeats = attackDelayInBeats;
-		this.warnTilesBeforeAttack = new boolean[directionalTilesAttackData.get(Direction.RIGHT).size()];
+		this.warnTilesBeforeAttack = new boolean[targetTilesFacingRight.size()];
 		for(int i = 0; i < this.warnTilesBeforeAttack.length; i++) {
 			this.warnTilesBeforeAttack[i] = warnTilesBeforeAttack;
 		}

@@ -10,7 +10,7 @@ disable_movement=0
 right1=[
 #0
 ]
-warn_tiles=false
+warn_tiles=none
 
 name=player_sword
 animation_name=player_sword
@@ -24,7 +24,7 @@ disable_movement=0
 right1=[
 #0
 ]
-warn_tiles=false
+warn_tiles=none
 
 name=player_bow
 animation_name=player_bow
@@ -41,7 +41,7 @@ right1=[
 warn_tiles=none
 
 name=skeleton_fire_sword
-animation_name=player_sword
+animation_name=none
 can_hit=all
 direction=SELF_FACING
 auto_rotate=true
@@ -58,7 +58,7 @@ right2=[
 #11
 -1-
 ]
-warn_tiles=1,2
+warn_tiles=2
 
 name=dragon_fire_breath
 animation_name=dragon_fire_breath
