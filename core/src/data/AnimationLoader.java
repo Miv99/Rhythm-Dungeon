@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.miv.EntityActions.Direction;
 
-import dungeons.Dungeon;
-
 import com.miv.Options;
 
 import graphics.Images;
@@ -31,6 +29,7 @@ public class AnimationLoader {
 		
 		String animationName = "";
 		float animationDurationInBeats = 1f;
+		float finalFrameDuration = 0;
 		int lineCount = 1;
 		for(int i = 0; i < metadata.size(); i++) {
 			String line = metadata.get(i);
@@ -39,12 +38,14 @@ public class AnimationLoader {
 					animationName = line.replace("name=", "");
 				} else if(line.startsWith("duration=")) {
 					animationDurationInBeats = GeneralUtils.toFloat(line.replace("duration=", ""));
+				} else if(line.startsWith("final_frame_duration=")) {
+					finalFrameDuration = GeneralUtils.toFloat(line.replace("final_frame_duration=", ""));
 				} else if(line.equals("")) {
 					if(!animationName.equals("")) {
 						Array<Sprite> rightSprites = new Array<Sprite>();
 						rightSprites.addAll(images.loadGroupedSprites(animationName));
 						
-						AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
+						AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats, finalFrameDuration);
 						animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
 						
 						Array<Sprite> leftSprites = new Array<Sprite>();
@@ -55,11 +56,12 @@ public class AnimationLoader {
 							sprite.flip(true, false);
 						}
 						
-						AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
+						AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats, finalFrameDuration);
 						animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
 						
 						animationName = "";
 						animationDurationInBeats = 1f;
+						finalFrameDuration = 0;
 					}
 				} else {
 					System.out.println("Animation data invalid format at line " + lineCount);
@@ -74,7 +76,7 @@ public class AnimationLoader {
 			Array<Sprite> rightSprites = new Array<Sprite>();
 			rightSprites.addAll(images.loadGroupedSprites(animationName));
 			
-			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats);
+			AnimationData animationRightData = new AnimationData(new Animation<Sprite>(1f, rightSprites), rightSprites.size, animationDurationInBeats, finalFrameDuration);
 			animationsData.put(animationName + "_" + Direction.RIGHT.getStringRepresentation(), animationRightData);
 			
 			Array<Sprite> leftSprites = new Array<Sprite>();
@@ -85,7 +87,7 @@ public class AnimationLoader {
 				sprite.flip(true, false);
 			}
 			
-			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats);
+			AnimationData animationLeftData = new AnimationData(new Animation<Sprite>(1f, leftSprites), leftSprites.size, animationDurationInBeats, finalFrameDuration);
 			animationsData.put(animationName + "_" + Direction.LEFT.getStringRepresentation(), animationLeftData);
 		}
 	}
@@ -95,7 +97,11 @@ public class AnimationLoader {
 	 */
 	public void updateAllAnimationFrameDuration(float newBpm) {
 		for(AnimationData data : animationsData.values()) {
-			data.getAnimation().setFrameDuration(data.getFrameCount()/(newBpm/data.getAnimationDurationInBeats()) * Dungeon.INVISIBLE_BEATLINES_PER_BEAT);
+			if(data.getFinalFrameDuration() == 0) {
+				data.getAnimation().setFrameDuration((60f * data.getAnimationDurationInBeats()/(newBpm * data.getFrameCount())));
+			} else {
+				data.getAnimation().setFrameDuration((60f * data.getAnimationDurationInBeats()/(newBpm * (data.getFrameCount() - 1))));
+			}
 		}
 	}
 	

@@ -18,6 +18,9 @@ public class AnimationComponent implements Component {
 	// Idle animation will be started on each new beat if currentAnimation is null
 	private String idleAnimationName;
 	private boolean playingIdleAnimation;
+	private AnimationData currentAnimationData;
+	// Time until final frame ends; only used for animations with an abnormal final frame length
+	private float timeUntilEndOfFinalFrame;
 	
 	// If true, after the animation finishes, the entity the component belongs to is removed from the engine
 	// Used for animation entities (entities used to show animations)
@@ -35,7 +38,8 @@ public class AnimationComponent implements Component {
 			} else {
 				playingIdleAnimation = animationName.contains(idleAnimationName);
 				animationStateTime = 0f;
-				currentAnimation = animations.get(animationName).getAnimation();
+				currentAnimationData = animations.get(animationName);
+				currentAnimation = currentAnimationData.getAnimation();
 				currentAnimation.setPlayMode(animationPlayMode);
 			}
 		}
@@ -51,7 +55,8 @@ public class AnimationComponent implements Component {
 				System.out.println("Missing animation: " + newAnimationName);
 			} else {
 				playingIdleAnimation = newAnimationName.contains(idleAnimationName);
-				currentAnimation = animations.get(newAnimationName).getAnimation();
+				currentAnimationData = animations.get(newAnimationName);
+				currentAnimation = currentAnimationData.getAnimation();
 				currentAnimation.setPlayMode(animationPlayMode);
 			}
 		}
@@ -59,7 +64,9 @@ public class AnimationComponent implements Component {
 	
 	public void cancelAnimation() {
 		animationStateTime = 0f;
+		timeUntilEndOfFinalFrame = 0;
 		currentAnimation = null;
+		currentAnimationData = null;
 		playingIdleAnimation = false;
 	}
 	
@@ -91,6 +98,10 @@ public class AnimationComponent implements Component {
 		return currentAnimation;
 	}
 	
+	public AnimationData getCurrentAnimationData() {
+		return currentAnimationData;
+	}
+	
 	public Sprite getKeyFrame() {
 		return currentAnimation.getKeyFrame(animationStateTime);
 	}
@@ -98,10 +109,6 @@ public class AnimationComponent implements Component {
 	public void update(float deltaTime) {
 		if(currentAnimation != null) {
 			animationStateTime += deltaTime;
-			if((currentAnimation.isAnimationFinished(animationStateTime) && !playingIdleAnimation && !currentAnimation.getPlayMode().equals(PlayMode.NORMAL))
-					|| (currentAnimation.isAnimationFinished(animationStateTime) && removeEntityOnAnimationFinish)) {
-				cancelAnimation();
-			}
 		}
 	}
 	
@@ -119,5 +126,13 @@ public class AnimationComponent implements Component {
 	
 	public boolean isRemoveEntityOnAnimationFinish() {
 		return removeEntityOnAnimationFinish;
+	}
+	
+	public float getTimeUntilEndOfFinalFrame() {
+		return timeUntilEndOfFinalFrame;
+	}
+	
+	public void setTimeUntilEndOfFinalFrame(float timeUntilEndOfFinalFrame) {
+		this.timeUntilEndOfFinalFrame = timeUntilEndOfFinalFrame;
 	}
 }

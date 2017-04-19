@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
 
@@ -39,7 +40,26 @@ public class AnimationSystem extends EntitySystem {
 			
 			animation.update(deltaTime);
 			if(animation.getCurrentAnimation() != null) {
-				image.setSprite(animation.getKeyFrame());
+				Sprite nextSprite = null;
+				
+				if(animation.getTimeUntilEndOfFinalFrame() <= 0) {
+					if((animation.getCurrentAnimation().isAnimationFinished(animation.getAnimationStateTime()) && !animation.isPlayingIdleAnimation() && !animation.getCurrentAnimation().getPlayMode().equals(PlayMode.NORMAL))
+							|| (animation.getCurrentAnimation().isAnimationFinished(animation.getAnimationStateTime()) && animation.isRemoveEntityOnAnimationFinish())) {
+						if(animation.getCurrentAnimationData().getFinalFrameDuration() == 0) {
+							animation.cancelAnimation();
+						} else {
+							Object[] keyFrames = animation.getCurrentAnimation().getKeyFrames();
+							nextSprite = (Sprite)keyFrames[keyFrames.length - 1];
+							animation.setTimeUntilEndOfFinalFrame(animation.getCurrentAnimationData().getFinalFrameDuration());
+						}
+					} else {
+						nextSprite = animation.getKeyFrame();
+					}
+				}
+				
+				if(nextSprite != null) {
+					image.setSprite(nextSprite);
+				}
 			}
 			if(animation.isQueuedIdleAnimation()) {
 				animation.startAnimation(animation.getIdleAnimationName() + "_" + image.getFacing().getStringRepresentation(), PlayMode.NORMAL);
