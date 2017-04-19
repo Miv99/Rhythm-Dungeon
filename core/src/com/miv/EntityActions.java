@@ -139,9 +139,10 @@ public class EntityActions {
 		AnimationComponent animationComponent = ComponentMappers.animationMapper.get(entity);
 
 		if(!floor.isActionsDisabled() && !hitboxComponent.isMovementDisabled()) {
+			HitboxType[][] hitbox = hitboxComponent.getHitbox();
+			Point hitboxPosition = hitboxComponent.getMapPosition();
+
 			if(isValidMovement(tiles, entity, direction)) {
-				HitboxType[][] hitbox = hitboxComponent.getHitbox();
-				Point hitboxPosition = hitboxComponent.getMapPosition();
 				Point imagePosition = imageComponent.getMapPosition();
 				int xNew = hitboxPosition.x + direction.getDeltaX();
 				int yNew = hitboxPosition.y + direction.getDeltaY();
@@ -228,11 +229,31 @@ public class EntityActions {
 					}
 				}
 			} else if(isValidTurn(tiles, entity, direction)) {
+				// Remove the entity from the set of occupants on all tiles the entity is currently on
+				for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
+					for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
+						tiles[x][y].getAttackableOccupants().remove(entity);
+						tiles[x][y].getTangibleOccupants().remove(entity);
+					}
+				}
+				
 				// Entity turns but does not move
 				hitboxComponent.faceDirection(direction);
 				imageComponent.faceDirection(direction);
 				if(animationComponent.isPlayingIdleAnimation()) {
 					animationComponent.transitionAnimation(imageComponent.getSpriteName() + "_idle_" + hitboxComponent.getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+				}
+				
+				// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
+				for(int x = hitboxPosition.x; x < hitboxPosition.x + hitbox.length; x++) {
+					for(int y = hitboxPosition.y; y < hitboxPosition.y + hitbox[x - hitboxPosition.x].length; y++) {
+						if(hitbox[x - hitboxPosition.x][y - hitboxPosition.y].isTangible()) {
+							tiles[x][y].getTangibleOccupants().add(entity);
+						}
+						if(hitbox[x - hitboxPosition.x][y - hitboxPosition.y].isAttackable()) {
+							tiles[x][y].getAttackableOccupants().add(entity);
+						}
+					}
 				}
 			}
 		}
@@ -274,6 +295,35 @@ public class EntityActions {
 				focusAbsoluteMapPosition = new Point(ComponentMappers.hitboxMapper.get(target).getMapPosition());
 			} else if(directionDeterminant.equals(AttackDirectionDeterminant.TARGET_RELATIVE_TO_SELF)) {
 				attackDirection = MapUtils.getRelativeDirection(ComponentMappers.hitboxMapper.get(target).getMapPosition(), new Point(attackerPosition.x + attackerAttackOrigin.x, attackerPosition.y + attackerAttackOrigin.y));
+				if(!isValidTurn(mapTiles, attacker, attackDirection)) {
+					return false;
+				} else {
+					// Remove the entity from the set of occupants on all tiles the entity is currently on
+					HitboxType[][] hitbox = attackerHitboxComponent.getHitbox();
+					for(int x = attackerPosition.x; x < attackerPosition.x + hitbox.length; x++) {
+						for(int y = attackerPosition.y; y < attackerPosition.y + hitbox[x - attackerPosition.x].length; y++) {
+							mapTiles[x][y].getAttackableOccupants().remove(attacker);
+							mapTiles[x][y].getTangibleOccupants().remove(attacker);
+						}
+					}
+					
+					// Entity turns but does not move
+					attackerHitboxComponent.faceDirection(attackDirection);
+					ComponentMappers.imageMapper.get(attacker).faceDirection(attackDirection);
+					attackerAttackOrigin = new Point(attackerHitboxComponent.getAttackOrigin());
+					
+					// Update occupants set on all tiles in the floor that the entity's hitboxes now preside in after moving
+					for(int x = attackerPosition.x; x < attackerPosition.x + hitbox.length; x++) {
+						for(int y = attackerPosition.y; y < attackerPosition.y + hitbox[x - attackerPosition.x].length; y++) {
+							if(hitbox[x - attackerPosition.x][y - attackerPosition.y].isTangible()) {
+								mapTiles[x][y].getTangibleOccupants().add(attacker);
+							}
+							if(hitbox[x - attackerPosition.x][y - attackerPosition.y].isAttackable()) {
+								mapTiles[x][y].getAttackableOccupants().add(attacker);
+							}
+						}
+					}
+				}
 				focusAbsoluteMapPosition = new Point(attackerPosition);
 			} else {
 				System.out.println("YOU FORGOT TO MAKE AN IF STATEMENT FOR " + directionDeterminant + " IN Attack.class");
