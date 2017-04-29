@@ -81,7 +81,7 @@ public class Main extends ApplicationAdapter {
 		// Create systems
 		TileWarningSystem tileWarningSystem = new TileWarningSystem();
 		engine.addSystem(tileWarningSystem);
-		deathSystem = new DeathSystem(engine, audio);
+		deathSystem = new DeathSystem(engine, audio, entityFactory);
 		engine.addSystem(deathSystem);
 		engine.addSystem(new AnimationSystem(engine));
 		RenderSystem renderSystem = new RenderSystem();
@@ -172,7 +172,7 @@ public class Main extends ApplicationAdapter {
 				
 		//TODO: show cutscene of story intro
 		
-		Entity player = entityFactory.createEntity(entityLoader.getEntitiesData().get("player"), new Point(30, 30), 4);
+		Entity player = entityFactory.createEntity(entityLoader.getEntitiesData().get("player"), new Point(30, 30), 50);
 		camera.setFocus(player);
 		engine.addEntity(player);
 		

@@ -42,6 +42,9 @@ public class Options {
 		}
 	}
 	
+	// Should be a multiple of 10 for Dungeon.calculateBpmFromFloor()
+	public static final int MAX_FLOORS = 30;
+	
 	public static final int TILE_SIZE = 32;
 		
 	//TODO: change this to Gdx.files.local

@@ -46,7 +46,7 @@ public class ExplodingTrap extends EntityAI {
 	@Override
 	public void onActivation() {
 		EntityActions.entityStartAttack(engine, options, audio, dungeon, self, target, attackData, entityFactory);
-		EntityActions.killEntity(audio, engine, dungeon.getFloors()[dungeon.getCurrentFloor()], self);
+		EntityActions.killEntity(entityFactory, audio, engine, dungeon.getFloors()[dungeon.getCurrentFloor()], self);
 	}
 
 	@Override

@@ -11,16 +11,19 @@ import com.miv.EntityActions;
 import audio.Audio;
 import components.HealthComponent;
 import dungeons.Floor;
+import factories.EntityFactory;
 
 public class DeathSystem extends EntitySystem {
 	private Engine engine;
 	private Floor floor;
 	private Audio audio;
+	private EntityFactory entityFactory;
 	private ImmutableArray<Entity> entities;
 	
-	public DeathSystem(Engine engine, Audio audio) {
+	public DeathSystem(Engine engine, Audio audio, EntityFactory entityFactory) {
 		this.engine = engine;
 		this.audio = audio;
+		this.entityFactory = entityFactory;
 	}
 	
 	public void setFloor(Floor floor) {
@@ -43,7 +46,7 @@ public class DeathSystem extends EntitySystem {
 			HealthComponent healthComponent = ComponentMappers.healthMapper.get(e);
 			
 			if(healthComponent.getHealth() <= 0) {
-				EntityActions.killEntity(audio, engine, floor, e);
+				EntityActions.killEntity(entityFactory, audio, engine, floor, e);
 			}
 		}
 	}

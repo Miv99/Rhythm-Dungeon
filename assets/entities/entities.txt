@@ -3,47 +3,55 @@ hitbox=1x1
 sprite=none
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none
 
 name=stone_wall_breakable
 hitbox=1x1
 sprite=stone_wall
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none
 
 name=rock_breakable
 hitbox=1x1
 sprite=rock
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none
 
 name=default_trap
 hitbox=1x1_intangible
 sprite=default_trap
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none
 
 name=player
 player=true
-player_default_attack=skeleton_fire_sword
+player_default_attack=player_sword
 hitbox=1x1
 sprite=player
 hurt_sound=human_hurt
 death_sound=human_death
+death_animation=none
 
 name=dragon
 hitbox=dragon
 sprite=dragon
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=player_idle
 
 name=skeleton
 hitbox=1x1
 sprite=skeleton
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none
 
 name=fire_spirit
 hitbox=1x1
 sprite=fire_spirit
 hurt_sound=monster_hurt
 death_sound=monster_death
+death_animation=none

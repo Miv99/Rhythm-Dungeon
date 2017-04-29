@@ -7,6 +7,7 @@ public class HealthComponent implements Component {
 	private String deathSoundName;
 	private float health;
 	private float maxHealth;
+	private int lifetimeInBeats = -1;
 	
 	public HealthComponent(float maxHealth, String hurtSoundName, String deathSoundName) {
 		health = maxHealth;
@@ -33,5 +34,13 @@ public class HealthComponent implements Component {
 
 	public String getDeathSoundName() {
 		return deathSoundName;
+	}
+	
+	public void setLifetimeInBeats(int lifetimeInBeats) {
+		this.lifetimeInBeats = lifetimeInBeats;
+	}
+	
+	public int getLifetimeInBeats() {
+		return lifetimeInBeats;
 	}
 }

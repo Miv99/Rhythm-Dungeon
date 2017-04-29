@@ -444,7 +444,7 @@ public class DungeonFactory {
 	}
 	
 	private static int getFloorMaxSideLength(int floorNumber) {
-		return 150 + floorNumber*4;
+		return 75 + floorNumber;
 	}
 	
 	private static int getRoomPlacementAttempts(int floorArea) {

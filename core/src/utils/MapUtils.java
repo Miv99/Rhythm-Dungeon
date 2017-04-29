@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.miv.ComponentMappers;
 import com.miv.EntityActions.Direction;
 
@@ -88,5 +89,19 @@ public class MapUtils {
 	
 	public static Direction getRelativeDirection(Point point, Point relativeTo) {
 		return getRelativeDirection(point.x, point.y, relativeTo.x, relativeTo.y);
+	}
+	
+	public static Array<Tile> getAllVisibleIntangibleTilesInDirection(Tile[][] mapTiles, int x, int y, Direction direction) {
+		Array<Tile> tiles = new Array<Tile>();
+		while(x >= 0 && x < mapTiles.length && y >= 0 && y < mapTiles[0].length) {
+			if(mapTiles[x][y].getHitboxType().isTangible()) {
+				break;
+			} else {
+				tiles.add(mapTiles[x][y]);
+				x += direction.getDeltaX();
+				y += direction.getDeltaY();
+			}
+		}
+		return tiles;
 	}
 }

@@ -21,6 +21,7 @@ public class AnimationComponent implements Component {
 	private AnimationData currentAnimationData;
 	// Time until final frame ends; only used for animations with an abnormal final frame length
 	private float timeUntilEndOfFinalFrame;
+	private String deathAnimationName;
 	
 	// If true, after the animation finishes, the entity the component belongs to is removed from the engine
 	// Used for animation entities (entities used to show animations)
@@ -134,5 +135,13 @@ public class AnimationComponent implements Component {
 	
 	public void setTimeUntilEndOfFinalFrame(float timeUntilEndOfFinalFrame) {
 		this.timeUntilEndOfFinalFrame = timeUntilEndOfFinalFrame;
+	}
+	
+	public void setDeathAnimationName(String deathAnimationName) {
+		this.deathAnimationName = deathAnimationName;
+	}
+	
+	public String getDeathAnimationName() {
+		return deathAnimationName;
 	}
 }

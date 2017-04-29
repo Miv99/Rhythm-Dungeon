@@ -101,7 +101,9 @@ public class EntityFactory {
 		
 		e.add(new ImageComponent(entityData.getSpriteName(), createDirectionalSprites(entityData.getSpriteName()), mapPosition));
 		if(animationsData.containsKey(entityData.getSpriteName() + "_idle_" + Direction.RIGHT.getStringRepresentation())) {
-			e.add(new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle"));
+			AnimationComponent animation = new AnimationComponent(animationsData, entityData.getSpriteName() + "_idle");
+			animation.setDeathAnimationName(entityData.getDeathAnimationName());
+			e.add(animation);
 		}
 				
 		return e;

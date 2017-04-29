@@ -23,6 +23,7 @@ import audio.SongSelector.NoSelectableMusicException;
 import components.AnimationComponent;
 import components.AttackComponent;
 import components.EntityAIComponent;
+import components.HealthComponent;
 import components.HitboxComponent;
 import components.MovementAIComponent;
 import data.AnimationLoader;
@@ -36,9 +37,6 @@ import movement_ai.PathFinder;
 import special_tiles.WarningTile;
 import systems.DeathSystem;
 
-/**
- * Note: all calculations are optimized so that there is a maximum of 50 floors per dungeon.
- */
 public class Dungeon {
 	public static class DungeonParams {
 		private Engine engine;
@@ -144,7 +142,7 @@ public class Dungeon {
 	 */
 	public static float calculateBpmFromFloor(Options options, int floor) {
 		//return 200;
-		return Math.min(options.getDifficulty().getBpmCap(), 100f + ((float)Math.round(floor/5f) * 10f));		
+		return Math.min(options.getDifficulty().getBpmCap(), 100f + ((float)Math.round(floor/(Options.MAX_FLOORS/10f)) * 10f));		
 	}
 	
 	public void enterNewFloor(int newFloor) {
@@ -720,6 +718,15 @@ public class Dungeon {
 					
 					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(MovementAIComponent.class).get())) {
 						ComponentMappers.movementAIMapper.get(entity).getMovementAI().onNewBeat();
+					}
+					
+					// Lower lifetime of all entites with health component
+					for(Entity entity : dungeonParams.engine.getEntitiesFor(Family.all(HealthComponent.class).get())) {
+						HealthComponent health = ComponentMappers.healthMapper.get(entity);
+						health.setLifetimeInBeats(health.getLifetimeInBeats() - 1);
+						if(health.getLifetimeInBeats() == 0) {
+							EntityActions.killEntity(dungeonParams.entityFactory, dungeonParams.audio, dungeonParams.engine, floors[currentFloor], entity);
+						}
 					}
 				}
 			}

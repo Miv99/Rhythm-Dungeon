@@ -552,7 +552,7 @@ public class EntityActions {
 		}
 	}
 	
-	public static void killEntity(Audio audio, Engine engine, Floor floor, Entity entity) {
+	public static void killEntity(EntityFactory entityFactory, Audio audio, Engine engine, Floor floor, Entity entity) {
 		// Remove warning tiles
 		if(ComponentMappers.attackMapper.has(entity)) {
 			AttackComponent attackComponent = ComponentMappers.attackMapper.get(entity);
@@ -581,9 +581,13 @@ public class EntityActions {
 			}
 		}
 		
-		//TODO: do some death animation thing (use same animation for every entity death) and remove entity from engine after animation finishes
+		// Spawn separate entity to show death animation
+		if(ComponentMappers.animationMapper.has(entity)
+				&& !ComponentMappers.animationMapper.get(entity).getDeathAnimationName().equals("none")) {
+			entityFactory.spawnAnimationEntity(ComponentMappers.animationMapper.get(entity).getDeathAnimationName() + "_" + ComponentMappers.hitboxMapper.get(entity).getHorizontalFacing().getStringRepresentation(), 
+					new Point(ComponentMappers.hitboxMapper.get(entity).getMapPosition()));
+		}
 		
-		//TODO: remove this
 		engine.removeEntity(entity);
 	}
 	

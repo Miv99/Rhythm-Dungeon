@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Array;
+import com.miv.ComponentMappers;
 
 import data.EntityData;
 import data.HitboxData.HitboxType;
@@ -22,6 +23,14 @@ public class Floor {
 	
 	public void createBreakableTile(EntityFactory entityFactory, EntityData entityData, Point mapPosition, int healthPoints) {
 		Entity entity = entityFactory.createEntity(entityData, mapPosition, healthPoints);
+		entitiesToBeSpawned.add(entity);
+		tiles[mapPosition.x][mapPosition.y].setHitboxType(HitboxType.INTANGIBLE);
+		tiles[mapPosition.x][mapPosition.y].getTangibleOccupants().add(entity);
+	}
+	
+	public void createBreakableTile(Dungeon dungeon, EntityFactory entityFactory, EntityData entityData, Point mapPosition, int healthPoints, int lifetimeInBeats) {
+		Entity entity = entityFactory.createEntity(entityData, mapPosition, healthPoints);
+		ComponentMappers.healthMapper.get(entity).setLifetimeInBeats(lifetimeInBeats);
 		entitiesToBeSpawned.add(entity);
 		tiles[mapPosition.x][mapPosition.y].setHitboxType(HitboxType.INTANGIBLE);
 		tiles[mapPosition.x][mapPosition.y].getTangibleOccupants().add(entity);
