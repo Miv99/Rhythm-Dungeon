@@ -99,22 +99,22 @@ public class PathFinder {
 			
 			TileCell t;
 			if(current.x - 1 >= 0 
-					&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart, Direction.LEFT)) {
+					&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart - 1, current.y + searchSquareYStart, Direction.LEFT)) {
                 t = tileCells[current.x - 1][current.y];
                 checkAndUpdateCost(open, closed, current, t, current.finalCost + 1);
 			}
 			if(current.y - 1 >= 0
-					&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart, Direction.DOWN)) {
+					&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart - 1, Direction.DOWN)) {
                 t = tileCells[current.x][current.y - 1];
                 checkAndUpdateCost(open, closed, current, t, current.finalCost + 1);
             }
             if(current.y + 1 < tileCells[0].length
-            		&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart, Direction.UP)) {
+            		&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart + 1, Direction.UP)) {
                 t = tileCells[current.x][current.y + 1];
                 checkAndUpdateCost(open, closed, current, t, current.finalCost + 1);
             }
             if(current.x + 1 < tileCells.length
-            		&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart, current.y + searchSquareYStart, Direction.RIGHT)) {
+            		&& EntityActions.isValidMovement(tiles, mover, current.x + searchSquareXStart + 1, current.y + searchSquareYStart, Direction.RIGHT)) {
                 t = tileCells[current.x + 1][current.y];
                 checkAndUpdateCost(open, closed, current, t, current.finalCost + 1);
             }
@@ -136,6 +136,7 @@ public class PathFinder {
 		        	}
 	        	}
 	        } catch(NullPointerException e) {
+				System.out.println("2");
 	        	throw new NoPathsException();
 	        }
 		}
@@ -232,7 +233,7 @@ public class PathFinder {
         int tFinalCost = cell.heuristicCost + cost;
         
         boolean inOpen = open.contains(cell);
-        if(!inOpen || tFinalCost < cell.finalCost){
+        if(!inOpen || tFinalCost < cell.finalCost) {
             cell.finalCost = tFinalCost;
             cell.parent = current;
             if(!inOpen) {
