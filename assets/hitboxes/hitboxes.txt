@@ -13,9 +13,3 @@ name=1x1_intangible
 [
 -
 ]
-
-name=dragon
-[
----#
--xx-
-]
