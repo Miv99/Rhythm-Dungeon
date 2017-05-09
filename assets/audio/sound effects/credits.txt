@@ -1,1 +1,2 @@
-human_death, human_hurt, monster_death, monster_hurt: http://michel-baradari.de/
+http://michel-baradari.de/
+https://opengameart.org/content/rpg-sound-pack

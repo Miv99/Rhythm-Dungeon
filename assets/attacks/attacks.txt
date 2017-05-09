@@ -40,7 +40,7 @@ right1=[
 ]
 warn_tiles=none
 
-name=butterfly_default
+name=butterfly_melee
 animation_name=butterfly_attack1
 can_hit=player
 direction=SELF_FACING
@@ -53,3 +53,19 @@ right1=[
 #0
 ]
 warn_tiles=none
+
+name=butterfly_gust
+animation_name=butterfly_attack1
+can_hit=player
+direction=SELF_FACING
+auto_rotate=true
+attack_delay=2
+disable_attack=4
+disable_movement=3
+'0'=slash
+right1=[
+-0-
+#00
+-0-
+]
+warn_tiles=1
