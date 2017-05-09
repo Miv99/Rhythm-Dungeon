@@ -1,42 +1,15 @@
 package movement_ai;
 
-import java.awt.Point;
-
 import com.badlogic.ashley.core.Entity;
-import com.miv.ComponentMappers;
 import com.miv.EntityActions;
 import com.miv.EntityActions.Direction;
 
-import components.HitboxComponent;
 import dungeons.Floor;
 import movement_ai.PathFinder.NoPathsException;
-import utils.MapUtils;
 
 public class EfficientChaser extends MovementAI {
-	private int movementDisableAfterMovementInBeats;
-	private int movementDisableCounter;
-	
-	private HitboxComponent targetHitboxComponent;
-	private HitboxComponent selfHitboxComponent;
-	private Point targetHitboxCenter;
-	private Point selfHitboxCenter;
-	private Point selfAttackOrigin;
-	
-	public EfficientChaser(MovementAIParams params, Entity self, int activationRadiusInTiles, int movementDisableAfterMovementInBeats) {
+	public EfficientChaser(MovementAIParams params, Entity self, int activationRadiusInTiles) {
 		super(params, self, activationRadiusInTiles);
-		
-		movementDisableCounter = movementDisableAfterMovementInBeats;
-		this.movementDisableAfterMovementInBeats = movementDisableAfterMovementInBeats;
-		
-		targetHitboxComponent = ComponentMappers.hitboxMapper.get(target);
-		selfHitboxComponent = ComponentMappers.hitboxMapper.get(self);
-		
-		targetHitboxCenter = new Point(targetHitboxComponent.getHitbox().length/2, targetHitboxComponent.getHitbox()[0].length/2);
-		selfHitboxCenter = new Point(selfHitboxComponent.getHitbox().length/2, selfHitboxComponent.getHitbox()[0].length/2);
-		
-		if(selfHitboxComponent.hasAttackOrigin()) {
-			selfAttackOrigin = selfHitboxComponent.getAttackOrigin();
-		}
 	}
 
 	@Override

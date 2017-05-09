@@ -441,6 +441,7 @@ public class EntityActions {
 			if(ComponentMappers.animationMapper.has(attacker)) {
 				AnimationComponent animationComponent = ComponentMappers.animationMapper.get(attacker);
 				animationComponent.startAnimation(attackData.getAttackerAnimationName() + "_" + ComponentMappers.hitboxMapper.get(attacker).getHorizontalFacing().getStringRepresentation(), PlayMode.NORMAL);
+				animationComponent.setQueuedIdleAnimation(true);
 			}
 			
 			return true;

@@ -18,7 +18,7 @@ import components.PlayerComponent;
 import data.HitboxData.HitboxType;
 import dungeons.Dungeon;
 import dungeons.Dungeon.DungeonParams;
-import entity_ai.Dragon;
+import entity_ai.DefaultAI;
 import entity_ai.EntityAI.EntityAIParams;
 import entity_ai.ExplodingTrap;
 import entity_ai.PulsatingExpandingRingTrap;
@@ -84,11 +84,11 @@ public class DungeonFactory {
 		MovementAIParams movementAIParams = new MovementAIParams(dungeonParams.getEngine(), dungeon, dungeonParams.getPlayer());
 		
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
-		Entity dragon1 = dungeonParams.getEntityFactory()
-				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("dragon"), new Point(20, 30), 5);
-		dragon1.add(new EntityAIComponent(new Dragon(entityAIParams, dragon1, 10)));
-		dragon1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, dragon1, 10, 1)));
-		spawns.add(dragon1);
+		Entity butterfly1 = dungeonParams.getEntityFactory()
+				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("butterfly"), new Point(20, 30), 5);
+		butterfly1.add(new EntityAIComponent(new DefaultAI(entityAIParams, butterfly1, 10, "butterfly_gust")));
+		butterfly1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, butterfly1, 15)));
+		spawns.add(butterfly1);
 		/**
 		 * EntityFactory entityFactory, Options options, Audio audio, Dungeon dungeon, Entity self, Entity target, int activationRadiusInTiles
 		 * 

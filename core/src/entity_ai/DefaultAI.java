@@ -11,6 +11,12 @@ public class DefaultAI extends EntityAI {
 	private Array<String> attackRotation;
 	private int attackRotationIndex = 0;
 	
+	public DefaultAI(EntityAIParams params, Entity self, int activationRadiusInTiles, String attack) {
+		super(params, self, activationRadiusInTiles);
+		attackRotation = new Array<String>();
+		attackRotation.add(attack);
+	}
+	
 	public DefaultAI(EntityAIParams params, Entity self, int activationRadiusInTiles, Array<String> attackRotation) {
 		super(params, self, activationRadiusInTiles);
 		this.attackRotation = attackRotation;
