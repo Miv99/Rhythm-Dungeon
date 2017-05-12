@@ -44,44 +44,20 @@ public class MapUtils {
 		
 		float slope = (float)(y1 - relativeToY)/(x1 - relativeToX);
 		if(x1 - relativeToX > 0) {
-			if(slope > -1 && slope < 1) {
+			if(slope > -1 && slope <= 1) {
 				return Direction.RIGHT;
 			} else if(slope > 1) {
 				return Direction.UP;
-			} else if(slope < -1) {
+			} else if(slope <= -1) {
 				return Direction.DOWN;
-			} else if(slope == 1) {
-				if(MathUtils.randomBoolean()) {
-					return Direction.RIGHT;
-				} else {
-					return Direction.UP;
-				}
-			} else if(slope == -1) {
-				if(MathUtils.randomBoolean()) {
-					return Direction.RIGHT;
-				} else {
-					return Direction.DOWN;
-				}
 			}
 		} else {
-			if(slope > -1 && slope < 1) {
+			if(slope > -1 && slope <= 1) {
 				return Direction.LEFT;
 			} else if(slope > 1) {
 				return Direction.DOWN;
-			} else if(slope < -1) {
+			} else if(slope <= -1) {
 				return Direction.UP;
-			} else if(slope == 1) {
-				if(MathUtils.randomBoolean()) {
-					return Direction.LEFT;
-				} else {
-					return Direction.DOWN;
-				}
-			} else if(slope == -1) {
-				if(MathUtils.randomBoolean()) {
-					return Direction.LEFT;
-				} else {
-					return Direction.UP;
-				}
 			}
 		}
 		return null;

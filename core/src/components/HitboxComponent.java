@@ -77,11 +77,6 @@ public class HitboxComponent implements Component {
 		facing = direction;
 	}
 	
-	public void setMapPosition(int x, int y) {
-		mapPosition.x = x;
-		mapPosition.y = y;
-	}
-	
 	public void disableMovement(float movementDisabledTimeInBeats) {
 		movementDisabled = true;
 		this.movementDisabledTimeInBeats = movementDisabledTimeInBeats;
@@ -89,6 +84,10 @@ public class HitboxComponent implements Component {
 	
 	public HitboxType[][] getHitbox() {
 		return hitbox;
+	}
+	
+	public Point getCenterMapPosition() {
+		return new Point(getCenterMapPositionX(), getCenterMapPositionY());
 	}
 	
 	public int getCenterMapPositionX() {

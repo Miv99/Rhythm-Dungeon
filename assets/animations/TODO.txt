@@ -1,0 +1,9 @@
+TODO:
+
+lava
+acid
+ice_shard
+lightning_strike
+laser_start
+laser_middle
+laser_end

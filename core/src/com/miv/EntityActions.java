@@ -337,7 +337,7 @@ public class EntityActions {
 				Point focusPositionRelativeToTargetttedTiles = null;
 				for(int x = 0; x < targetedTiles.length; x++) {
 					for(int y = 0; y < targetedTiles[x].length; y++) {
-						if(targetedTiles[x][y].isFocus()) {
+						if(targetedTiles[x][y] != null && targetedTiles[x][y].isFocus()) {
 							focusPositionRelativeToTargetttedTiles = new Point(x, y);
 							break;
 						}
@@ -355,7 +355,7 @@ public class EntityActions {
 								if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
 									// Get x and y relative to targetedTiles
 									TileAttackData tile = targetedTiles[x - absX][y - absY];
-									if(tile.isAttack()) {
+									if(tile != null && tile.isAttack()) {
 										warningTiles.add(new WarningTile(attackData.getAttackDelayInBeats(), x, y));
 									}
 								}
@@ -372,7 +372,7 @@ public class EntityActions {
 								if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
 									// Get x and y relative to targetedTiles
 									TileAttackData tile = targetedTiles[x - absX][y - absY];
-									if(tile.isAttack()) {
+									if(tile != null && tile.isAttack()) {
 										warningTiles.add(new WarningTile(1, x, y));
 									}
 								}
@@ -390,7 +390,7 @@ public class EntityActions {
 				Point focusPositionRelativeToTargetttedTiles = null;
 				for(int x = 0; x < targetedTiles.length; x++) {
 					for(int y = 0; y < targetedTiles[x].length; y++) {
-						if(targetedTiles[x][y].isFocus()) {
+						if(targetedTiles[x][y] != null && targetedTiles[x][y].isFocus()) {
 							focusPositionRelativeToTargetttedTiles = new Point(x, y);
 							break;
 						}
@@ -477,7 +477,7 @@ public class EntityActions {
 				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
 					// Get x and y relative to targetedTiles
 					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
-					if(tile.isAttack()) {
+					if(tile != null && tile.isAttack()) {
 						params.entityFactory.spawnAnimationEntity(tile.getAnimationOnTileName() + "_right", new Point(x, y));
 					}
 				}
@@ -507,7 +507,7 @@ public class EntityActions {
 				if(x >= 0 && y >= 0 && x < mapTiles.length && y < mapTiles[x].length) {
 					// Get x and y relative to targetedTiles
 					TileAttackData tile = params.targetedTiles[x - absX][y - absY];
-					if(tile.isAttack()) {
+					if(tile != null && tile.isAttack()) {
 						// Get attackble entities that reside on the absolute tile
 						for(Entity occupant : mapTiles[x][y].getAttackableOccupants()) {
 							// Check if occupant has the entityHittableRequirement component

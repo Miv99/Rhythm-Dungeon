@@ -1,0 +1,7 @@
+AUDIO:
+http://michel-baradari.de/
+https://opengameart.org/content/rpg-sound-pack
+
+SPRITES:
+https://opengameart.org/content/bubble-explosion
+https://opengameart.org/users/calciumtrice

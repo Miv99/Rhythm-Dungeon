@@ -84,3 +84,6 @@ duration=1/2
 
 name=slash
 duration=1/8
+
+name=explosion
+duration=1/2
