@@ -47,12 +47,13 @@ public class AttackData {
 	}
 	public static enum AttackDirectionDeterminant {
 		// Direction determined depends on the target's position relative to self
-		// If the target lies on the border between two directions, one is chosen at random
 		TARGET_RELATIVE_TO_SELF, 
 		// Direction determined is the direction the target is facing
 		TARGET_FACING,
 		// Direction determined is the direction the attacker is facing
-		SELF_FACING
+		SELF_FACING,
+		// Direction is always Direction.RIGHT and attack focus is on self
+		ALWAYS_RIGHT_FROM_SELF
 	}
 	
 	// Component that the entity on affected tiles must have so that it is affected by the attack

@@ -21,6 +21,7 @@ import dungeons.Dungeon.DungeonParams;
 import entity_ai.DefaultAI;
 import entity_ai.EntityAI.EntityAIParams;
 import entity_ai.ExplodingTrap;
+import entity_ai.FireBlast;
 import entity_ai.PulsatingExpandingRingTrap;
 import graphics.Images;
 import movement_ai.EfficientChaser;
@@ -85,8 +86,9 @@ public class DungeonFactory {
 		
 		Array<Entity> spawns = floors[0].getEntitiesToBeSpawned();
 		Entity butterfly1 = dungeonParams.getEntityFactory()
-				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("butterfly"), new Point(20, 30), 5);
-		butterfly1.add(new EntityAIComponent(new DefaultAI(entityAIParams, butterfly1, 10, "butterfly_gust")));
+				.createEntity(dungeonParams.getEntityLoader().getEntitiesData().get("wizard_male"), new Point(40, 30), 5);
+		//butterfly1.add(new EntityAIComponent(new DefaultAI(entityAIParams, butterfly1, 10, "butterfly_gust")));
+		butterfly1.add(new EntityAIComponent(new FireBlast(entityAIParams, butterfly1, 10, "wizard_male_attack1")));
 		butterfly1.add(new MovementAIComponent(new EfficientChaser(movementAIParams, butterfly1, 15)));
 		spawns.add(butterfly1);
 		/**

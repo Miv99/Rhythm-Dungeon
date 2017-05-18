@@ -67,6 +67,32 @@ public class MapUtils {
 		return getRelativeDirection(point.x, point.y, relativeTo.x, relativeTo.y);
 	}
 	
+	/**
+	 * Returns the maximum number of intangible tiles in the specified direction from the specified point until the
+	 * line of sight is blocked by a tangible tile. 
+	 * Always counts the starting tile, even if it is tangible.
+	 */
+	public static int countVisibleIntangibleTilesInDirection(Tile[][] mapTiles, int x, int y, Direction direction) {
+		int count = 1;
+		x += direction.getDeltaX();
+		y += direction.getDeltaY();
+		while(x >= 0 && x < mapTiles.length && y >= 0 && y < mapTiles[0].length) {
+			if(mapTiles[x][y].getHitboxType().isTangible()) {
+				break;
+			} else {
+				count++;
+				x += direction.getDeltaX();
+				y += direction.getDeltaY();
+			}
+		}
+		return count;
+	}
+	
+	/**
+	 * Returns all intangible tiles in the specified direction from the specified point until the
+	 * line of sight is blocked by a tangible tile. 
+	 * Includes the starting tile if it is intangible.
+	 */
 	public static Array<Tile> getAllVisibleIntangibleTilesInDirection(Tile[][] mapTiles, int x, int y, Direction direction) {
 		Array<Tile> tiles = new Array<Tile>();
 		while(x >= 0 && x < mapTiles.length && y >= 0 && y < mapTiles[0].length) {

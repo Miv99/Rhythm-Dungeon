@@ -28,9 +28,10 @@ warn_tiles=none/#,#,#,...
 *SELF_FACING: Direction determined is the direction the attacker is facing
  TARGET_FACING: Direction determined is the direction the target is facing
  TARGET_RELATIVE_TO_SELF: Direction determined depends on the target's position relative to the attacker
+ ALWAYS_RIGHT_FROM_SELF: Direction is always right
 
 **The legend is the list of "'(any single character)'=" as defined in the same attack. Default legend keys are:
-  '#' = the attacker (if direction is SELF_FACING) or the player (if direction is TARGET_FACING or TARGET_RELATIVE_TO_SELF);
+  '#' = the attacker (if direction is SELF_FACING) or the player (if direction is TARGET_FACING or TARGET_RELATIVE_TO_SELF or ALWAYS_RIGHT_FROM_SELF);
 	can be used in the custom legend to have an animationon the same tile as the focus
   '-' = empty space used solely for visual aid; never to be used in the custom legend
 

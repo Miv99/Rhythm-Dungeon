@@ -325,6 +325,9 @@ public class EntityActions {
 					}
 				}
 				focusAbsoluteMapPosition = new Point(attackerPosition);
+			} else if(directionDeterminant.equals(AttackDirectionDeterminant.ALWAYS_RIGHT_FROM_SELF)) {
+				attackDirection = Direction.RIGHT;
+				focusAbsoluteMapPosition = new Point(attackerPosition);
 			} else {
 				System.out.println("YOU FORGOT TO MAKE AN IF STATEMENT FOR " + directionDeterminant + " IN Attack.class");
 				return false;
